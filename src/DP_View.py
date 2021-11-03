@@ -45,7 +45,11 @@ from Tools.Directories import fileExists
 from enigma import eServiceReference
 from enigma import ePicLoad
 
-from urllib import quote_plus
+try:
+	from urllib.parse import quote_plus
+except:
+	from urllib import quote_plus
+
 from twisted.web.client import downloadPage
 
 from .DP_Player import DP_Player

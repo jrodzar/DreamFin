@@ -47,7 +47,10 @@ import socket
 import struct
 import threading
 import time
-import urllib2
+try:
+	from urllib.request import urlopen
+except:
+	from urllib2 import urlopen
 
 from Components.config import config
 
@@ -206,7 +209,7 @@ class PlexGdm(object):
 				media_port = self.server_list[0]['port']
 
 				printl("Checking server [%s] on port [%s]" % (media_server, media_port), self, "D")
-				f = urllib2.urlopen('http://%s:%s/clients' % (media_server, media_port))
+				f = urlopen('http://%s:%s/clients' % (media_server, media_port))
 				client_result = f.read()
 				if self.client_id in client_result:
 					printl("Client registration successful", self, "D")

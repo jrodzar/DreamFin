@@ -32,11 +32,16 @@ import hmac
 import cPickle as pickle
 
 from time import time
-from urllib import quote_plus, unquote
+try:
+	from urllib.parse import quote_plus, unquote
+	from urllib.request import urlopen, Request
+except:
+	from urllib import quote_plus, unquote
+	from urllib2 import urlopen, Request
+
 from base64 import b64encode, b64decode
 from Components.config import config
 from hashlib import sha256
-from urllib2 import urlopen, Request
 from random import seed
 from Tools.Directories import fileExists, copyfile
 

@@ -287,12 +287,15 @@ def testInetConnectivity(target="http://www.google.com"):
 	"""
 	printl2("", "__common__::testInetConnectivity", "S")
 
-	import urllib2
+	try:
+		from urllib.request import build_opener
+	except:
+		from urllib2 import build_opener
 	from   sys import version_info
 	import socket
 
 	try:
-		opener = urllib2.build_opener()
+		opener = build_opener()
 
 		if version_info[1] >= 6:
 			page = opener.open(target, timeout=2)

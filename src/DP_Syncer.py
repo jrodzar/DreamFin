@@ -38,7 +38,11 @@ from Components.config import config
 from Components.ScrollLabel import ScrollLabel
 from Components.Pixmap import Pixmap
 
-import urllib
+
+try:
+	from urllib.request import URLopener
+except:
+	from urllib import URLopener
 
 from Screens.Screen import Screen
 
@@ -733,7 +737,7 @@ class BackgroundMediaSyncer(Thread):
 
 		import math
 		import glob
-		import commands
+		import subprocess
 
 		try:
 			from PIL import Image
@@ -834,7 +838,7 @@ class BackgroundMediaSyncer(Thread):
 
 							printl("cmd: " + str(cmd), self, "D")
 
-							response = commands.getstatusoutput(cmd)
+							response = subprocess.getstatusoutput(cmd)
 
 							if fileExists(videoLocation) and response[0] == 0:
 								printl("finished rendering myFile: " + str(myFile),self, "D")
@@ -1247,7 +1251,7 @@ class BackgroundMediaSyncer(Thread):
 		printl("", self, "S")
 
 		# we establish the connection once here
-		self.urllibInstance=urllib.URLopener()
+		self.urllibInstance=URLopener()
 
 		# we add headers only in special cases
 		connectionType = self.serverConfig.connectionType.value
