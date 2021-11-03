@@ -407,7 +407,7 @@ class DP_View(DPH_Screen, DPH_ScreenHelper, DPH_MultiColorFunctions, DPH_Filter)
 				# we use this to be able to resize the tv picture and show as backdrop
 				self.loadedStillPictureLib = True
 
-			except Exception, ex:
+			except Exception as ex:
 				printl("Exception: " + str(ex), self, "D")
 				printl("was not able to import lib for stillpictures", self, "D")
 
@@ -2712,13 +2712,13 @@ class DP_View(DPH_Screen, DPH_ScreenHelper, DPH_MultiColorFunctions, DPH_Filter)
 				if element == "backdrop":
 					self[element+"Video"].show()
 
-			except Exception, e:
+			except Exception as e:
 				printl("Exception: " + str(e), self, "D")
 
 			try:
 				if element == "btn_red" or element == "green" or element == "btn_yellow" or element == "btn_blue":
 					self[element + "Text"].show()
-			except Exception, e:
+			except Exception as e:
 				printl("Exception: " + str(e), self, "D")
 
 		else:
@@ -2729,13 +2729,13 @@ class DP_View(DPH_Screen, DPH_ScreenHelper, DPH_MultiColorFunctions, DPH_Filter)
 				# additional changes
 				if element == "backdrop":
 					self[element+"Video"].hide()
-			except Exception, e:
+			except Exception as e:
 				printl("Exception: " + str(e), self, "D")
 
 			try:
 				if element == "btn_red" or element == "green" or element == "btn_yellow" or element == "btn_blue":
 					self[element + "Text"].hide()
-			except Exception, e:
+			except Exception as e:
 				printl("Exception: " + str(e), self, "D")
 
 		printl("", self, "C")
@@ -2763,7 +2763,7 @@ class DP_View(DPH_Screen, DPH_ScreenHelper, DPH_MultiColorFunctions, DPH_Filter)
 			printl("newX: " + str(newX), self, "D")
 			printl("newY: " + str(newY), self, "D")
 			self[element+"Label"].setPosition(newX, newY)
-		except Exception, e:
+		except Exception as e:
 			printl("error: " + str(e), self, "D")
 
 		printl("element: " + str(element), self, "D")
@@ -3074,7 +3074,7 @@ class DP_View(DPH_Screen, DPH_ScreenHelper, DPH_MultiColorFunctions, DPH_Filter)
 
 		try:
 			popularity = float(self.details["rating"])
-		except Exception, e:
+		except Exception as e:
 			popularity = 0
 			printl("error in popularity " + str(e), self, "D")
 

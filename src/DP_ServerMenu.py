@@ -477,7 +477,7 @@ class DPS_ServerMenu(DPH_Screen, DPH_HorizontalMenu, DPH_ScreenHelper, DPH_Filte
 				self.refreshOrientationHorMenu(+1)
 			else:
 				self["menu"].pageDown()
-		except Exception, ex:
+		except Exception as ex:
 			printl("Exception(" + str(type(ex)) + "): " + str(ex), self, "W")
 			self["menu"].selectNext()
 
@@ -494,7 +494,7 @@ class DPS_ServerMenu(DPH_Screen, DPH_HorizontalMenu, DPH_ScreenHelper, DPH_Filte
 				self.refreshOrientationHorMenu(-1)
 			else:
 				self["menu"].pageUp()
-		except Exception, ex:
+		except Exception as ex:
 			printl("Exception(" + str(type(ex)) + "): " + str(ex), self, "W")
 			self["menu"].selectPrevious()
 

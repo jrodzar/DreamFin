@@ -737,7 +737,7 @@ class BackgroundMediaSyncer(Thread):
 
 		try:
 			from PIL import Image
-		except Exception, e:
+		except Exception as e:
 			printl("Error: " + str(e), self, "D")
 			self.messages.push((THREAD_WORKING, _("Error!\nError-message:%s" % e) ))
 			self.messagePump.send(0)
@@ -851,7 +851,7 @@ class BackgroundMediaSyncer(Thread):
 								self.cancel = True
 								break
 
-				except Exception, e:
+				except Exception as e:
 					printl("Error: " + str(e), self, "D")
 					self.messages.push((THREAD_WORKING, _("Error!\nError-message:%s" % e) ))
 					self.messagePump.send(0)
@@ -989,7 +989,7 @@ class BackgroundMediaSyncer(Thread):
 			else:
 				self.messages.push((THREAD_FINISHED, _("We did it :-)")))
 
-		except Exception, e:
+		except Exception as e:
 			self.messages.push((THREAD_FINISHED, _("Error!\nError-message:%s\nPress Exit to close." % e) ))
 		finally:
 			self.messagePump.send(0)
@@ -1230,7 +1230,7 @@ class BackgroundMediaSyncer(Thread):
 			msg_text = _("... success")
 			self.messages.push((THREAD_WORKING, msg_text))
 			self.messagePump.send(0)
-		except Exception, e:
+		except Exception as e:
 			printl("download not possible: " + str(e), self, "D")
 
 			msg_text = _("... failed")

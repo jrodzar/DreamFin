@@ -257,7 +257,7 @@ class DPS_MainMenu(DPH_Screen, DPH_HorizontalMenu, DPH_ScreenHelper):
 				self.refreshOrientationHorMenu(+1)
 			else:
 				self["menu"].pageDown()
-		except Exception, ex:
+		except Exception as ex:
 			printl("Exception(" + str(type(ex)) + "): " + str(ex), self, "W")
 			self["menu"].selectNext()
 		
@@ -274,7 +274,7 @@ class DPS_MainMenu(DPH_Screen, DPH_HorizontalMenu, DPH_ScreenHelper):
 				self.refreshOrientationHorMenu(-1)
 			else:
 				self["menu"].pageUp()
-		except Exception, ex:
+		except Exception as ex:
 			printl("Exception(" + str(type(ex)) + "): " + str(ex), self, "W")
 			self["menu"].selectPrevious()
 		
@@ -489,7 +489,7 @@ class DPS_MainMenu(DPH_Screen, DPH_HorizontalMenu, DPH_ScreenHelper):
 						wake_on_lan(self.g_wakeserver, broadcastIp)
 					except ValueError:
 						printl("Incorrect MAC address format for server " + str(i), self, "D")
-					except Exception, e:
+					except Exception as e:
 						printl("WOL Error: " + str(e), self, "D")
 			self.sleepNow()
 		else:

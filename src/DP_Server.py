@@ -182,7 +182,7 @@ class DPS_Server(Screen, DPH_PlexScreen):
 		try:
 			sel = self["entryList"].getCurrent()[4]
 
-		except Exception, ex:
+		except Exception as ex:
 			printl("Exception: " + str(ex), self, "W")
 			sel = None
 
@@ -214,7 +214,7 @@ class DPS_Server(Screen, DPH_PlexScreen):
 		try:
 			sel = self["entryList"].getCurrent()[4]
 
-		except Exception, ex:
+		except Exception as ex:
 			printl("Exception: " + str(ex), self, "W")
 			sel = None
 
@@ -235,7 +235,7 @@ class DPS_Server(Screen, DPH_PlexScreen):
 		try:
 			serverConfig = self["entryList"].getCurrent()[4]
 
-		except Exception, ex:
+		except Exception as ex:
 			printl("Exception: " + str(ex), self, "W")
 			serverConfig = None
 
@@ -258,7 +258,7 @@ class DPS_Server(Screen, DPH_PlexScreen):
 
 		client.start_discovery()
 		while not client.discovery_complete:
-			print "Waiting for results"
+			print("Waiting for results")
 			time.sleep(1)
 
 		client.stop_discovery()
@@ -368,7 +368,7 @@ class DPS_ServerConfig(ConfigListScreen, Screen, DPH_PlexScreen):
 	#===========================================================================
 	def finishLayout(self):
 		printl("", self, "S")
-		print "here"
+		print("here")
 
 		# first we set the pics for buttons
 		self.setColorFunctionIcons()

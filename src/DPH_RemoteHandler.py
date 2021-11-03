@@ -180,7 +180,7 @@ class RemoteHandler(BaseHTTPRequestHandler):
 					self.answerPoll(commandID)
 					sleep(1)
 				except:
-					print "no params"
+					print("no params")
 					self.answerPoll(commandID)
 					sleep(1)
 

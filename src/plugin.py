@@ -113,8 +113,8 @@ def gotThreadMsg(msg):
 	msg = HttpDeamonThread.PlayerData.pop()
 
 	data = msg[0]
-	print "data ==>"
-	print str(data)
+	print("data ==>")
+	print(str(data))
 
 	# first we check if we are standby and exit this if needed
 	if inStandby is not None:
@@ -130,7 +130,7 @@ def gotThreadMsg(msg):
 			if data["currentKey"] != lastKey:
 				startPlayback(data)
 			else:
-				print "dropping mediaplay command ..."
+				print("dropping mediaplay command ...")
 
 			lastKey = data["currentKey"]
 
@@ -168,7 +168,7 @@ def gotThreadMsg(msg):
 			stopPlayback(restartLiveTv=True)
 
 		elif command == "addSubscriber":
-			print "subscriber"
+			print("subscriber")
 			protocol= data["protocol"]
 			host = data["host"]
 			port = data["port"]
@@ -179,7 +179,7 @@ def gotThreadMsg(msg):
 			startNotifier()
 
 		elif command == "removeSubscriber":
-			print "remove subscriber"
+			print("remove subscriber")
 			uuid = data["uuid"]
 
 			HttpDeamonThread.removeSubscriber(uuid)
@@ -195,7 +195,7 @@ def gotThreadMsg(msg):
 
 		else:
 			# not handled command
-			print command
+			print(command)
 			raise Exception
 
 #===========================================================================
@@ -273,7 +273,7 @@ def updateNotifier():
 #===========================================================================
 def notifySubscribers():
 	players = getPlayer()
-	print "subscribers: " + str(HttpDeamonThread.getSubscribersList())
+	print("subscribers: " + str(HttpDeamonThread.getSubscribersList()))
 
 	if players:
 		HttpDeamonThread.notifySubscribers(players)

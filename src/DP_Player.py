@@ -725,8 +725,8 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 						self.subtitleWatcher.stop()
 
 					else:
-						print self.subtitleData
-						print myLanguage
+						print(self.subtitleData)
+						print(myLanguage)
 						raise Exception
 
 					# just for debugging
@@ -734,7 +734,7 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 
 			printl("subtitleStreams: " + str(subtitleStreams), self, "D")
 
-		except Exception, e:
+		except Exception as e:
 			printl("Subtitle Message: " + str(e), self, "D")
 
 		printl("", self, "C")
@@ -750,7 +750,7 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 			self.setSubtitlesEnable()
 			success = True
 
-		except Exception, e:
+		except Exception as e:
 			printl("Subtitle Message: " + str(e), self, "D")
 
 			try:
@@ -759,7 +759,7 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 				self.enableSubtitle(subtitles)
 				success = True
 
-			except Exception, e:
+			except Exception as e:
 				printl("Subtitle Message: " + str(e), self, "D")
 
 		if success:
@@ -950,7 +950,7 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 			printl( "audio-codec %s can't be decoded by hardware" % sTagAudioCodec, self, "I")
 			Notifications.AddNotification(MessageBox, _("This Box can't decode %s streams!") % sTagAudioCodec, type=MessageBox.TYPE_INFO, timeout=10)
 		
-		except Exception, e:
+		except Exception as e:
 			printl("exception: " + str(e), self, "W")
 		
 		printl("", self, "C")
@@ -967,7 +967,7 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 			printl( "video-codec %s can't be decoded by hardware" % sTagVideoCodec, self, "I")
 			Notifications.AddNotification(MessageBox, _("This Box can't decode %s streams!") % sTagVideoCodec, type=MessageBox.TYPE_INFO, timeout=10)
 		
-		except Exception, e:
+		except Exception as e:
 			printl("exception: " + str(e), self, "W")
 		
 		printl("", self, "C")
@@ -984,7 +984,7 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 			printl( "[PlexPlayer] PluginError " + message, self, "I")
 			Notifications.AddNotification(MessageBox, _("Your Box can't decode this video stream!\n%s") % message, type=MessageBox.TYPE_INFO, timeout=10)
 		
-		except Exception, e:
+		except Exception as e:
 			printl("exception: " + str(e), self, "W")
 		
 		printl("", self, "C")
@@ -1004,7 +1004,7 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 			if err != "":
 				Notifications.AddNotification(MessageBox, _("Your Box can't decode this video stream!\n%s") % err, type=MessageBox.TYPE_INFO, timeout=10)
 		
-		except Exception, e:
+		except Exception as e:
 			printl("exception: " + str(e), self, "W")
 			
 		printl("", self, "C")
@@ -1021,7 +1021,7 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 			while self is not None and self.resumeStamp is not None:
 				self.seekToStartPos()
 				sleep(1)
-		except Exception, e:
+		except Exception as e:
 			printl("stopping due to exception in seektostartpos, eg. stopped playback before ready ..." + str(e), self, "W")
 		
 		printl( "seekWatcher finished ", self, "I")
@@ -1068,7 +1068,7 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 					self.doSeek(int(elapsed))
 					self.resumeStamp = None
 
-		except Exception, e:
+		except Exception as e:
 			printl("exception: " + str(e), self, "W")
 
 		printl("", self, "C")
@@ -1291,7 +1291,7 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 				self.setAudioTrack()
 				sleep(1)
 		
-		except Exception, e:	
+		except Exception as e:	
 			printl("exception: " + str(e), self, "E")
 		
 		printl("", self, "C")
@@ -1312,7 +1312,7 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 		if self.calculateEndingTime:
 			try:
 				endingTime = localtime(time() + (totalTime - currentTime))
-			except Exception, e:
+			except Exception as e:
 				printl("something went wrong with ending time -> " + str(e), self, "D")
 				endingTime = localtime()
 
@@ -1345,7 +1345,7 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 				# todo add stopped here if needed
 					#urlPath += "&state=stopped&time=" + str(currentTime*1000) + "&duration=" + str(totalTime*1000)
 
-			except Exception, e:
+			except Exception as e:
 				printl("exception: " + str(e), self, "E")
 				return False
 
@@ -1448,7 +1448,7 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 				
 				self.tryAudioEnable(trackList, systemLanguage, tracks)
 			
-			except Exception, e:
+			except Exception as e:
 				printl("audioTrack exception: " + str(e), self, "W") 
 		
 		printl("", self, "C")   
@@ -1593,7 +1593,7 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 				with open(self.whatPoster, "wb") as local_file:
 					local_file.write(response)
 					local_file.close()
-			except Exception, e:
+			except Exception as e:
 				printl("download error: " + str(e), self, "D")
 				printl("last plexinstance error: " + str(self.plexInstance.getLastErrorMessage()), self, "D")
 		else:

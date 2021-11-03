@@ -50,7 +50,7 @@ class Showiframe(object):
 
 		try:
 			self.load()
-		except Exception, ex:
+		except Exception as ex:
 			printl("Exception(" + str(type(ex)) + "): " + str(ex), self, "E")
 
 		printl("", self , "C")
@@ -73,7 +73,7 @@ class Showiframe(object):
 				printl("self.ctypes import worked", self, "D")
 				libname = "libshowiframe.so.0.0.sh4"
 
-			except Exception, ex:
+			except Exception as ex:
 				printl("self.ctypes import failed", self, "E")
 				printl("Exception(" + str(type(ex)) + "): " + str(ex), self, "E")
 				self.ctypes = None
@@ -98,13 +98,13 @@ class Showiframe(object):
 		try:
 			self.showSinglePic = self.ctypes.dlsym(self.showiframe, "showSinglePic")
 			self.finishShowSinglePic = self.ctypes.dlsym(self.showiframe, "finishShowSinglePic")
-		except Exception, ex:
+		except Exception as ex:
 			printl("Exception(" + str(type(ex)) + "): " + str(ex), self, "W")
 			printl("self.ctypes.dlsym - FAILED!!! trying next ...", self, "W")
 			try:
 				self.showSinglePic = self.ctypes.dlsym(self.showiframe, "_Z13showSinglePicPKc")
 				self.finishShowSinglePic = self.ctypes.dlsym(self.showiframe, "_Z19finishShowSinglePicv")
-			except Exception, ex2:
+			except Exception as ex2:
 				printl("Exception(" + str(type(ex2)) + "): " + str(ex2), self, "E")
 				printl("self.ctypes.dlsym - FAILED AGAIN !!!", self, "E")
 
@@ -379,7 +379,7 @@ class StillPicture(Renderer, InfoBarBase):
 						self.pollStart()
 					else:
 						printl("ARGGHHHH!!! self.session is not None and self.session.nav is not None", self, "E")
-			except Exception, ex:
+			except Exception as ex:
 				printl("Exception(" + str(type(ex)) + "): " + str(ex), self, "E")
 
 		printl("", self, "C")
@@ -401,7 +401,7 @@ class StillPicture(Renderer, InfoBarBase):
 						ServiceEventTracker.popActiveInfoBar()
 					else:
 						printl("ARGGHHHH!!! self.session is not None and self.session.nav is None", self, "E")
-			except Exception, ex:
+			except Exception as ex:
 				printl("Exception(" + str(type(ex)) + "): " + str(ex), self, "E")
 
 		printl("", self, "C")

@@ -121,39 +121,39 @@ def printl2(string, parent=None, dmode="U", obfuscate=False, steps=4):
 				out = str(parent) + " -> " + str(string)
 
 		if dmode == "E":
-			print "[DreamPlex] " + "E" + "  " + str(out)
+			print("[DreamPlex] " + "E" + "  " + str(out))
 			writeToLog(dmode, out)
 
 		elif dmode == "W":
-			print "[DreamPlex] " + "W" + "  " + str(out)
+			print("[DreamPlex] " + "W" + "  " + str(out))
 			writeToLog(dmode, out)
 
 		elif dmode == "I":
-			print "[DreamPlex] " + "I" + "  " + str(out)
+			print("[DreamPlex] " + "I" + "  " + str(out))
 			writeToLog(dmode, out)
 
 		elif dmode == "D":
-			print "[DreamPlex] " + "D" + "  " + str(out)
+			print("[DreamPlex] " + "D" + "  " + str(out))
 			writeToLog(dmode, out)
 
 		elif dmode == "S":
-			print "[DreamPlex] " + "S" + "  " + str(out) + STARTING_MESSAGE
+			print("[DreamPlex] " + "S" + "  " + str(out) + STARTING_MESSAGE)
 			writeToLog(dmode, out + STARTING_MESSAGE)
 
 		elif dmode == "C":
-			print "[DreamPlex] " + "C" + "  " + str(out) + CLOSING_MESSAGE
+			print("[DreamPlex] " + "C" + "  " + str(out) + CLOSING_MESSAGE)
 			writeToLog(dmode, out + CLOSING_MESSAGE)
 
 		elif dmode == "U":
-			print "[DreamPlex] " + "U  specify me!!!!!" + "  " + str(out)
+			print("[DreamPlex] " + "U  specify me!!!!!" + "  " + str(out))
 			writeToLog(dmode, out)
 
 		elif dmode == "X":
-			print "[DreamPlex] " + "D" + "  " + str(out)
+			print("[DreamPlex] " + "D" + "  " + str(out))
 			writeToLog(dmode, out)
 
 		else:
-			print "[DreamPlex] " + "OLD CHARACTER CHANGE ME !!!!!" + "  " + str(out)
+			print("[DreamPlex] " + "OLD CHARACTER CHANGE ME !!!!!" + "  " + str(out))
 
 #===============================================================================
 #
@@ -212,7 +212,7 @@ def revokeCacheFiles():
 
 		printl2("", "__common__::revokeCacheFiles", "C")
 
-	except Exception, ex:
+	except Exception as ex:
 		printl2("Exception(" + str(type(ex)) + "): " + str(ex), "__common__::revokeCacheFiles", "E")
 
 		printl2("", "__common__::revokeCacheFiles", "C")
@@ -243,7 +243,7 @@ def writeToLog(dmode, out):
 				dmode) + " <<<  " + str(out) + "\n")
 			gLogFile.flush()
 
-		except Exception, ex:
+		except Exception as ex:
 			config.plugins.dreamplex.writeDebugFile.value = False
 			config.plugins.dreamplex.debugMode.save()
 
@@ -270,7 +270,7 @@ def openLogFile():
 		instance = Singleton()
 		instance.getLogFileInstance(open(logDir + "dreamplex.log", "w"))
 
-	except Exception, ex:
+	except Exception as ex:
 		printl2("Exception(" + str(type(ex)) + "): " + str(ex), "openLogFile", "E")
 
 	#printl2("", "openLogFile", "C")
@@ -339,7 +339,7 @@ def testPlexConnectivity(ip, port):
 
 		printl2("", "__common__::testPlexConnectivity", "C")
 		return True
-	except socket.error, e:
+	except socket.error as e:
 		printl2("Strange error creating socket: %s" % e, "__common__::testPlexConnectivity", "E")
 		sock.close()
 
@@ -490,7 +490,7 @@ def checkDirectory(directory):
 		else:
 			printl2("directory found ... nothing to do", "__common__::checkDirectory", "D")
 
-	except Exception, ex:
+	except Exception as ex:
 		printl2("Exception(" + str(type(ex)) + "): " + str(ex), "__common__::checkDirectory", "E")
 
 	printl2("", "__common__::checkDirectory", "C")
@@ -848,7 +848,7 @@ def checkXmlFile(location):
 		except IOError:
 			printl2("io error writing xml", "__common__::checkXmlFile", "D")
 
-		except Exception, e:
+		except Exception as e:
 			printl2("unknow error writing xml: " + str(e), "__common__::checkXmlFile", "D")
 
 	else:
@@ -871,7 +871,7 @@ def getXmlContent(location):
 
 	try:
 		tree = etree.fromstring(xml)
-	except Exception, e:
+	except Exception as e:
 		printl2("something weng wrong during xml parsing" + str(e), __name__, "E")
 
 	printl2("", "__common__::getXmlContent", "C")

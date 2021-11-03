@@ -377,7 +377,7 @@ class DPS_SystemCheck(Screen):
 		if answer is True:
 			try:
 				self.session.open(TryQuitMainloop, 3)
-			except Exception, ex:
+			except Exception as ex:
 				printl("Exception: " + str(ex), self, "W")
 				data = "TryQuitMainLoop is not implemented in your OS.\n Please restart your box manually."
 				self.session.open(MessageBox, _("Information:\n") + data, MessageBox.TYPE_INFO)

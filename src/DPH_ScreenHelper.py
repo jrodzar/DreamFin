@@ -80,7 +80,7 @@ class DPH_ScreenHelper(object):
 			if width is None or height is None:
 				width, height = self.getMiniTvParams()
 			desk = getDesktop(0)
-			print str(self["miniTv"].instance)
+			print(str(self["miniTv"].instance))
 			self["miniTv"].instance.setFBSize(desk.size())
 			self["miniTv"].instance.resize(eSize(int(width), int(height)))
 		else:

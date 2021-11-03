@@ -336,16 +336,16 @@ class RequestMgr:
 			data = conn.getresponse()
 
 			if int(data.status) >= 400:
-				print "HTTP response error: " + str(data.status)
+				print("HTTP response error: " + str(data.status))
 				# this should return false, but I'm hacking it since iOS returns 404 no matter what
 				return data or True
 			elif int(data.status) == 200:
-				print "got 200 OK"
-				print "data: " + str(data.read())
+				print("got 200 OK")
+				print("data: " + str(data.read()))
 			else:
 				return data.read() or True
 		except:
-			print "Unable to connect to %s\nReason:" % host
+			print("Unable to connect to %s\nReason:" % host)
 			traceback.print_exc()
 			self.conns.pop(protocol+host+str(port), None)
 			if conn:
@@ -373,12 +373,12 @@ class RequestMgr:
 			conn.request("GET", path, headers=header)
 			data = conn.getresponse()
 			if int(data.status) >= 400:
-				print "HTTP response error: " + str(data.status)
+				print("HTTP response error: " + str(data.status))
 				return False
 			else:
 				return data.read() or True
 		except:
-			print "Unable to connect to %s\nReason: %s" % (host, traceback.print_exc())
+			print("Unable to connect to %s\nReason: %s" % (host, traceback.print_exc()))
 			self.conns.pop(protocol+host+str(port), None)
 			conn.close()
 			return False
