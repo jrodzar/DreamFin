@@ -59,6 +59,8 @@ from .__init__ import _ # _ is translation
 #===========================================================================
 #
 #===========================================================================
+
+
 class DPS_Syncer(Screen, DPH_ScreenHelper, DPH_PlexScreen):
 
 	_session = None
@@ -144,7 +146,7 @@ class DPS_Syncer(Screen, DPH_ScreenHelper, DPH_PlexScreen):
 		isRunning = self.mediaSyncerInfo.isRunning()
 		if isRunning:
 			currentMode = self.mediaSyncerInfo.getMode()
-			printl("currentMode: " +  str(currentMode), self, "D")
+			printl("currentMode: " + str(currentMode), self, "D")
 			printl("_mode: " + str(self._mode), self, "D")
 
 			if currentMode != self._mode:
@@ -152,7 +154,7 @@ class DPS_Syncer(Screen, DPH_ScreenHelper, DPH_PlexScreen):
 					text = "Can not start renderer because there is still a syncer running."
 				else:
 					text = "Can not start syncer because there is still a renderer running."
-				self.session.open(MessageBox,_("\n%s") % text, MessageBox.TYPE_INFO)
+				self.session.open(MessageBox, _("\n%s") % text, MessageBox.TYPE_INFO)
 				printl("detected another run of syncer", self, "D")
 				self.close()
 				return
@@ -281,7 +283,7 @@ class DPS_Syncer(Screen, DPH_ScreenHelper, DPH_PlexScreen):
 	def keyBouquetDown(self):
 		printl("", self, "S")
 
-		self["output"].pageDown ()
+		self["output"].pageDown()
 
 		printl("", self, "C")
 
@@ -358,7 +360,7 @@ class DPS_Syncer(Screen, DPH_ScreenHelper, DPH_PlexScreen):
 		if not self.mediaSyncerInfo.isRunning():
 			self.close(0)
 		else:
-			self.session.openWithCallback(self.askForBackground,MessageBox,_("Sync or Renderer is still running!\nContinue in background?"), MessageBox.TYPE_YESNO)
+			self.session.openWithCallback(self.askForBackground, MessageBox, _("Sync or Renderer is still running!\nContinue in background?"), MessageBox.TYPE_YESNO)
 
 		printl("", self, "C")
 
@@ -376,6 +378,8 @@ class DPS_Syncer(Screen, DPH_ScreenHelper, DPH_PlexScreen):
 #===========================================================================
 #
 #===========================================================================
+
+
 class MediaSyncerInfo(object):
 	instance = None
 
@@ -518,7 +522,7 @@ class MediaSyncerInfo(object):
 	def isRunning(self):
 		printl("", self, "S")
 
-		printl("running: " + str(self.running),self , "D")
+		printl("running: " + str(self.running), self, "D")
 
 		printl("", self, "C")
 		return self.running
@@ -526,7 +530,7 @@ class MediaSyncerInfo(object):
 	#===========================================================================
 	#
 	#===========================================================================
-	def infoCallBack(self,text):
+	def infoCallBack(self, text):
 		printl("", self, "S")
 
 		printl("Message: " + str(text), self, "D")
@@ -538,7 +542,7 @@ class MediaSyncerInfo(object):
 	#===========================================================================
 	#
 	#===========================================================================
-	def progressCallBack(self,text):
+	def progressCallBack(self, text):
 		printl("", self, "S")
 
 		printl("Message: " + str(text), self, "D")
@@ -554,7 +558,7 @@ class MediaSyncerInfo(object):
 		printl("", self, "S")
 
 		if self.callback_finished is not None:
-			printl("callback_finished: " + str(self.callback_finished),self, "D")
+			printl("callback_finished: " + str(self.callback_finished), self, "D")
 			self.callback_finished()
 
 		if self.mode == "render":
@@ -578,6 +582,7 @@ class MediaSyncerInfo(object):
 
 		printl("", self, "C")
 
+
 # !!! important !!!!
 # this is a singleton implementation so that there is only one instance of this class
 # it can be also imported from other classes with from file import g_mediaSyncerInfo
@@ -586,11 +591,13 @@ g_mediaSyncerInfo = MediaSyncerInfo()
 #===========================================================================
 #
 #===========================================================================
+
+
 class BackgroundMediaSyncer(Thread):
 
 	urllibInstance = None
 
-	def __init__ (self):
+	def __init__(self):
 		Thread.__init__(self)
 		self.cancel = False
 		self.arg = None
@@ -743,7 +750,7 @@ class BackgroundMediaSyncer(Thread):
 			from PIL import Image
 		except Exception as e:
 			printl("Error: " + str(e), self, "D")
-			self.messages.push((THREAD_WORKING, _("Error!\nError-message:%s" % e) ))
+			self.messages.push((THREAD_WORKING, _("Error!\nError-message:%s" % e)))
 			self.messagePump.send(0)
 			return
 
@@ -755,7 +762,7 @@ class BackgroundMediaSyncer(Thread):
 			resolutionString = "*1280x720_v2.jpg"
 			searchString = "1280x720_v2.jpg"
 
-		self.count = len(glob.glob1(config.plugins.dreamplex.mediafolderpath.value,resolutionString))
+		self.count = len(glob.glob1(config.plugins.dreamplex.mediafolderpath.value, resolutionString))
 
 		msg_text = _("\n\nFiles found: ") + str(self.count)
 		self.messages.push((THREAD_WORKING, msg_text))
@@ -765,7 +772,7 @@ class BackgroundMediaSyncer(Thread):
 
 		if int(self.count) > 0:
 			self.currentIndex = 0
-			for myFile in glob.glob1(config.plugins.dreamplex.mediafolderpath.value,resolutionString):
+			for myFile in glob.glob1(config.plugins.dreamplex.mediafolderpath.value, resolutionString):
 				sleep(0.2)
 				self.currentIndex += 1
 				if self.cancel:
@@ -829,7 +836,7 @@ class BackgroundMediaSyncer(Thread):
 								resizedImage = i.resize(newSize)
 								resizedImage.save(imageLocation, format=extension)
 
-							printl("started rendering : " + str(videoLocation),self, "D")
+							printl("started rendering : " + str(videoLocation), self, "D")
 
 							if self.resolution == "FHD":
 								cmd = renderCommand + " -v 0 -f 25 -n1 -I p -j " + imageLocation + " | mpeg2enc -v 0 -f 12 -x 1920 -y 1080 -a 3 -4 1 -2 1 -q 1 -H --level high -o " + videoLocation
@@ -841,12 +848,12 @@ class BackgroundMediaSyncer(Thread):
 							response = subprocess.getstatusoutput(cmd)
 
 							if fileExists(videoLocation) and response[0] == 0:
-								printl("finished rendering myFile: " + str(myFile),self, "D")
+								printl("finished rendering myFile: " + str(myFile), self, "D")
 							else:
 								printl("File does not exist after rendering!", self, "D")
 								printl("Error: " + str(response[1]), self, "D")
 
-								self.messages.push((THREAD_WORKING, _("Error: ") + str(response[1]) + "Location: " + imageLocation ))
+								self.messages.push((THREAD_WORKING, _("Error: ") + str(response[1]) + "Location: " + imageLocation))
 								self.messagePump.send(0)
 
 								sleep(1)
@@ -857,7 +864,7 @@ class BackgroundMediaSyncer(Thread):
 
 				except Exception as e:
 					printl("Error: " + str(e), self, "D")
-					self.messages.push((THREAD_WORKING, _("Error!\nError-message:%s" % e) ))
+					self.messages.push((THREAD_WORKING, _("Error!\nError-message:%s" % e)))
 					self.messagePump.send(0)
 		else:
 			msg_text = _("\n\nNo Files found. Nothing to do!")
@@ -867,7 +874,7 @@ class BackgroundMediaSyncer(Thread):
 			sleep(1)
 
 		if self.cancel:
-			self.messages.push((THREAD_FINISHED, _("Process aborted.\nPress Exit to close.") ))
+			self.messages.push((THREAD_FINISHED, _("Process aborted.\nPress Exit to close.")))
 		else:
 			self.messages.push((THREAD_FINISHED, _("\n\nWe are done!")))
 
@@ -953,8 +960,8 @@ class BackgroundMediaSyncer(Thread):
 
 		# get sections from server
 		self.sectionList = self.plexInstance.getAllSections()
-		self.sectionCount=len(self.sectionList)
-		printl("sectionList: "+ str(self.sectionList),self, "D")
+		self.sectionCount = len(self.sectionList)
+		printl("sectionList: " + str(self.sectionList), self, "D")
 
 		# get servername
 		self.prefix = self.plexInstance.getServerName().lower()
@@ -977,24 +984,24 @@ class BackgroundMediaSyncer(Thread):
 			# in this run we gather only the information
 			self.cylceThroughLibrary()
 
-			printl("sectionCount " + str(self.sectionCount),self, "D")
-			printl("movieCount " + str(self.movieCount),self, "D")
-			printl("showCount  " + str(self.showCount),self, "D")
-			printl("seasonCount " + str(self.seasonCount),self, "D")
-			printl("episodeCount " + str(self.episodeCount),self, "D")
-			printl("artistCount "  + str(self.artistCount),self, "D")
-			printl("albumCount " + str(self.albumCount),self, "D")
+			printl("sectionCount " + str(self.sectionCount), self, "D")
+			printl("movieCount " + str(self.movieCount), self, "D")
+			printl("showCount  " + str(self.showCount), self, "D")
+			printl("seasonCount " + str(self.seasonCount), self, "D")
+			printl("episodeCount " + str(self.episodeCount), self, "D")
+			printl("artistCount " + str(self.artistCount), self, "D")
+			printl("albumCount " + str(self.albumCount), self, "D")
 
 			# this run really fetches the data
 			self.cylceThroughLibrary(dryRun=False)
 
 			if self.cancel:
-				self.messages.push((THREAD_FINISHED, _("Process aborted.\nPress Exit to close.") ))
+				self.messages.push((THREAD_FINISHED, _("Process aborted.\nPress Exit to close.")))
 			else:
 				self.messages.push((THREAD_FINISHED, _("We did it :-)")))
 
 		except Exception as e:
-			self.messages.push((THREAD_FINISHED, _("Error!\nError-message:%s\nPress Exit to close." % e) ))
+			self.messages.push((THREAD_FINISHED, _("Error!\nError-message:%s\nPress Exit to close." % e)))
 		finally:
 			self.messagePump.send(0)
 
@@ -1050,7 +1057,7 @@ class BackgroundMediaSyncer(Thread):
 							break
 						printl("seasons: " + str(seasons))
 
-						seasonsUrl = seasons[1]["server"] +  seasons[1]["key"]
+						seasonsUrl = seasons[1]["server"] + seasons[1]["key"]
 						printl("seasonsUrl: " + str(seasonsUrl), self, "D")
 						library, mediaContainer = self.plexInstance.getSeasonsOfShow(seasonsUrl)
 
@@ -1064,7 +1071,7 @@ class BackgroundMediaSyncer(Thread):
 								break
 							printl("episode: " + str(episodes))
 
-							episodesUrl = episodes[1]["server"] +  episodes[1]["key"]
+							episodesUrl = episodes[1]["server"] + episodes[1]["key"]
 							printl("episodesUrl: " + str(episodesUrl), self, "D")
 							library, mediaContainer = self.plexInstance.getEpisodesOfSeason(episodesUrl)
 
@@ -1132,11 +1139,11 @@ class BackgroundMediaSyncer(Thread):
 				t_postfix = variant[2]
 
 				# location string
-				location = config.plugins.dreamplex.mediafolderpath.value + str(self.prefix) + "_" +  str(media[1]["ratingKey"]) + str(t_postfix)
+				location = config.plugins.dreamplex.mediafolderpath.value + str(self.prefix) + "_" + str(media[1]["ratingKey"]) + str(t_postfix)
 
 				# check if backdrop exists
 				if fileExists(location):
-					msg_text = _("found backdrop - size(" + str(t_width) +"x" +str(t_height)+ ")")
+					msg_text = _("found backdrop - size(" + str(t_width) + "x" + str(t_height) + ")")
 					self.messages.push((THREAD_WORKING, msg_text))
 					self.messagePump.send(0)
 					continue
@@ -1158,11 +1165,11 @@ class BackgroundMediaSyncer(Thread):
 				t_postfix = variant[2]
 
 				# location string
-				location = config.plugins.dreamplex.mediafolderpath.value + str(self.prefix) + "_" +  str(media[1]["ratingKey"]) + str(t_postfix)
+				location = config.plugins.dreamplex.mediafolderpath.value + str(self.prefix) + "_" + str(media[1]["ratingKey"]) + str(t_postfix)
 
 				# check if poster exists
 				if fileExists(location):
-					msg_text = _("found poster - size(" + str(t_width) +"x" +str(t_height)+ ")")
+					msg_text = _("found poster - size(" + str(t_width) + "x" + str(t_height) + ")")
 					self.messages.push((THREAD_WORKING, msg_text))
 					self.messagePump.send(0)
 					continue
@@ -1180,7 +1187,6 @@ class BackgroundMediaSyncer(Thread):
 						+ "\n" + "Artists: " + str(self.artistCount) + "\n" + "Albums: " + str(self.albumCount)
 			self.progress.push((THREAD_WORKING, msg_text))
 			self.progressPump.send(0)
-
 
 		printl("", self, "C")
 
@@ -1211,7 +1217,6 @@ class BackgroundMediaSyncer(Thread):
 		else:
 			raise Exception
 
-
 		printl("", self, "C")
 
 	#===========================================================================
@@ -1221,7 +1226,7 @@ class BackgroundMediaSyncer(Thread):
 		printl("", self, "S")
 
 		download_url = download_url.replace('&width=999&height=999', '&width=' + width + '&height=' + height)
-		printl( "download url " + download_url, self, "D")
+		printl("download url " + download_url, self, "D")
 
 		if self.urllibInstance is None:
 			server = self.plexInstance.getServerFromURL(download_url)
@@ -1251,7 +1256,7 @@ class BackgroundMediaSyncer(Thread):
 		printl("", self, "S")
 
 		# we establish the connection once here
-		self.urllibInstance=URLopener()
+		self.urllibInstance = URLopener()
 
 		# we add headers only in special cases
 		connectionType = self.serverConfig.connectionType.value
@@ -1270,9 +1275,11 @@ THREAD_ERROR = 3
 #===========================================================================
 #
 #===========================================================================
+
+
 class ThreadQueue(object):
 	def __init__(self):
-		self.__list = [ ]
+		self.__list = []
 		self.__lock = Lock()
 
 	#===========================================================================

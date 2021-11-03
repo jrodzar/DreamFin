@@ -32,15 +32,19 @@ from .__init__ import _ # _ is translation
 #===============================================================================
 #
 #===============================================================================
-def getViewClass():
-	printl("",__name__ , "S")
 
-	printl("",__name__ , "C")
+
+def getViewClass():
+	printl("", __name__, "S")
+
+	printl("", __name__, "C")
 	return DPS_ViewMusic
 
 #===============================================================================
 #
 #===============================================================================
+
+
 class DPS_ViewMusic(DP_View):
 
 	parentSeasonId = None
@@ -49,7 +53,7 @@ class DPS_ViewMusic(DP_View):
 	#
 	#===========================================================================
 	def __init__(self, viewClass, libraryName, loadLibraryFnc, viewParams):
-		printl("", self , "S")
+		printl("", self, "S")
 
 		DP_View.__init__(self, viewClass, libraryName, loadLibraryFnc, viewParams)
 
@@ -172,7 +176,7 @@ class DPS_ViewMusic(DP_View):
 		self.toggleFilterMode(quit=True)
 
 		# first we call the the rest of the onEnter from super
-		super(DPS_ViewMusic,self).onLeave()
+		super(DPS_ViewMusic, self).onLeave()
 
 		# first restore Elements
 		self.restoreElementsInViewStep()
@@ -194,7 +198,6 @@ class DPS_ViewMusic(DP_View):
 		self.toggleFilterMode(quit=True)
 
 		# first we call the the rest of the onEnter from super
-		super(DPS_ViewMusic,self).onEnter()
+		super(DPS_ViewMusic, self).onEnter()
 
 		printl("", self, "C")
-

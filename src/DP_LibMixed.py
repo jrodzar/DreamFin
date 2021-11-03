@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 DreamPlex Plugin by DonDavici, 2012
- 
+
 https://github.com/DonDavici/DreamPlex
 
 Some of the code is from other plugins:
@@ -27,15 +27,17 @@ from .DP_LibMain import DP_LibMain
 from .__common__ import printl2 as printl
 
 #===============================================================================
-# 
+#
 #===============================================================================
+
+
 class DP_LibMixed(DP_LibMain):
 
 	#===========================================================================
-	# 
+	#
 	#===========================================================================
 	def __init__(self, session, initalEntryData):
-		printl ("", self, "S")
+		printl("", self, "S")
 
 		self.initalEntryData = initalEntryData
 		printl("initalEntryData: " + str(self.initalEntryData))
@@ -43,18 +45,16 @@ class DP_LibMixed(DP_LibMain):
 		libraryName = "mixed"
 		DP_LibMain.__init__(self, session, libraryName)
 
-		printl ("", self, "C")
+		printl("", self, "C")
 
 	#===========================================================================
-	# 
+	#
 	#===========================================================================
-	def loadLibrary(self, entryData = None, forceUpdate=False):
-		printl ("", self, "S")
+	def loadLibrary(self, entryData=None, forceUpdate=False):
+		printl("", self, "S")
 
 		if entryData is None:
 			entryData = self.initalEntryData
 
-		printl ("", self, "C")
+		printl("", self, "C")
 		return self.loadLibraryData(entryData, forceUpdate)
-
-

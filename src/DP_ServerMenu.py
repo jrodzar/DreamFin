@@ -49,6 +49,8 @@ from .__init__ import _ # _ is translation
 #===============================================================================
 #
 #===============================================================================
+
+
 class DPS_ServerMenu(DPH_Screen, DPH_HorizontalMenu, DPH_ScreenHelper, DPH_Filter, DPH_PlexScreen):
 
 	g_horizontal_menu = False
@@ -69,7 +71,7 @@ class DPS_ServerMenu(DPH_Screen, DPH_HorizontalMenu, DPH_ScreenHelper, DPH_Filte
 	#===========================================================================
 	#
 	#===========================================================================
-	def __init__(self, session, g_serverConfig ):
+	def __init__(self, session, g_serverConfig):
 		printl("", self, "S")
 		DPH_Screen.__init__(self, session)
 		DPH_ScreenHelper.__init__(self)
@@ -77,7 +79,7 @@ class DPS_ServerMenu(DPH_Screen, DPH_HorizontalMenu, DPH_ScreenHelper, DPH_Filte
 		DPH_PlexScreen.__init__(self)
 
 		self.selectionOverride = None
-		printl("selectionOverride:" +str(self.selectionOverride), self, "D")
+		printl("selectionOverride:" + str(self.selectionOverride), self, "D")
 		self.session = session
 
 		self.g_serverConfig = g_serverConfig
@@ -93,26 +95,26 @@ class DPS_ServerMenu(DPH_Screen, DPH_HorizontalMenu, DPH_ScreenHelper, DPH_Filte
 
 		self["title"] = StaticText()
 
-		self["menu"]= List(enableWrapAround=True)
+		self["menu"] = List(enableWrapAround=True)
 
 		self["actions"] = HelpableActionMap(self, "DP_MainMenuActions",
 			{
-				"ok":		(self.okbuttonClick, ""),
-				"left":		(self.left, ""),
-				"right":	(self.right, ""),
-				"up":		(self.up, ""),
-				"down":		(self.down, ""),
-				"cancel":	(self.cancel, ""),
-			    "red":		(self.onKeyRed, ""),
-			    "green":    (self.onKeyGreen, ""),
+				"ok": (self.okbuttonClick, ""),
+				"left": (self.left, ""),
+				"right": (self.right, ""),
+				"up": (self.up, ""),
+				"down": (self.down, ""),
+				"cancel": (self.cancel, ""),
+			    "red": (self.onKeyRed, ""),
+			    "green": (self.onKeyGreen, ""),
 			}, -2)
 
-		self["btn_green"]		= Pixmap()
+		self["btn_green"] = Pixmap()
 		self["btn_green"].hide()
-		self["btn_greenText"]   = Label()
+		self["btn_greenText"] = Label()
 
-		self["text_HomeUserLabel"]   = Label()
-		self["text_HomeUser"]   = Label()
+		self["text_HomeUserLabel"] = Label()
+		self["text_HomeUser"] = Label()
 
 		self.onLayoutFinish.append(self.finishLayout)
 		self.onLayoutFinish.append(self.getInitialData)
@@ -246,12 +248,12 @@ class DPS_ServerMenu(DPH_Screen, DPH_HorizontalMenu, DPH_ScreenHelper, DPH_Filte
 		if self.isHomeUser:
 			if choice[1] != "":
 				printl(choice[1], self, "D")
-				self.session.openWithCallback(self.askForPin, InputBox, title=_("Please enter the pincode!") ,type=Input.PIN)
+				self.session.openWithCallback(self.askForPin, InputBox, title=_("Please enter the pincode!"), type=Input.PIN)
 			else:
 				self.switchUser()
 		else:
 			if self.g_serverConfig.myplexPinProtect.value:
-				self.session.openWithCallback(self.askForPin, InputBox, title=_("Please enter the pincode!") , type=Input.PIN)
+				self.session.openWithCallback(self.askForPin, InputBox, title=_("Please enter the pincode!"), type=Input.PIN)
 				self.currentPin = self.g_serverConfig.myplexPin.value
 			else:
 				self.switchUser()
@@ -278,7 +280,7 @@ class DPS_ServerMenu(DPH_Screen, DPH_HorizontalMenu, DPH_ScreenHelper, DPH_Filte
 
 		if not accessToken:
 			# we get all the restriction data from plex and not from the local server this means that if we ar not connected no data is coming to check, means no restction
-			self.session.open(MessageBox,"No accessToken! Check plex.tv connection and plexPass status.", MessageBox.TYPE_INFO)
+			self.session.open(MessageBox, "No accessToken! Check plex.tv connection and plexPass status.", MessageBox.TYPE_INFO)
 		else:
 			self.g_serverConfig.myplexCurrentHomeUser.value = title
 			self.g_serverConfig.myplexCurrentHomeUserAccessToken.value = accessToken
@@ -301,13 +303,13 @@ class DPS_ServerMenu(DPH_Screen, DPH_HorizontalMenu, DPH_ScreenHelper, DPH_Filte
 			pass
 		else:
 			if int(enteredPin) == int(self.currentPin):
-				self.session.open(MessageBox,"The pin was correct! Switching user.", MessageBox.TYPE_INFO)
+				self.session.open(MessageBox, "The pin was correct! Switching user.", MessageBox.TYPE_INFO)
 				if self.isHomeUser:
 					self.switchUser()
 				else:
 					self.switchUser()
 			else:
-				self.session.open(MessageBox,"The pin was wrong! Abort user switiching.", MessageBox.TYPE_INFO)
+				self.session.open(MessageBox, "The pin was wrong! Abort user switiching.", MessageBox.TYPE_INFO)
 
 		printl("", self, "C")
 
@@ -376,7 +378,7 @@ class DPS_ServerMenu(DPH_Screen, DPH_HorizontalMenu, DPH_ScreenHelper, DPH_Filte
 				hasPromptTag = entryData.get('hasPromptTag', False)
 				printl("hasPromptTag: " + str(hasPromptTag), self, "D")
 				if hasPromptTag:
-					self.session.openWithCallback(self.addSearchString, DPS_InputBox, entryData, title=_("Please enter your search string: "), text=" " * 55, maxSize=55, type=Input.TEXT )
+					self.session.openWithCallback(self.addSearchString, DPS_InputBox, entryData, title=_("Please enter your search string: "), text=" " * 55, maxSize=55, type=Input.TEXT)
 				else:
 					self.menuStep -= 1
 					self.executeSelectedEntry(entryData)
@@ -391,7 +393,7 @@ class DPS_ServerMenu(DPH_Screen, DPH_HorizontalMenu, DPH_ScreenHelper, DPH_Filte
 	#===========================================================================
 	#
 	#===========================================================================
-	def addSearchString(self, entryData, searchString = None):
+	def addSearchString(self, entryData, searchString=None):
 		printl("", self, "S")
 		printl("entryData: " + str(entryData), self, "D")
 
@@ -506,7 +508,7 @@ class DPS_ServerMenu(DPH_Screen, DPH_HorizontalMenu, DPH_ScreenHelper, DPH_Filte
 	def exit(self):
 		printl("", self, "S")
 
-		self.close((True,) )
+		self.close((True,))
 
 		printl("", self, "C")
 
@@ -590,6 +592,6 @@ class DPS_ServerMenu(DPH_Screen, DPH_HorizontalMenu, DPH_ScreenHelper, DPH_Filte
 		printl("", self, "S")
 
 		text = self.plexInstance.getLastErrorMessage()
-		self.session.open(MessageBox,_("\n%s") % text, MessageBox.TYPE_INFO)
+		self.session.open(MessageBox, _("\n%s") % text, MessageBox.TYPE_INFO)
 
 		printl("", self, "C")

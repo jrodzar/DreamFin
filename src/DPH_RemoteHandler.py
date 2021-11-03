@@ -40,6 +40,8 @@ from .__common__ import printl2 as printl, getUUID, getVersion, getMyIp, getPlex
 #===============================================================================
 #
 #===============================================================================
+
+
 class RemoteHandler(BaseHTTPRequestHandler):
 	"""
 	Serves a HEAD request
@@ -92,7 +94,7 @@ class RemoteHandler(BaseHTTPRequestHandler):
 	#===========================================================================
 	#
 	#===========================================================================
-	def response(self, body, headers = {}, code = 200):
+	def response(self, body, headers={}, code=200):
 		printl("", self, "S")
 
 		try:
@@ -121,8 +123,8 @@ class RemoteHandler(BaseHTTPRequestHandler):
 		printl("", self, "S")
 
 		try:
-			request_path=self.path[1:]
-			request_path=re.sub(r"\?.*","",request_path)
+			request_path = self.path[1:]
+			request_path = re.sub(r"\?.*", "", request_path)
 
 			printl("request path is: [%s]" % request_path, self, "D")
 
@@ -241,7 +243,7 @@ class RemoteHandler(BaseHTTPRequestHandler):
 
 			elif request_path == "player/playback/seekTo":
 				self.response(getOKMsg(), getPlexHeaders())
-				offset =  params["offset"]
+				offset = params["offset"]
 				data = {"command": "seekTo", "offset": offset}
 
 				self.playerCallback(data)
@@ -291,7 +293,7 @@ class RemoteHandler(BaseHTTPRequestHandler):
 						splittedData = self.currentKey.split("/")
 						subtitleData = self.plexInstance.getSelectedSubtitleDataById(self.currentCompleteAddress, splittedData[-1])
 
-						data = {"command": "playMedia", "currentKey": self.currentKey, "listViewList": listViewList, "mediaContainer": mediaContainer, "autoPlayMode": autoPlayMode, "forceResume":  forceResume, "resumeMode": resumeMode, "playbackMode": playbackMode, "currentIndex": currentIndex, "libraryName": libraryName, "subtitleData": subtitleData }
+						data = {"command": "playMedia", "currentKey": self.currentKey, "listViewList": listViewList, "mediaContainer": mediaContainer, "autoPlayMode": autoPlayMode, "forceResume": forceResume, "resumeMode": resumeMode, "playbackMode": playbackMode, "currentIndex": currentIndex, "libraryName": libraryName, "subtitleData": subtitleData}
 
 						self.playerCallback(data)
 						self.resetCallback()
@@ -349,7 +351,7 @@ class RemoteHandler(BaseHTTPRequestHandler):
 	def getResourceXml(self):
 		printl("", self, "S")
 
-		xml = "<MediaContainer><Player protocolCapabilities='playback, navigation' product='"+ getMyIp() +"' platformVersion='"+ getVersion() +"' platform='Enigma2' machineIdentifier='"+ getUUID() +"' title='"+ config.plugins.dreamplex.boxName.value +"' protocolVersion='1' deviceClass='stb'/></MediaContainer>"
+		xml = "<MediaContainer><Player protocolCapabilities='playback, navigation' product='" + getMyIp() + "' platformVersion='" + getVersion() + "' platform='Enigma2' machineIdentifier='" + getUUID() + "' title='" + config.plugins.dreamplex.boxName.value + "' protocolVersion='1' deviceClass='stb'/></MediaContainer>"
 
 		printl("", self, "C")
 		return xml

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 DreamPlex Plugin by DonDavici, 2012
- 
+
 https://github.com/DonDavici/DreamPlex
 
 Some of the code is from other plugins:
@@ -25,8 +25,10 @@ You should have received a copy of the GNU General Public License
 #from Plugins.Extensions.DreamPlex.__common__ import printl2 as printl
 
 #===============================================================================
-# 
+#
 #===============================================================================
+
+
 class Singleton(object):
 	"""
 	singlton config object

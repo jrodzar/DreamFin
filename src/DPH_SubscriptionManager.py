@@ -37,6 +37,8 @@ from .__common__ import printl2 as printl, getUUID, timeToMillis, getPlexHeaders
 #===========================================================================
 #
 #===========================================================================
+
+
 class SubscriptionManager:
 	def __init__(self):
 		self.subscribers = {}
@@ -111,7 +113,7 @@ class SubscriptionManager:
 			state = "stopped"
 			time = 0
 
-		ret = "\r\n"+'<Timeline location="%s" state="%s" time="%s" type="%s"' % (self.mainlocation, state, time, ptype)
+		ret = "\r\n" + '<Timeline location="%s" state="%s" time="%s" type="%s"' % (self.mainlocation, state, time, ptype)
 
 		if playerid > 0:
 			ret += ' duration="%s"' % self.durationFromEnigma2
@@ -143,7 +145,7 @@ class SubscriptionManager:
 	#===========================================================================
 	#
 	#===========================================================================
-	def notify(self, players, event = False):
+	def notify(self, players, event=False):
 		self.cleanup()
 
 		# fetch the message, subscribers or not, since the server
@@ -154,7 +156,7 @@ class SubscriptionManager:
 			with threading.RLock():
 				for sub in self.subscribers.values():
 					pass
-					sub.send_update(msg, len(players)==0)
+					sub.send_update(msg, len(players) == 0)
 
 		return True
 
@@ -210,7 +212,7 @@ class SubscriptionManager:
 			info['time'] = timeToMillis(props['time'])
 			info['duration'] = timeToMillis(props['totaltime'])
 			info['state'] = ("paused", "playing")[int(props['speed'])]
-			info['shuffle'] = ("0","1")[props.get('shuffled', False)]
+			info['shuffle'] = ("0", "1")[props.get('shuffled', False)]
 		except:
 			info['time'] = 0
 			info['duration'] = 0
@@ -243,6 +245,8 @@ class SubscriptionManager:
 #===========================================================================
 #
 #===========================================================================
+
+
 class Subscriber:
 	#===========================================================================
 	#
@@ -295,6 +299,8 @@ class Subscriber:
 #===========================================================================
 #
 #===========================================================================
+
+
 class RequestMgr:
 	def __init__(self):
 		self.conns = {}
@@ -303,9 +309,9 @@ class RequestMgr:
 	#
 	#===========================================================================
 	def getConnection(self, protocol, host, port):
-		conn = self.conns.get(protocol+host+str(port), False)
+		conn = self.conns.get(protocol + host + str(port), False)
 		if not conn:
-			if protocol=="https":
+			if protocol == "https":
 				conn = HTTPSConnection(host, port)
 			else:
 				conn = HTTPConnection(host, port)
@@ -315,10 +321,10 @@ class RequestMgr:
 	#
 	#===========================================================================
 	def closeConnection(self, protocol, host, port):
-		conn = self.conns.get(protocol+host+str(port), False)
+		conn = self.conns.get(protocol + host + str(port), False)
 		if conn:
 			conn.close()
-			self.conns.pop(protocol+host+str(port), None)
+			self.conns.pop(protocol + host + str(port), None)
 
 	#===========================================================================
 	#
@@ -351,7 +357,7 @@ class RequestMgr:
 		except:
 			print("Unable to connect to %s\nReason:" % host)
 			traceback.print_exc()
-			self.conns.pop(protocol+host+str(port), None)
+			self.conns.pop(protocol + host + str(port), None)
 			if conn:
 				conn.close()
 			return False
@@ -363,7 +369,7 @@ class RequestMgr:
 		newpath = path + '?'
 		pairs = []
 		for key in params:
-			pairs.append(str(key)+'='+str(params[key]))
+			pairs.append(str(key) + '=' + str(params[key]))
 		newpath += string.join(pairs, '&')
 		return self.get(host, port, newpath, header, protocol)
 
@@ -383,8 +389,9 @@ class RequestMgr:
 				return data.read() or True
 		except:
 			print("Unable to connect to %s\nReason: %s" % (host, traceback.print_exc()))
-			self.conns.pop(protocol+host+str(port), None)
+			self.conns.pop(protocol + host + str(port), None)
 			conn.close()
 			return False
+
 
 requests = RequestMgr()

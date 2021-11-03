@@ -35,6 +35,8 @@ from .__common__ import printl2 as printl, getBoxInformation, getOeVersion
 #===============================================================================
 #
 #===============================================================================
+
+
 class Showiframe(object):
 
 	boxInformation = None
@@ -43,7 +45,7 @@ class Showiframe(object):
 	#
 	#===========================================================================
 	def __init__(self):
-		printl("", self , "S")
+		printl("", self, "S")
 
 		self.boxInformation = getBoxInformation()
 		printl("boxInformation: " + str(self.boxInformation), self, "D")
@@ -53,13 +55,13 @@ class Showiframe(object):
 		except Exception as ex:
 			printl("Exception(" + str(type(ex)) + "): " + str(ex), self, "E")
 
-		printl("", self , "C")
+		printl("", self, "C")
 
 	#===========================================================================
 	#
 	#===========================================================================
 	def load(self):
-		printl("", self , "S")
+		printl("", self, "S")
 
 		# we append here to have ctype.so also for sh4 boxes
 		libsFolder = config.plugins.dreamplex.pluginfolderpath.value + "libs"
@@ -87,7 +89,7 @@ class Showiframe(object):
 			elif self.boxInformation[3] == "oe20":
 				libname = "libshowiframe.so.0.0.oe20"
 
-		printl("libname: " + str(libname), self , "D")
+		printl("libname: " + str(libname), self, "D")
 		self.finishShowSinglePic = None
 
 		libsi = libsFolder + "/" + libname
@@ -118,7 +120,7 @@ class Showiframe(object):
 	#
 	#===========================================================================
 	def showStillpicture(self, pic):
-		printl("", self , "S")
+		printl("", self, "S")
 
 		if self.ctypes is not None:
 			self.ctypes.call_function(self.showSinglePic, (pic, ))
@@ -129,7 +131,7 @@ class Showiframe(object):
 	#
 	#===========================================================================
 	def finishStillPicture(self):
-		printl("", self , "S")
+		printl("", self, "S")
 
 		if self.ctypes is not None and self.finishShowSinglePic is not None:
 			self.ctypes.call_function(self.finishShowSinglePic, ())
@@ -139,6 +141,8 @@ class Showiframe(object):
 #===========================================================================
 #
 #===========================================================================
+
+
 class eStillPicture(eWidget):
 
 	#===========================================================================
@@ -146,7 +150,7 @@ class eStillPicture(eWidget):
 	#===========================================================================
 	#noinspection PyUnresolvedReferences
 	def __init__(self, parent):
-		printl("", self , "S")
+		printl("", self, "S")
 
 		eWidget.__init__(self, parent)
 		self.setTransparent(True)
@@ -157,7 +161,7 @@ class eStillPicture(eWidget):
 	#
 	#===========================================================================
 	def setText(self):
-		printl("", self , "S")
+		printl("", self, "S")
 
 		pass
 
@@ -166,6 +170,8 @@ class eStillPicture(eWidget):
 #===========================================================================
 #
 #===========================================================================
+
+
 class StillPicture(Renderer, InfoBarBase):
 	GUI_WIDGET = eStillPicture
 
@@ -181,7 +187,7 @@ class StillPicture(Renderer, InfoBarBase):
 	#
 	#===========================================================================
 	def __init__(self, session):
-		printl("", self , "S")
+		printl("", self, "S")
 
 		Renderer.__init__(self)
 
@@ -200,7 +206,7 @@ class StillPicture(Renderer, InfoBarBase):
 	#
 	#===========================================================================
 	def addEventTracker(self):
-		printl("", self , "S")
+		printl("", self, "S")
 
 		if self.session is not None and self.session.nav is not None:
 			self.session.nav.event.append(self.event)
@@ -213,7 +219,7 @@ class StillPicture(Renderer, InfoBarBase):
 	#
 	#===========================================================================
 	def removeEventTracker(self):
-		printl("", self , "S")
+		printl("", self, "S")
 
 		if self.session is not None and self.session.nav is not None:
 			self.session.nav.event.remove(self.event)
@@ -226,7 +232,7 @@ class StillPicture(Renderer, InfoBarBase):
 	#
 	#===========================================================================
 	def event(self, myType):
-		printl("", self , "S")
+		printl("", self, "S")
 
 		if myType == iPlayableService.evEOF:
 			self.__evEOF()
@@ -237,7 +243,7 @@ class StillPicture(Renderer, InfoBarBase):
 	#
 	#===========================================================================
 	def poll(self):
-		printl("", self , "S")
+		printl("", self, "S")
 
 		if self.session is not None and self.session.nav is not None:
 			service = self.session.nav.getCurrentService()
@@ -253,7 +259,7 @@ class StillPicture(Renderer, InfoBarBase):
 	#
 	#===========================================================================
 	def pollStart(self):
-		printl("", self , "S")
+		printl("", self, "S")
 
 		self.addEventTracker()
 		self.poll_timer.start(500)
@@ -264,7 +270,7 @@ class StillPicture(Renderer, InfoBarBase):
 	#
 	#===========================================================================
 	def pollStop(self):
-		printl("", self , "S")
+		printl("", self, "S")
 
 		self.removeEventTracker()
 		self.poll_timer.stop()
@@ -275,7 +281,7 @@ class StillPicture(Renderer, InfoBarBase):
 	#
 	#===========================================================================
 	def __evEOF(self):
-		printl("", self , "S")
+		printl("", self, "S")
 
 		if self.session is not None and self.session.nav is not None:
 			service = self.session.nav.getCurrentService()
@@ -293,7 +299,7 @@ class StillPicture(Renderer, InfoBarBase):
 	#
 	#===========================================================================
 	def elementExists(self):
-		printl("", self , "S")
+		printl("", self, "S")
 
 		printl("", self, "C")
 		return self.element
@@ -302,7 +308,7 @@ class StillPicture(Renderer, InfoBarBase):
 	#
 	#===========================================================================
 	def getStillpicture(self):
-		printl("", self , "S")
+		printl("", self, "S")
 
 		printl("", self, "C")
 		return self.stillpicture
@@ -311,7 +317,7 @@ class StillPicture(Renderer, InfoBarBase):
 	#
 	#===========================================================================
 	def getStillpictureDefault(self):
-		printl("", self , "S")
+		printl("", self, "S")
 
 		printl("", self, "C")
 		return self.stillpictureDefault
@@ -320,7 +326,7 @@ class StillPicture(Renderer, InfoBarBase):
 	#
 	#===========================================================================
 	def setStillPicture(self, value, default=False, refresh=True, isLoop=False):
-		printl("", self , "S")
+		printl("", self, "S")
 
 		if default is True:
 			self.stillpictureDefault = config.plugins.dreamplex.mediafolderpath.value + "/bootlogo.m1v"
@@ -337,7 +343,7 @@ class StillPicture(Renderer, InfoBarBase):
 	#
 	#===========================================================================
 	def setStillPictureToDefault(self):
-		printl("", self , "S")
+		printl("", self, "S")
 
 		if self.stillpicture != self.stillpictureDefault:
 			self.stillpicture = self.stillpictureDefault
@@ -349,7 +355,7 @@ class StillPicture(Renderer, InfoBarBase):
 	#
 	#===========================================================================
 	def postWidgetCreate(self, instance):
-		printl("", self , "S")
+		printl("", self, "S")
 
 		self.sequence = None
 
@@ -365,7 +371,7 @@ class StillPicture(Renderer, InfoBarBase):
 	#
 	#===========================================================================
 	def showStillPicture(self):
-		printl("", self , "S")
+		printl("", self, "S")
 
 		if self.elementExists():
 			try:
@@ -388,7 +394,7 @@ class StillPicture(Renderer, InfoBarBase):
 	#
 	#===========================================================================
 	def finishStillPicture(self):
-		printl("", self , "S")
+		printl("", self, "S")
 
 		if self.elementExists():
 			try:
@@ -410,7 +416,7 @@ class StillPicture(Renderer, InfoBarBase):
 	#
 	#===========================================================================
 	def onShow(self):
-		printl("", self , "S")
+		printl("", self, "S")
 
 		self.showStillPicture()
 
@@ -420,7 +426,7 @@ class StillPicture(Renderer, InfoBarBase):
 	#
 	#===========================================================================
 	def onHide(self):
-		printl("", self , "S")
+		printl("", self, "S")
 
 		# We could close the still picutre here, but keep it open for a neatless expereience
 		pass
@@ -431,7 +437,7 @@ class StillPicture(Renderer, InfoBarBase):
 	#
 	#===========================================================================
 	def changed(self):
-		printl("", self , "S")
+		printl("", self, "S")
 
 		self.showStillPicture()
 

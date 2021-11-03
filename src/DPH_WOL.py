@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 DreamPlex Plugin by DonDavici, 2012
- 
+
 https://github.com/DonDavici/DreamPlex
 
 Some of the code is from other plugins:
@@ -27,12 +27,14 @@ import struct
 
 from .__common__ import printl2 as printl
 #===============================================================================
-# 
+#
 #===============================================================================
+
+
 def wake_on_lan(macaddress, broadcastIp):
-	printl ("", "DPH_WOL::wake_on_lan", "S")
-	printl ("using this mac ... " + macaddress, "DPH_WOL::wake_on_lan", "D")
-	
+	printl("", "DPH_WOL::wake_on_lan", "S")
+	printl("using this mac ... " + macaddress, "DPH_WOL::wake_on_lan", "D")
+
 	# Check macaddress format and try to compensate.
 	if len(macaddress) == 12:
 		pass
@@ -40,12 +42,12 @@ def wake_on_lan(macaddress, broadcastIp):
 		sep = macaddress[2]
 		macaddress = macaddress.replace(sep, '')
 	else:
-		printl ("Incorrect MAC address format", "DPH_WOL::wake_on_lan", "D")
+		printl("Incorrect MAC address format", "DPH_WOL::wake_on_lan", "D")
 		raise ValueError('Incorrect MAC address format')
 
 	# Pad the synchronization stream.
 	data = ''.join(['FFFFFFFFFFFF', macaddress * 20])
-	send_data = '' 
+	send_data = ''
 
 	# Split up the hex values and pack.
 	for i in range(0, len(data), 2):
@@ -55,5 +57,5 @@ def wake_on_lan(macaddress, broadcastIp):
 	sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 	sock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
 	sock.sendto(send_data, (broadcastIp, 7))
-	
-	printl ("", "DPH_WOL::wake_on_lan", "C")
+
+	printl("", "DPH_WOL::wake_on_lan", "C")

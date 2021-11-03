@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 DreamPlex Plugin by DonDavici, 2012
- 
+
 https://github.com/DonDavici/DreamPlex
 
 Some of the code is from other plugins:
@@ -51,6 +51,8 @@ from .__init__ import _ # _ is translation
 #===============================================================================
 #
 #===============================================================================
+
+
 class DPS_MainMenu(DPH_Screen, DPH_HorizontalMenu, DPH_ScreenHelper):
 
 	g_horizontal_menu = False
@@ -65,7 +67,7 @@ class DPS_MainMenu(DPH_Screen, DPH_HorizontalMenu, DPH_ScreenHelper):
 	checkedForUpdates = False
 
 	#===========================================================================
-	# 
+	#
 	#===========================================================================
 	def __init__(self, session, allowOverride=True):
 		printl("", self, "S")
@@ -75,7 +77,7 @@ class DPS_MainMenu(DPH_Screen, DPH_HorizontalMenu, DPH_ScreenHelper):
 		self.allowOverride = allowOverride
 
 		self.selectionOverride = None
-		printl("selectionOverride:" +str(self.selectionOverride), self, "D")
+		printl("selectionOverride:" + str(self.selectionOverride), self, "D")
 		self.session = session
 
 		# save liveTvData
@@ -90,18 +92,18 @@ class DPS_MainMenu(DPH_Screen, DPH_HorizontalMenu, DPH_ScreenHelper):
 
 		self["title"] = StaticText()
 
-		self["menu"]= List(enableWrapAround=True)
+		self["menu"] = List(enableWrapAround=True)
 
 		self["actions"] = HelpableActionMap(self, "DP_MainMenuActions",
 			{
-				"ok":		(self.okbuttonClick, ""),
-				"left":		(self.left, ""),
-				"right":	(self.right, ""),
-				"up":		(self.up, ""),
-				"down":		(self.down, ""),
-				"cancel":	(self.cancel, ""),
+				"ok": (self.okbuttonClick, ""),
+				"left": (self.left, ""),
+				"right": (self.right, ""),
+				"up": (self.up, ""),
+				"down": (self.down, ""),
+				"cancel": (self.cancel, ""),
 			}, -2)
-		
+
 		if config.plugins.dreamplex.stopLiveTvOnStartup.value:
 			self.session.nav.stopService()
 
@@ -112,11 +114,11 @@ class DPS_MainMenu(DPH_Screen, DPH_HorizontalMenu, DPH_ScreenHelper):
 		printl("", self, "C")
 
 	#===============================================================================
-	# 
+	#
 	#===============================================================================
 	def finishLayout(self):
 		printl("", self, "S")
-		
+
 		self.setTitle(_("Main Menu"))
 
 		if self.miniTv:
@@ -136,7 +138,7 @@ class DPS_MainMenu(DPH_Screen, DPH_HorizontalMenu, DPH_ScreenHelper):
 		printl("", self, "C")
 
 	#===============================================================
-	# 
+	#
 	#===============================================================
 	def okbuttonClick(self):
 		printl("", self, "S")
@@ -149,21 +151,21 @@ class DPS_MainMenu(DPH_Screen, DPH_HorizontalMenu, DPH_ScreenHelper):
 			self.selectionOverride = None
 		else:
 			selection = self["menu"].getCurrent()
-		
+
 		printl("selection = " + str(selection), self, "D")
 
 		if selection is not None:
-			
+
 			self.selectedEntry = selection[1]
 			printl("selected entry " + str(self.selectedEntry), self, "D")
-			
+
 			if type(self.selectedEntry) is int:
 				printl("selected entry is int", self, "D")
-				
+
 				if self.selectedEntry == Plugin.MENU_MAIN:
 					printl("found Plugin.MENU_MAIN", self, "D")
 					self["menu"].setList(self.menu_main_list)
-			
+
 				elif self.selectedEntry == Plugin.MENU_SERVER:
 					printl("found Plugin.MENU_SERVER", self, "D")
 
@@ -182,19 +184,19 @@ class DPS_MainMenu(DPH_Screen, DPH_HorizontalMenu, DPH_ScreenHelper):
 
 					if self.g_horizontal_menu:
 						self.refreshOrientationHorMenu(0)
-				
+
 			elif type(self.selectedEntry) is str:
 				printl("selected entry is string", self, "D")
 
 				if selection[1] == "DPS_Settings":
 					self.session.open(DPS_Settings)
-					
+
 				elif selection[1] == "DPS_Server":
 					self.session.open(DPS_Server)
-					
+
 				elif selection[1] == "DPS_SystemCheck":
 					self.session.open(DPS_SystemCheck)
-				
+
 				elif selection[1] == "DPS_About":
 					self.session.open(DPS_About)
 
@@ -206,22 +208,22 @@ class DPS_MainMenu(DPH_Screen, DPH_HorizontalMenu, DPH_ScreenHelper):
 
 			else:
 				pass
-					
+
 			printl("", self, "C")
 
 	#===========================================================================
-	# 
+	#
 	#===========================================================================
 	def getSettingsMenuList(self):
 		printl("", self, "S")
-		
+
 		self["menu"].setList(self.getSettingsMenu())
 		self.refreshMenu()
 
 		printl("", self, "C")
-	
+
 	#==========================================================================
-	# 
+	#
 	#==========================================================================
 	def up(self):
 		printl("", self, "S")
@@ -230,11 +232,11 @@ class DPS_MainMenu(DPH_Screen, DPH_HorizontalMenu, DPH_ScreenHelper):
 			self.left()
 		else:
 			self["menu"].selectPrevious()
-		
-		printl("", self, "C")	
-	
+
+		printl("", self, "C")
+
 	#===========================================================================
-	# 
+	#
 	#===========================================================================
 	def down(self):
 		printl("", self, "S")
@@ -243,15 +245,15 @@ class DPS_MainMenu(DPH_Screen, DPH_HorizontalMenu, DPH_ScreenHelper):
 			self.right()
 		else:
 			self["menu"].selectNext()
-		
+
 		printl("", self, "C")
-	
+
 	#===============================================================================
-	# 
+	#
 	#===============================================================================
 	def right(self):
 		printl("", self, "S")
-				
+
 		try:
 			if self.g_horizontal_menu:
 				self.refreshOrientationHorMenu(+1)
@@ -260,15 +262,15 @@ class DPS_MainMenu(DPH_Screen, DPH_HorizontalMenu, DPH_ScreenHelper):
 		except Exception as ex:
 			printl("Exception(" + str(type(ex)) + "): " + str(ex), self, "W")
 			self["menu"].selectNext()
-		
+
 		printl("", self, "C")
 
 	#===========================================================================
-	# 
+	#
 	#===========================================================================
 	def left(self):
 		printl("", self, "S")
-		
+
 		try:
 			if self.g_horizontal_menu:
 				self.refreshOrientationHorMenu(-1)
@@ -277,11 +279,11 @@ class DPS_MainMenu(DPH_Screen, DPH_HorizontalMenu, DPH_ScreenHelper):
 		except Exception as ex:
 			printl("Exception(" + str(type(ex)) + "): " + str(ex), self, "W")
 			self["menu"].selectPrevious()
-		
+
 		printl("", self, "C")
 
 	#===========================================================================
-	# 
+	#
 	#===========================================================================
 	def exit(self):
 		printl("", self, "S")
@@ -292,18 +294,18 @@ class DPS_MainMenu(DPH_Screen, DPH_HorizontalMenu, DPH_ScreenHelper):
 		printl("", self, "C")
 
 	#===========================================================================
-	# 
+	#
 	#===========================================================================
 	def cancel(self):
 		printl("", self, "S")
 
 		if self.nextExitIsQuit:
 			self.exit()
-		
+
 		else:
 			self.setTitle(_("Main Menu"))
 
-			printl("selectedEntry " +  str(self.selectedEntry), self, "D")
+			printl("selectedEntry " + str(self.selectedEntry), self, "D")
 			self.getServerList()
 
 			self["menu"].setList(self.menu_main_list)
@@ -313,38 +315,38 @@ class DPS_MainMenu(DPH_Screen, DPH_HorizontalMenu, DPH_ScreenHelper):
 				self.refreshOrientationHorMenu(0)
 
 		printl("", self, "C")
-	
+
 	#===========================================================================
-	# 
+	#
 	#===========================================================================
 	def refreshMenu(self):
 		printl("", self, "S")
-		
+
 		if self.g_horizontal_menu:
 			self.refreshOrientationHorMenu(0)
 
 		printl("", self, "C")
-		
+
 #===============================================================================
 # HELPER
 #===============================================================================
-		
+
 	#===============================================================================
-	# 
+	#
 	#===============================================================================
 	def Error(self, error):
 		printl("", self, "S")
-		
-		self.session.open(MessageBox,_("UNEXPECTED ERROR:") + "\n%s" % error, MessageBox.TYPE_INFO)
-		
+
+		self.session.open(MessageBox, _("UNEXPECTED ERROR:") + "\n%s" % error, MessageBox.TYPE_INFO)
+
 		printl("", self, "C")
-		
+
 	#=======================================================================
-	# 
+	#
 	#=======================================================================
-	def getSettingsMenu (self):
+	def getSettingsMenu(self):
 		printl("", self, "S")
-		
+
 		mainMenuList = []
 
 		mainMenuList.append((_("Settings"), "DPS_Settings", "settingsEntry"))
@@ -353,7 +355,7 @@ class DPS_MainMenu(DPH_Screen, DPH_HorizontalMenu, DPH_ScreenHelper):
 		mainMenuList.append((_("Backdrops"), "DPS_Syncer", "settingsEntry"))
 
 		self.nextExitIsQuit = False
-		
+
 		printl("", self, "C")
 		return mainMenuList
 
@@ -375,6 +377,7 @@ class DPS_MainMenu(DPH_Screen, DPH_HorizontalMenu, DPH_ScreenHelper):
 	#===============================================================================
 	#
 	#===============================================================================
+
 	def getServerList(self, allowOverride=True):
 			printl("", self, "S")
 
@@ -412,7 +415,7 @@ class DPS_MainMenu(DPH_Screen, DPH_HorizontalMenu, DPH_ScreenHelper):
 		connectionType = str(self.g_serverConfig.connectionType.value)
 		if connectionType == "0":
 			ip = "%d.%d.%d.%d" % tuple(self.g_serverConfig.ip.value)
-			port =  int(self.g_serverConfig.port.value)
+			port = int(self.g_serverConfig.port.value)
 			isOnline = testPlexConnectivity(ip, port)
 
 		elif connectionType == "2":
@@ -466,7 +469,7 @@ class DPS_MainMenu(DPH_Screen, DPH_HorizontalMenu, DPH_ScreenHelper):
 	def showOfflineMessage(self):
 		printl("", self, "S")
 
-		self.session.openWithCallback(self.startServerMenu,MessageBox,_("Plexserver seems to be offline. Please check your your settings or connection!\n Retry?"), MessageBox.TYPE_YESNO)
+		self.session.openWithCallback(self.startServerMenu, MessageBox, _("Plexserver seems to be offline. Please check your your settings or connection!\n Retry?"), MessageBox.TYPE_YESNO)
 
 		printl("", self, "C")
 
@@ -480,7 +483,7 @@ class DPS_MainMenu(DPH_Screen, DPH_HorizontalMenu, DPH_ScreenHelper):
 			# User said 'yes'
 			printl("Wake On LAN: " + str(self.g_wolon), self, "D")
 
-			for i in range(1,12):
+			for i in range(1, 12):
 				if not self.g_wakeserver == "":
 					try:
 						printl("Waking server " + str(i) + " with MAC: " + self.g_wakeserver, self, "D")
@@ -501,7 +504,7 @@ class DPS_MainMenu(DPH_Screen, DPH_HorizontalMenu, DPH_ScreenHelper):
 	#===========================================================================
 	#
 	#===========================================================================
-	def sleepNow (self):
+	def sleepNow(self):
 		printl("", self, "S")
 
 		time.sleep(int(self.g_woldelay))
@@ -514,11 +517,9 @@ class DPS_MainMenu(DPH_Screen, DPH_HorizontalMenu, DPH_ScreenHelper):
 #===============================================================================
 
 	#===========================================================================
-	# 
+	#
 	#===========================================================================
 	def onExec(self):
 		printl("", self, "S")
 
 		printl("", self, "C")
-
-

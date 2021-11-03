@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 DreamPlex Plugin by DonDavici, 2012
- 
+
 https://github.com/DonDavici/DreamPlex
 
 Some of the code is from other plugins:
@@ -62,22 +62,22 @@ except ImportError:
 #
 #===============================================================================
 class DPS_Mappings(Screen):
-	
+
 	remotePath = None
 	localPath = None
-	
+
 	def __init__(self, session, serverID):
 		printl("", self, "S")
-		
+
 		Screen.__init__(self, session)
-		self["actions"] = ActionMap(["ColorActions", "SetupActions" ],
+		self["actions"] = ActionMap(["ColorActions", "SetupActions"],
 		{
 		#"ok": self.startSelection,
 		"cancel": self.cancel,
 		"red": self.redKey,
 		"green": self.greenKey,
 		}, -1)
-		
+
 		self.guiElements = getGuiElements()
 
 		self.location = config.plugins.dreamplex.configfolderpath.value + "mountMappings"
@@ -93,14 +93,14 @@ class DPS_Mappings(Screen):
 		else:
 			self.error = True
 
-		self["btn_red"]			= Pixmap()
-		self["btn_redText"]		= Label()
+		self["btn_red"] = Pixmap()
+		self["btn_redText"] = Label()
 
-		self["btn_green"]		= Pixmap()
-		self["btn_greenText"]   = Label()
+		self["btn_green"] = Pixmap()
+		self["btn_greenText"] = Label()
 
 		self.onShown.append(self.finishLayout)
-		
+
 		printl("", self, "C")
 
 	#===========================================================================
@@ -116,77 +116,76 @@ class DPS_Mappings(Screen):
 		self["btn_greenText"].setText(_("Add Entry"))
 
 		if self.error:
-			self.session.open(MessageBox,_("Something went wrong while opening mappings xml!"), MessageBox.TYPE_INFO)
+			self.session.open(MessageBox, _("Something went wrong while opening mappings xml!"), MessageBox.TYPE_INFO)
 			self.close()
 
 		printl("", self, "C")
 
 	#===========================================================================
-	# 
+	#
 	#===========================================================================
 	def updateList(self):
 		printl("", self, "S")
-		
+
 		self["content"].buildList()
 
 		printl("", self, "C")
-		
+
 	#===================================================================
-	# 
+	#
 	#===================================================================
 	def cancel(self):
 		printl("", self, "S")
 
-		self.close(False,self.session)
-		
+		self.close(False, self.session)
+
 		printl("", self, "C")
-		
+
 	#===================================================================
-	# 
+	#
 	#===================================================================
 	def greenKey(self):
 		printl("", self, "S")
-		
-		self.session.openWithCallback(self.setLocalPathCallback, DPS_PathSelector,"/", "mapping")
-		
+
+		self.session.openWithCallback(self.setLocalPathCallback, DPS_PathSelector, "/", "mapping")
+
 		printl("", self, "C")
-		
-	
+
 	#===================================================================
-	# 
+	#
 	#===================================================================
-	def setLocalPathCallback(self, callback = None, myType = None):
+
+	def setLocalPathCallback(self, callback=None, myType=None):
 		printl("", self, "S")
 		printl("myType: " + str(myType), self, "S")
-		
+
 		if callback is not None and len(callback):
 			printl("localPath: " + str(callback), self, "D")
 			self.localPath = str(callback)
-			self.session.openWithCallback(self.setRemotePathCallback, VirtualKeyBoard, title = (_("Enter your remote path segment here:")), text = "C:\Videos or /volume1/videos or \\\\SERVER\\Videos\\")
+			self.session.openWithCallback(self.setRemotePathCallback, VirtualKeyBoard, title=(_("Enter your remote path segment here:")), text="C:\Videos or /volume1/videos or \\\\SERVER\\Videos\\")
 		else:
-			self.session.open(MessageBox,_("Adding new mapping was not completed"), MessageBox.TYPE_INFO)
+			self.session.open(MessageBox, _("Adding new mapping was not completed"), MessageBox.TYPE_INFO)
 			self.close()
-	
+
 	#===================================================================
-	# 
+	#
 	#===================================================================
-	def setRemotePathCallback(self, callback = None):
+	def setRemotePathCallback(self, callback=None):
 		printl("", self, "S")
-		
+
 		if callback is not None and len(callback):
 			printl("remotePath: " + str(callback), self, "D")
 			self.remotePath = str(callback)
-			
+
 			self["content"].addNewMapping(self.remotePath, self.localPath)
 		else:
-			self.session.open(MessageBox,_("Adding new mapping was not completed"), MessageBox.TYPE_INFO)
-		
-		
+			self.session.open(MessageBox, _("Adding new mapping was not completed"), MessageBox.TYPE_INFO)
+
 		self.close()
-		printl("", self, "C")	
-		
+		printl("", self, "C")
+
 	#===================================================================
-	# 
+	#
 	#===================================================================
 	def redKey(self):
 		printl("", self, "S")
@@ -195,21 +194,23 @@ class DPS_Mappings(Screen):
 		if content is not None:
 			currentId = content[1][7]
 			printl("currentId: " + str(currentId), self, "D")
-			
+
 			self["content"].deleteSelectedMapping(currentId)
 		self.close()
-		
+
 		printl("", self, "C")
-		
+
 #===============================================================================
 #
 #===============================================================================
+
+
 class DPS_MappingsEntryList(MenuList):
-	
+
 	lastMappingId = 0 # we use this to find the next id if we add a new element
 	location = None
-	
-	def __init__(self, menuList, serverID, tree, enableWrapAround = True):
+
+	def __init__(self, menuList, serverID, tree, enableWrapAround=True):
 		printl("", self, "S")
 		self.serverID = serverID
 		self.tree = tree
@@ -220,25 +221,25 @@ class DPS_MappingsEntryList(MenuList):
 		self.location = config.plugins.dreamplex.configfolderpath.value + "mountMappings"
 
 		printl("", self, "C")
-		
+
 	#===========================================================================
-	# 
+	#
 	#===========================================================================
 	def postWidgetCreate(self, instance):
 		printl("", self, "S")
-		
+
 		MenuList.postWidgetCreate(self, instance)
 		instance.setItemHeight(20)
 
 		printl("", self, "C")
-		
+
 	#===========================================================================
-	# 
+	#
 	#===========================================================================
 	def buildList(self):
 		printl("", self, "S")
-		
-		self.list=[]
+
+		self.list = []
 
 		printl("serverID: " + str(self.serverID), self, "D")
 		for server in self.tree.findall("server"):
@@ -254,9 +255,9 @@ class DPS_MappingsEntryList(MenuList):
 					printl("localPathPart: " + str(localPathPart), self, "D")
 
 					res = [mapping]
-					res.append((eListboxPythonMultiContent.TYPE_TEXT, 5, 0, 200, 20, 1, RT_HALIGN_LEFT|RT_VALIGN_CENTER, str(self.lastMappingId)))
-					res.append((eListboxPythonMultiContent.TYPE_TEXT, 50, 0, 300, 20, 1, RT_HALIGN_LEFT|RT_VALIGN_CENTER, str(localPathPart)))
-					res.append((eListboxPythonMultiContent.TYPE_TEXT, 355, 0, 300, 20, 1, RT_HALIGN_LEFT|RT_VALIGN_CENTER, str(remotePathPart)))
+					res.append((eListboxPythonMultiContent.TYPE_TEXT, 5, 0, 200, 20, 1, RT_HALIGN_LEFT | RT_VALIGN_CENTER, str(self.lastMappingId)))
+					res.append((eListboxPythonMultiContent.TYPE_TEXT, 50, 0, 300, 20, 1, RT_HALIGN_LEFT | RT_VALIGN_CENTER, str(localPathPart)))
+					res.append((eListboxPythonMultiContent.TYPE_TEXT, 355, 0, 300, 20, 1, RT_HALIGN_LEFT | RT_VALIGN_CENTER, str(remotePathPart)))
 
 					self.list.append(res)
 
@@ -264,9 +265,9 @@ class DPS_MappingsEntryList(MenuList):
 		self.moveToIndex(0)
 
 		printl("", self, "C")
-	
+
 	#===========================================================================
-	# 
+	#
 	#===========================================================================
 	def deleteSelectedMapping(self, mappingId):
 		printl("", self, "S")
@@ -275,7 +276,7 @@ class DPS_MappingsEntryList(MenuList):
 		for server in tree.findall("server"):
 			printl("servername: " + str(server.get('id')), self, "D")
 			if str(server.get('id')) == str(self.serverID):
-				
+
 				for mapping in server.findall('mapping'):
 					printl("mapping: " + str(mapping.get('id')), self, "D")
 					if str(mapping.get('id')) == str(mappingId):
@@ -284,35 +285,35 @@ class DPS_MappingsEntryList(MenuList):
 		printl("", self, "C")
 
 	#===========================================================================
-	# 
-	#===========================================================================	
+	#
+	#===========================================================================
 	def addNewMapping(self, remotePath, localPath):
 		printl("", self, "S")
 
 		tree = getXmlContent(self.location)
 
 		newId = int(self.lastMappingId) + 1
-		
+
 		printl("newId: " + str(newId), self, "D")
 		printl("remotePath: " + str(remotePath), self, "D")
 		printl("localPath: " + str(localPath), self, "D")
-		
+
 		existingServer = False
-		
+
 		for server in tree.findall("server"):
 			printl("servername: " + str(server.get('id')), self, "D")
 			if str(server.get('id')) == str(self.serverID):
 				existingServer = True
-				
+
 				server.append(etree.Element('mapping id="' + str(newId) + '" remotePathPart="' + remotePath + '" localPathPart="' + localPath + '"'))
 				writeXmlContent(tree, self.location)
-		
+
 		if not existingServer: # this server has no node in the xml
 			printl("expanding server list", self, "D")
 			tree.append(etree.Element('server id="' + str(self.serverID) + '"'))
 			writeXmlContent(tree, self.location)
-			
+
 			# now lets go through the xml again to add the mapping to the server
 			self.addNewMapping(remotePath, localPath)
-		
+
 		printl("", self, "C")

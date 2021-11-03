@@ -33,12 +33,16 @@ notifyWatcherConn = None
 # Actions to take place when starting the plugin over extensions
 #===============================================================================
 #noinspection PyUnusedLocal
+
+
 def main(session, **kwargs):
 	session.open(DPS_MainMenu)
 
 #===========================================================================
 #
 #===========================================================================
+
+
 def DPS_MainMenu(*args, **kwargs):
 	from . import DP_MainMenu
 
@@ -51,6 +55,8 @@ def DPS_MainMenu(*args, **kwargs):
 #
 #===========================================================================
 #noinspection PyUnusedLocal
+
+
 def menu_dreamplex(menuid, **kwargs):
 	if menuid == "mainmenu":
 		return [(_("DreamPlex"), main, "dreamplex", 47)]
@@ -60,6 +66,8 @@ def menu_dreamplex(menuid, **kwargs):
 #
 #===========================================================================
 #noinspection PyUnusedLocal
+
+
 def Autostart(reason, session=None, **kwargs):
 
 	if reason == 0:
@@ -78,6 +86,8 @@ def Autostart(reason, session=None, **kwargs):
 #===========================================================================
 #
 #===========================================================================
+
+
 def startRemoteDeamon():
 	from .DPH_RemoteListener import HttpDeamon
 	global HttpDeamonThread
@@ -100,8 +110,11 @@ def startRemoteDeamon():
 #===========================================================================
 #
 #===========================================================================
+
+
 def getHttpDeamonInformation():
 	return HttpDeamonThread.getDeamonState()
+
 
 lastKey = None
 #===========================================================================
@@ -109,6 +122,8 @@ lastKey = None
 # form outside!!!!
 #===========================================================================
 # noinspection PyUnusedLocal
+
+
 def gotThreadMsg(msg):
 	msg = HttpDeamonThread.PlayerData.pop()
 
@@ -169,7 +184,7 @@ def gotThreadMsg(msg):
 
 		elif command == "addSubscriber":
 			print("subscriber")
-			protocol= data["protocol"]
+			protocol = data["protocol"]
 			host = data["host"]
 			port = data["port"]
 			uuid = data["uuid"]
@@ -201,15 +216,17 @@ def gotThreadMsg(msg):
 #===========================================================================
 #
 #===========================================================================
+
+
 def startPlayback(data, stopPlaybackFirst=False):
-	listViewList    = data["listViewList"]
-	currentIndex    = data["currentIndex"]
-	libraryName     = data["libraryName"]
-	autoPlayMode    = data["autoPlayMode"]
-	resumeMode      = data["resumeMode"]
-	playbackMode    = data["playbackMode"]
-	forceResume     = data["forceResume"]
-	subtitleData    = data["subtitleData"]
+	listViewList = data["listViewList"]
+	currentIndex = data["currentIndex"]
+	libraryName = data["libraryName"]
+	autoPlayMode = data["autoPlayMode"]
+	resumeMode = data["resumeMode"]
+	playbackMode = data["playbackMode"]
+	forceResume = data["forceResume"]
+	subtitleData = data["subtitleData"]
 
 	if stopPlaybackFirst:
 		stopPlayback()
@@ -224,6 +241,8 @@ def startPlayback(data, stopPlaybackFirst=False):
 #===========================================================================
 #
 #===========================================================================
+
+
 def stopPlayback(restartLiveTv=False):
 
 	if isinstance(global_session.current_dialog, DP_Player):
@@ -236,12 +255,16 @@ def stopPlayback(restartLiveTv=False):
 #===========================================================================
 #
 #===========================================================================
+
+
 def restartLiveTvNow():
 	global_session.nav.playService(getLiveTv())
 
 #===========================================================================
 #
 #===========================================================================
+
+
 def startNotifier():
 	global notifyWatcher
 
@@ -253,11 +276,13 @@ def startNotifier():
 		global notifyWatcherConn
 		notifyWatcherConn = notifyWatcher.timeout.connect(notifySubscribers)
 
-	notifyWatcher.start(1000,False)
+	notifyWatcher.start(1000, False)
 
 #===========================================================================
 #
 #===========================================================================
+
+
 def updateNotifier():
 	if notifyWatcher is not None:
 		players = getPlayer()
@@ -271,6 +296,8 @@ def updateNotifier():
 #===========================================================================
 #
 #===========================================================================
+
+
 def notifySubscribers():
 	players = getPlayer()
 	print("subscribers: " + str(HttpDeamonThread.getSubscribersList()))
@@ -281,6 +308,8 @@ def notifySubscribers():
 #===========================================================================
 #
 #===========================================================================
+
+
 def getPlayer():
 	ret = None
 
@@ -295,6 +324,8 @@ def getPlayer():
 #===========================================================================
 #
 #===========================================================================
+
+
 def sessionStart(reason, **kwargs):
 
 	if "session" in kwargs:
@@ -312,18 +343,20 @@ def sessionStart(reason, **kwargs):
 # Actions to take place in Plugins
 #===============================================================================
 #noinspection PyUnusedLocal
+
+
 def Plugins(**kwargs):
 	myList = []
 	boxResolution = getBoxResolution()
 
 	if boxResolution == "FHD":
-		myList.append(PluginDescriptor(name = "DreamPlex", description = "plex client for enigma2", where = [PluginDescriptor.WHERE_PLUGINMENU], icon = "pluginLogoHD.png", fnc=main))
+		myList.append(PluginDescriptor(name="DreamPlex", description="plex client for enigma2", where=[PluginDescriptor.WHERE_PLUGINMENU], icon="pluginLogoHD.png", fnc=main))
 	else:
-		myList.append(PluginDescriptor(name = "DreamPlex", description = "plex client for enigma2", where = [PluginDescriptor.WHERE_PLUGINMENU], icon = "pluginLogo.png", fnc=main))
-	myList.append(PluginDescriptor(where = PluginDescriptor.WHERE_AUTOSTART, fnc = Autostart))
-	myList.append(PluginDescriptor(where = PluginDescriptor.WHERE_SESSIONSTART, fnc = sessionStart))
+		myList.append(PluginDescriptor(name="DreamPlex", description="plex client for enigma2", where=[PluginDescriptor.WHERE_PLUGINMENU], icon="pluginLogo.png", fnc=main))
+	myList.append(PluginDescriptor(where=PluginDescriptor.WHERE_AUTOSTART, fnc=Autostart))
+	myList.append(PluginDescriptor(where=PluginDescriptor.WHERE_SESSIONSTART, fnc=sessionStart))
 
 	if config.plugins.dreamplex.showInMainMenu.value:
-		myList.append(PluginDescriptor(name="DreamPlex", description=_("plex client for enigma2"), where = [PluginDescriptor.WHERE_MENU], fnc=menu_dreamplex))
+		myList.append(PluginDescriptor(name="DreamPlex", description=_("plex client for enigma2"), where=[PluginDescriptor.WHERE_MENU], fnc=menu_dreamplex))
 
 	return myList

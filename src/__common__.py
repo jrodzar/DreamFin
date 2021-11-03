@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 DreamPlex Plugin by DonDavici, 2012
- 
+
 https://github.com/DonDavici/DreamPlex
 
 Some of the code is from other plugins:
@@ -75,13 +75,15 @@ g_archType = None
 STARTING_MESSAGE = ">>>>>>>>>>"
 CLOSING_MESSAGE = "<<<<<<<<<<"
 #===============================================================================
-# 
+#
 #===============================================================================
+
+
 def printl2(string, parent=None, dmode="U", obfuscate=False, steps=4):
 	"""
 	@param string:
 	@param parent:
-	@param dmode: default = "U" undefined 
+	@param dmode: default = "U" undefined
 							"E" shows error
 							"W" shows warning
 							"I" shows important information to have better overview if something really happening or not
@@ -158,55 +160,71 @@ def printl2(string, parent=None, dmode="U", obfuscate=False, steps=4):
 #===============================================================================
 #
 #===============================================================================
+
+
 def getVersion():
 	return str(version)
 
 #===============================================================================
 #
 #===============================================================================
+
+
 def getSkinAuthors():
 	return skinAuthors
 
 #===============================================================================
 #
 #===============================================================================
+
+
 def getSkinHighlightedColor():
 	return skinHighlightedColor
 
 #===============================================================================
 #
 #===============================================================================
+
+
 def getSkinNormalColor():
 	return skinNormalColor
 
 #===============================================================================
 #
 #===============================================================================
+
+
 def getSkinCompatibility():
 	return skinCompatibility
 
 #===============================================================================
 #
 #===============================================================================
+
+
 def getSkinDebugMode():
 	return skinDebugMode
 
 #===============================================================================
 #
 #===============================================================================
+
+
 def getSkinResolution():
 	return skinResolution
 
 #===============================================================================
 #
 #===============================================================================
+
+
 def revokeCacheFiles():
 	printl2("", "__common__::revokeCacheFiles", "S")
 	cachePath = config.plugins.dreamplex.cachefolderpath.value
 
 	try:
 		os.chdir(cachePath)
-		files=glob.glob('*.cache')
+		files = glob.glob('*.cache')
 		for filename in files:
 			os.unlink(filename)
 
@@ -220,10 +238,12 @@ def revokeCacheFiles():
 #===============================================================================
 #
 #===============================================================================
+
+
 def writeToLog(dmode, out):
 	"""
 	singleton handler for the log file
-	
+
 	@param dmode: E, W, S, H, A, C, I
 	@param out: message string
 	@return: none
@@ -250,8 +270,10 @@ def writeToLog(dmode, out):
 			printl2("Exception(" + str(type(ex)) + "): " + str(ex), "__common__::writeToLog", "E")
 
 #===============================================================================
-# 
+#
 #===============================================================================
+
+
 def openLogFile():
 	"""
 	singleton instance for logfile
@@ -276,12 +298,14 @@ def openLogFile():
 	#printl2("", "openLogFile", "C")
 
 #===============================================================================
-# 
+#
 #===============================================================================
+
+
 def testInetConnectivity(target="http://www.google.com"):
 	"""
 	test if we get an answer from the specified url
-	
+
 	@param target:
 	@return: bool
 	"""
@@ -291,7 +315,7 @@ def testInetConnectivity(target="http://www.google.com"):
 		from urllib.request import build_opener
 	except:
 		from urllib2 import build_opener
-	from   sys import version_info
+	from sys import version_info
 	import socket
 
 	try:
@@ -316,12 +340,14 @@ def testInetConnectivity(target="http://www.google.com"):
 		return False
 
 #===============================================================================
-# 
+#
 #===============================================================================
+
+
 def testPlexConnectivity(ip, port):
 	"""
 	test if the plex server is online on the specified port
-	
+
 	@param ip: e.g. 192.168.0.1
 	@param port: e.g. 32400
 	@return: bool
@@ -351,13 +377,13 @@ def testPlexConnectivity(ip, port):
 
 
 #===============================================================================
-# 
-#===============================================================================	
+#
+#===============================================================================
 def registerPlexFonts():
 	"""
 	registers fonts for skins
-	
-	@param: none 
+
+	@param: none
 	@return none
 	"""
 	printl2("", "__common__::registerPlexFonts", "S")
@@ -384,6 +410,8 @@ def registerPlexFonts():
 #===============================================================================
 #
 #===============================================================================
+
+
 def getBoxResolution():
 	printl2("", "__common__::getBoxResolution", "S")
 	global boxResoltion
@@ -405,6 +433,8 @@ def getBoxResolution():
 #===============================================================================
 #
 #===============================================================================
+
+
 def loadSkinParams():
 	printl2("", "__common__::loadSkinParams", "S")
 
@@ -428,13 +458,15 @@ def loadSkinParams():
 	printl2("", "__common__::loadSkinParams", "C")
 
 #===============================================================================
-# 
+#
 #===============================================================================
+
+
 def loadPlexSkin():
 	"""
 	loads the corresponding skin.xml file
-	
-	@param: none 
+
+	@param: none
 	@return none
 	"""
 	printl2("", "__common__::loadPlexSkin", "S")
@@ -446,14 +478,16 @@ def loadPlexSkin():
 	printl2("", "__common__::loadPlexSkin", "C")
 
 #===============================================================================
-# 
+#
 #===============================================================================
+
+
 def checkPlexEnvironment():
 	"""
 	checks needed file structure for plex
-	
-	@param: none 
-	@return none	
+
+	@param: none
+	@return none
 	"""
 	printl2("", "__common__::checkPlexEnvironment", "S")
 
@@ -474,12 +508,14 @@ def checkPlexEnvironment():
 	printl2("", "__common__::checkPlexEnvironment", "C")
 
 #===============================================================================
-# 
+#
 #===============================================================================
+
+
 def checkDirectory(directory):
 	"""
 	checks if dir exists. if not it is added
-	
+
 	@param directory: e.g. /media/hdd/
 	@return: none
 	"""
@@ -499,12 +535,14 @@ def checkDirectory(directory):
 	printl2("", "__common__::checkDirectory", "C")
 
 #===============================================================================
-# 
-#===============================================================================		
+#
+#===============================================================================
+
+
 def getServerFromURL(url): # CHECKED
 	"""
 	Simply split the URL up and get the server portion, sans port
-	
+
 	@param url: with or without protocol
 	@return: the server URL
 	"""
@@ -520,15 +558,17 @@ def getServerFromURL(url): # CHECKED
 		return url.split('/')[0]
 
 #===============================================================================
-# 
+#
 #===============================================================================
+
+
 def getBoxInformation():
 	"""
 	@return: manu, model, arch, version
 	"""
 	printl2("", "__common__::getBoxtype", "S")
 
-	if g_boxData is  None:
+	if g_boxData is None:
 		setBoxInformation()
 
 	printl2("", "__common__::getBoxtype", "C")
@@ -537,6 +577,8 @@ def getBoxInformation():
 #===============================================================================
 #
 #===============================================================================
+
+
 def getUUID():
 	printl2("", "__common__::getUUID", "S")
 	global g_uuid
@@ -548,8 +590,10 @@ def getUUID():
 	return str(g_uuid)
 
 #===============================================================================
-# 
+#
 #===============================================================================
+
+
 def setBoxInformation():
 	printl2("", "__common__::_setBoxtype", "C")
 
@@ -679,6 +723,8 @@ def setBoxInformation():
 #===========================================================================
 #
 #===========================================================================
+
+
 def setSkinFolder(currentSkinFolder):
 	printl2("", "__common__::setSkinFolder", "S")
 
@@ -690,6 +736,8 @@ def setSkinFolder(currentSkinFolder):
 #===========================================================================
 # there is no / at the end
 #===========================================================================
+
+
 def getSkinFolder():
 	printl2("", "__common__::getSkinFolder", "S")
 
@@ -699,6 +747,8 @@ def getSkinFolder():
 #===========================================================================
 #
 #===========================================================================
+
+
 def getBoxArch():
 	printl2("", "__common__::setBoxArch", "S")
 
@@ -711,6 +761,8 @@ def getBoxArch():
 #===========================================================================
 #
 #===========================================================================
+
+
 def setBoxArch():
 	printl2("", "__common__::setBoxArch", "S")
 
@@ -730,6 +782,8 @@ def setBoxArch():
 #===============================================================================
 #
 #===============================================================================
+
+
 def getOeVersion():
 	printl2("", "__common__::getOeVersion", "S")
 
@@ -742,7 +796,9 @@ def getOeVersion():
 #===============================================================================
 #
 #===============================================================================
-def  setOeVersion():
+
+
+def setOeVersion():
 	printl2("", "__common__::getBoxArch", "S")
 
 	oeVersion = "unknown"
@@ -768,6 +824,8 @@ def  setOeVersion():
 #===============================================================================
 #
 #===============================================================================
+
+
 def prettyFormatTime(msec):
 	printl2("", "__common__::prettyFormatTime", "S")
 
@@ -804,6 +862,8 @@ def prettyFormatTime(msec):
 #===============================================================================
 #
 #===============================================================================
+
+
 def formatTime(msec):
 	printl2("", "__common__::formatTime", "S")
 
@@ -826,8 +886,10 @@ def formatTime(msec):
 		return "%i" % seconds
 
 #===============================================================================
-# 
+#
 #===============================================================================
+
+
 def getScale():
 	printl2("", "__common__::getScale", "S")
 
@@ -835,8 +897,10 @@ def getScale():
 	return AVSwitch().getFramebufferScale()
 
 #===========================================================================
-# 
+#
 #===========================================================================
+
+
 def checkXmlFile(location):
 	printl2("", "__common__::checkXmlFile", "S")
 
@@ -860,8 +924,10 @@ def checkXmlFile(location):
 	printl2("", "__common__::checkXmlFile", "C")
 
 #===========================================================================
-# 
+#
 #===========================================================================
+
+
 def getXmlContent(location):
 	printl2("", "__common__::getXmlContent", "S")
 
@@ -881,8 +947,10 @@ def getXmlContent(location):
 	return tree
 
 #===========================================================================
-# 
+#
 #===========================================================================
+
+
 def writeXmlContent(content, location):
 	printl2("", "__common__::writeXmlContent", "S")
 
@@ -896,8 +964,10 @@ def writeXmlContent(content, location):
 	printl2("", "__common__::getXmlContent", "C")
 
 #===========================================================================
-# 
+#
 #===========================================================================
+
+
 def indentXml(elem, level=0, more_sibs=False):
 	printl2("", "__common__::indentXml", "S")
 
@@ -930,18 +1000,22 @@ def indentXml(elem, level=0, more_sibs=False):
 #===========================================================================
 #
 #===========================================================================
+
+
 def durationToTime(duration):
 	printl2("", "__common__::durationToTime", "S")
 
-	m, s = divmod(int(duration)/1000, 60)
+	m, s = divmod(int(duration) / 1000, 60)
 	h, m = divmod(m, 60)
 
 	printl2("", "__common__::durationToTime", "C")
 	return "%d:%02d:%02d" % (h, m, s)
 
 #===========================================================================
-# 
+#
 #===========================================================================
+
+
 def convertSize(size):
 	printl2("", "__common__::convertSize", "S")
 
@@ -958,8 +1032,10 @@ def convertSize(size):
 		return '0B'
 
 #===========================================================================
-# 
+#
 #===========================================================================
+
+
 def loadPicture(filename):
 	printl2("", "__common__::loadPicture", "S")
 	ptr = None
@@ -981,6 +1057,8 @@ def loadPicture(filename):
 #===========================================================================
 #
 #===========================================================================
+
+
 def isValidSize(size):
 	printl2("", "__common__::isValidSize", "S")
 	valid = False
@@ -994,6 +1072,8 @@ def isValidSize(size):
 #===========================================================================
 #
 #===========================================================================
+
+
 def saveLiveTv(currentService):
 	printl2("", "__common__::saveLiveTv", "S")
 
@@ -1006,6 +1086,8 @@ def saveLiveTv(currentService):
 #===========================================================================
 #
 #===========================================================================
+
+
 def getLiveTv():
 	printl2("", "__common__::restoreLiveTv", "S")
 
@@ -1017,6 +1099,8 @@ def getLiveTv():
 #===========================================================================
 #
 #===========================================================================
+
+
 def addNewScreen(screen):
 	printl2("", "__common__::addNewScreen", "S")
 
@@ -1027,6 +1111,8 @@ def addNewScreen(screen):
 #===========================================================================
 #
 #===========================================================================
+
+
 def closePlugin(session):
 	printl2("", "__common__::closePlugin", "S")
 
@@ -1045,7 +1131,9 @@ def closePlugin(session):
 #===========================================================================
 #
 #===========================================================================
-def getPlexHeader(g_sessionID, asDict = True):
+
+
+def getPlexHeader(g_sessionID, asDict=True):
 	printl2("", "__common__::getPlexHeader", "S")
 
 	boxData = getBoxInformation()
@@ -1056,7 +1144,7 @@ def getPlexHeader(g_sessionID, asDict = True):
 	# ERROR - [TranscodeUniversalRequest] Unable to find a matching profile
 
 	if asDict:
-		plexHeader={'X-Plex-Platform': "iOS",
+		plexHeader = {'X-Plex-Platform': "iOS",
 					'X-Plex-Platform-Version': boxData[3],
 					'X-Plex-Provides': "player",
 					'X-Plex-Product': "DreamPlex",
@@ -1073,7 +1161,7 @@ def getPlexHeader(g_sessionID, asDict = True):
 		plexHeader.append('X-Plex-Provides:player')
 		plexHeader.append('X-Plex-Product:DreamPlex')
 		plexHeader.append('X-Plex-Version:' + getVersion())
-		plexHeader.append('X-Plex-Device:' +  boxData[0]) # manu
+		plexHeader.append('X-Plex-Device:' + boxData[0]) # manu
 		plexHeader.append("X-Plex-Device-Name:" + boxName)
 		plexHeader.append("X-Plex-Model:" + boxData[1]) # model
 		plexHeader.append('X-Plex-Client-Identifier:' + g_sessionID)
@@ -1085,12 +1173,14 @@ def getPlexHeader(g_sessionID, asDict = True):
 #===========================================================================
 #
 #===========================================================================
-def getUserAgentHeader(asDict = True):
+
+
+def getUserAgentHeader(asDict=True):
 	printl2("", "__common__::getUserAgentHeader", "S")
 
 	if asDict:
 		#Create the standard header structure and load with a User Agent to ensure we get back a response.
-		header = {'User-Agent': 'Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US;rv:1.9.2.3) Gecko/20100401 Firefox/3.6.3 ( .NET CLR 3.5.30729)',}
+		header = {'User-Agent': 'Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US;rv:1.9.2.3) Gecko/20100401 Firefox/3.6.3 ( .NET CLR 3.5.30729)', }
 	else:
 		header = []
 		header.append('User-Agent: Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US;rv:1.9.2.3) Gecko/20100401 Firefox/3.6.3 ( .NET CLR 3.5.30729)')
@@ -1101,6 +1191,8 @@ def getUserAgentHeader(asDict = True):
 #===========================================================================
 #
 #===========================================================================
+
+
 def encodeThat(stringToEncode):
 	#printl2("", "__common__::encodeThat", "S")
 	try:
@@ -1114,6 +1206,8 @@ def encodeThat(stringToEncode):
 #===========================================================================
 #
 #===========================================================================
+
+
 def getMyIp():
 	#printl2("", "__common__::getMyIp", "S")
 	import socket
@@ -1132,12 +1226,16 @@ def getMyIp():
 #===========================================================================
 #
 #===========================================================================
+
+
 def timeToMillis(time):
-	return (time['hours']*3600 + time['minutes']*60 + time['seconds'])*1000 + time['milliseconds']
+	return (time['hours'] * 3600 + time['minutes'] * 60 + time['seconds']) * 1000 + time['milliseconds']
 
 #===========================================================================
 #
 #===========================================================================
+
+
 def millisToTime(t):
 	millis = int(t)
 	seconds = millis / 1000
@@ -1146,20 +1244,24 @@ def millisToTime(t):
 	seconds %= 60
 	minutes %= 60
 	millis %= 1000
-	return {'hours':hours,'minutes':minutes,'seconds':seconds,'milliseconds':millis}
+	return {'hours': hours, 'minutes': minutes, 'seconds': seconds, 'milliseconds': millis}
 
 #===========================================================================
 #
 #===========================================================================
+
+
 def getXMLHeader():
 	#printl("", "getXMLHeader", "S")
 
 	#printl("", "getXMLHeader", "C")
-	return '<?xml version="1.0" encoding="utf-8"?>'+"\r\n"
+	return '<?xml version="1.0" encoding="utf-8"?>' + "\r\n"
 
 #===========================================================================
 #
 #===========================================================================
+
+
 def getOKMsg():
 	#printl("", "getOKMsg", "S")
 
@@ -1169,6 +1271,8 @@ def getOKMsg():
 #===========================================================================
 #
 #===========================================================================
+
+
 def getPlexHeaders():
 	#printl("", "getPlexHeaders", "S")
 

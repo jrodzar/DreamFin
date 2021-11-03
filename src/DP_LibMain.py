@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 DreamPlex Plugin by DonDavici, 2012
- 
+
 https://github.com/DonDavici/DreamPlex
 
 Some of the code is from other plugins:
@@ -37,20 +37,22 @@ from .DPH_Singleton import Singleton
 from .__common__ import printl2 as printl
 
 #===============================================================================
-# 
+#
 #===============================================================================
+
+
 class DP_LibMain(Screen):
 
 	#===========================================================================
-	# 
+	#
 	#===========================================================================
 	def __init__(self, session, libraryName):
 		printl("", self, "S")
 		printl("libraryName: " + str(libraryName), self, "D")
-		
+
 		Screen.__init__(self, session)
 		self._libraryName = libraryName
-		
+
 		self._views = getViews(libraryName)
 
 		if self._libraryName == "movies":
@@ -64,13 +66,13 @@ class DP_LibMain(Screen):
 
 		else:
 			self.currentViewIndex = 0
-		
+
 		self.onFirstExecBegin.append(self.showView)
-		
+
 		printl("", self, "C")
 
 	#===========================================================================
-	# 
+	#
 	#===========================================================================
 	def showView(self):
 		printl("", self, "S")
@@ -78,7 +80,7 @@ class DP_LibMain(Screen):
 		viewParams = self._views[self.currentViewIndex][2]
 		m = __import__(self._views[self.currentViewIndex][1], globals(), locals(), [])
 		self.session.openWithCallback(self.onViewClosed, m.getViewClass(), self._libraryName, self.loadLibrary, viewParams)
-		
+
 		printl("", self, "C")
 
 	#===========================================================================
@@ -90,7 +92,7 @@ class DP_LibMain(Screen):
 		printl("", self, "C")
 
 	#===========================================================================
-	# 
+	#
 	#===========================================================================
 	def onViewClosed(self, cause=None):
 		"""
@@ -111,13 +113,13 @@ class DP_LibMain(Screen):
 				self.currentViewIndex += 1
 				if len(self._views) <= self.currentViewIndex:
 					self.currentViewIndex = 0
-				
+
 				if len(cause) >= 5 and cause[4] is not None:
 					for i in range(len(self._views)):
-						if cause[4]== self._views[i][1]:
+						if cause[4] == self._views[i][1]:
 							self.currentViewIndex = i
 							break
-				
+
 				self.showView()
 
 			else:
@@ -166,14 +168,14 @@ class DP_LibMain(Screen):
 
 		library, mediaContainer = self.getLibraryData(source, url, nextViewMode, currentViewMode, uuid, forceUpdate)
 
-		printl ("", self, "C")
+		printl("", self, "C")
 		return library, mediaContainer
 
 	#===========================================================================
 	#
 	#===========================================================================
 	def getLibraryData(self, source, url, nextViewMode, currentViewMode, uuid, forceUpdate=False):
-		printl ("", self, "S")
+		printl("", self, "S")
 
 		if config.plugins.dreamplex.useCache.value:
 			pickleFileExists = False
@@ -206,27 +208,27 @@ class DP_LibMain(Screen):
 		else:
 			library = self.getLibraryDataFromPlex(url, nextViewMode, currentViewMode)
 
-		printl ("", self, "C")
+		printl("", self, "C")
 		return library
 
 	#===========================================================================
 	#
 	#===========================================================================
 	def getLibraryDataFromPickle(self):
-		printl ("", self, "S")
+		printl("", self, "S")
 
 		fd = open(self.pickleName, "rb")
 		pickleData = pickle.load(fd)
 		fd.close()
 
-		printl ("", self, "C")
+		printl("", self, "C")
 		return pickleData
 
 	#===========================================================================
 	#
 	#===========================================================================
 	def getLibraryDataFromPlex(self, url, nextViewMode, currentViewMode):
-		printl ("", self, "S")
+		printl("", self, "S")
 
 		printl("nextViewMode: " + str(nextViewMode), self, "D")
 		printl("currentViewMode: " + str(currentViewMode), self, "D")
@@ -263,14 +265,14 @@ class DP_LibMain(Screen):
 		elif nextViewMode == "ShowEpisodes":
 			library, mediaContainer = Singleton().getPlexInstance().getEpisodesOfSeason(url)
 
-		printl ("", self, "C")
+		printl("", self, "C")
 		return library, mediaContainer
 
 	#===========================================================================
 	#
 	#===========================================================================
 	def generateCacheForSection(self, library):
-		printl ("", self, "S")
+		printl("", self, "S")
 
 		try:
 			pickleData = library
@@ -280,4 +282,4 @@ class DP_LibMain(Screen):
 		except Exception as e:
 			printl("Error while saving cache file: " + str(e), self, "D")
 
-		printl ("", self, "C")
+		printl("", self, "C")

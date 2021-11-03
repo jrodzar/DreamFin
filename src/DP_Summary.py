@@ -27,6 +27,8 @@ from Screens.Screen import Screen
 #===========================================================================
 #
 #===========================================================================
+
+
 class DreamplexPlayerSummary(Screen):
 
 	#===========================================================================
@@ -36,4 +38,3 @@ class DreamplexPlayerSummary(Screen):
 		Screen.__init__(self, session, parent)
 
 		self.skinName = ["DreamPlexPlayerSummary"]
-

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 DreamPlex Plugin by DonDavici, 2012
- 
+
 https://github.com/DonDavici/DreamPlex
 
 Some of the code is from other plugins:
@@ -35,11 +35,13 @@ from .__common__ import printl2 as printl, getSkinDebugMode
 #===========================================================================
 #
 #===========================================================================
+
+
 def getDefaultCineElementsList():
 	printl("", "DP_ViewFactory::", "S")
 
 	elementsList = ["pagination", "total", "backdrop", "poster", "writer", "resolution", "cast", "audio", "info",
-	                "aspect", "codec", "rated", "title", "grandparentTitle" ,"tag", "shortDescription", "subtitles", "director",
+	                "aspect", "codec", "rated", "title", "grandparentTitle", "tag", "shortDescription", "subtitles", "director",
 	                "genre", "year", "duration", "rating_stars", "sound", "soundchannels", "pagination", "total", "leafCount", "unviewedLeafCount", "viewedLeafCount",
 	                "videoCodec", "bitrate", "videoFrameRate", "audioChannels", "aspectRatio",
 	                "videoResolution", "audioCodec", "file", "childCount", "studio"]
@@ -50,6 +52,8 @@ def getDefaultCineElementsList():
 #===========================================================================
 #
 #===========================================================================
+
+
 def getDefaultDirectoryElementsList():
 	printl("", "DP_ViewFactory::getDefaultDirectoryElementsList", "S")
 
@@ -61,6 +65,8 @@ def getDefaultDirectoryElementsList():
 #===========================================================================
 #
 #===========================================================================
+
+
 def getNoneDirectoryElements():
 	printl("", "DP_ViewFactory::getNoneDirectoryElements", "S")
 
@@ -78,6 +84,8 @@ def getNoneDirectoryElements():
 #===========================================================================
 #
 #===========================================================================
+
+
 def getDefaultSettingsList():
 	printl("", "DP_ViewFactory::getDefaultSettingsList", "S")
 
@@ -87,8 +95,10 @@ def getDefaultSettingsList():
 	return settingsList
 
 #===============================================================================
-# 
+#
 #===============================================================================
+
+
 def getViews(libraryName):
 	"""
 	@return: availableViewList
@@ -106,7 +116,7 @@ def getViews(libraryName):
 
 	elif libraryName == "music":
 		availableViewList = getViewsFromSkinParams("musicView")
-	
+
 	else:
 		availableViewList = ()
 
@@ -114,11 +124,13 @@ def getViews(libraryName):
 	return availableViewList
 
 #===========================================================================
-# 
+#
 #===========================================================================
+
+
 def getViewsFromSkinParams(myType):
 	printl("", "DP_ViewFactory::getViewsFromSkinParams", "S")
-	
+
 	tree = Singleton().getSkinParamsInstance()
 
 	availableViewList = []
@@ -141,7 +153,7 @@ def getViewsFromSkinParams(myType):
 	elif myType == "musicView":
 		myFile = "DP_ViewMusic"
 		defaultParams = getMusicViewDefaults()
-		
+
 	else:
 		raise Exception
 
@@ -181,9 +193,9 @@ def getViewsFromSkinParams(myType):
 				currentParams["settings"][setting] = translateValues(value)
 
 		view = (name, myFile, currentParams)
-		
+
 		availableViewList.append(view)
-	
+
 	#printl("availableViewList: " + str(availableViewList), __name__, "D")
 	printl("", "DP_ViewFactory::getViewsFromSkinParams", "C")
 	return availableViewList
@@ -191,6 +203,8 @@ def getViewsFromSkinParams(myType):
 #===========================================================================
 #
 #===========================================================================
+
+
 def getSubViewParams(tree):
 	printl("", "DP_ViewFactory::getSubViewParams", "S")
 
@@ -222,8 +236,10 @@ def getSubViewParams(tree):
 	return useMe, myDict
 
 #===========================================================================
-# 
+#
 #===========================================================================
+
+
 def getMovieViewDefaults():
 	printl("", "DP_ViewFactory::getMovieViewDefaults", "S")
 	params = {}
@@ -243,19 +259,19 @@ def getMovieViewDefaults():
 		params["elements"][element]["visible"] = True
 
 	# override default True
-	params["elements"]["grandparentTitle"]["visible"]              = False
-	params["elements"]["childCount"]["visible"]                    = False
-	params["elements"]["leafCount"]["visible"]                     = False
-	params["elements"]["unviewedLeafCount"]["visible"]             = False
-	params["elements"]["viewedLeafCount"]["visible"]               = False
-	params["elements"]["videoCodec"]["visible"]                    = False
-	params["elements"]["bitrate"]["visible"]                       = False
-	params["elements"]["videoFrameRate"]["visible"]                = False
-	params["elements"]["audioChannels"]["visible"]                 = False
-	params["elements"]["aspectRatio"]["visible"]                   = False
-	params["elements"]["videoResolution"]["visible"]               = False
-	params["elements"]["audioCodec"]["visible"]                    = False
-	params["elements"]["file"]["visible"]                          = False
+	params["elements"]["grandparentTitle"]["visible"] = False
+	params["elements"]["childCount"]["visible"] = False
+	params["elements"]["leafCount"]["visible"] = False
+	params["elements"]["unviewedLeafCount"]["visible"] = False
+	params["elements"]["viewedLeafCount"]["visible"] = False
+	params["elements"]["videoCodec"]["visible"] = False
+	params["elements"]["bitrate"]["visible"] = False
+	params["elements"]["videoFrameRate"]["visible"] = False
+	params["elements"]["audioChannels"]["visible"] = False
+	params["elements"]["aspectRatio"]["visible"] = False
+	params["elements"]["videoResolution"]["visible"] = False
+	params["elements"]["audioCodec"]["visible"] = False
+	params["elements"]["file"]["visible"] = False
 
 	# add addional params in elements
 	# params["elements"]["backdrop"]["height"]                       = "315"
@@ -272,6 +288,8 @@ def getMovieViewDefaults():
 #===========================================================================
 #
 #===========================================================================
+
+
 def getShowViewDefaults():
 	printl("", "DP_ViewFactory::getShowViewDefaults", "S")
 	params = {}
@@ -291,25 +309,25 @@ def getShowViewDefaults():
 		params["elements"][element]["visible"] = True
 
 	# override default True
-	params["elements"]["subtitles"]["visible"]                     = False
-	params["elements"]["audio"]["visible"]                         = False
-	params["elements"]["videoCodec"]["visible"]                    = False
-	params["elements"]["bitrate"]["visible"]                       = False
-	params["elements"]["videoFrameRate"]["visible"]                = False
-	params["elements"]["audioChannels"]["visible"]                 = False
-	params["elements"]["aspectRatio"]["visible"]                   = False
-	params["elements"]["videoResolution"]["visible"]               = False
-	params["elements"]["audioCodec"]["visible"]                    = False
-	params["elements"]["file"]["visible"]                          = False
-	params["elements"]["director"]["visible"]                      = False
-	params["elements"]["writer"]["visible"]                        = False
-	params["elements"]["cast"]["visible"]                          = False
-	params["elements"]["codec"]["visible"]                         = False
-	params["elements"]["aspect"]["visible"]                        = False
-	params["elements"]["resolution"]["visible"]                    = False
-	params["elements"]["rated"]["visible"]                         = False
-	params["elements"]["sound"]["visible"]                         = False
-	params["elements"]["soundchannels"]["visible"]                 = False
+	params["elements"]["subtitles"]["visible"] = False
+	params["elements"]["audio"]["visible"] = False
+	params["elements"]["videoCodec"]["visible"] = False
+	params["elements"]["bitrate"]["visible"] = False
+	params["elements"]["videoFrameRate"]["visible"] = False
+	params["elements"]["audioChannels"]["visible"] = False
+	params["elements"]["aspectRatio"]["visible"] = False
+	params["elements"]["videoResolution"]["visible"] = False
+	params["elements"]["audioCodec"]["visible"] = False
+	params["elements"]["file"]["visible"] = False
+	params["elements"]["director"]["visible"] = False
+	params["elements"]["writer"]["visible"] = False
+	params["elements"]["cast"]["visible"] = False
+	params["elements"]["codec"]["visible"] = False
+	params["elements"]["aspect"]["visible"] = False
+	params["elements"]["resolution"]["visible"] = False
+	params["elements"]["rated"]["visible"] = False
+	params["elements"]["sound"]["visible"] = False
+	params["elements"]["soundchannels"]["visible"] = False
 
 	# add addional params in elements
 	# params["elements"]["backdrop"]["height"]                       = "315"
@@ -324,8 +342,10 @@ def getShowViewDefaults():
 	return params
 
 #===========================================================================
-# 
+#
 #===========================================================================
+
+
 def getMusicViewDefaults():
 	printl("", "DP_ViewFactory::getMusicViewDefaults", "S")
 	params = {}
@@ -345,27 +365,27 @@ def getMusicViewDefaults():
 		params["elements"][element]["visible"] = True
 
 	# override default True
-	params["elements"]["subtitles"]["visible"]                     = False
-	params["elements"]["audio"]["visible"]                         = False
-	params["elements"]["year"]["visible"]                          = False
-	params["elements"]["duration"]["visible"]                      = False
-	params["elements"]["childCount"]["visible"]                    = False
-	params["elements"]["writer"]["visible"]                        = False
-	params["elements"]["director"]["visible"]                      = False
-	params["elements"]["cast"]["visible"]                          = False
-	params["elements"]["leafCount"]["visible"]                     = False
-	params["elements"]["unviewedLeafCount"]["visible"]             = False
-	params["elements"]["viewedLeafCount"]["visible"]               = False
-	params["elements"]["videoCodec"]["visible"]                    = False
-	params["elements"]["bitrate"]["visible"]                       = False
-	params["elements"]["videoFrameRate"]["visible"]                = False
-	params["elements"]["audioChannels"]["visible"]                 = False
-	params["elements"]["aspectRatio"]["visible"]                   = False
-	params["elements"]["videoResolution"]["visible"]               = False
-	params["elements"]["audioCodec"]["visible"]                    = False
-	params["elements"]["file"]["visible"]                          = False
-	params["elements"]["genre"]["visible"]                         = False
-	params["elements"]["studio"]["visible"]                        = False
+	params["elements"]["subtitles"]["visible"] = False
+	params["elements"]["audio"]["visible"] = False
+	params["elements"]["year"]["visible"] = False
+	params["elements"]["duration"]["visible"] = False
+	params["elements"]["childCount"]["visible"] = False
+	params["elements"]["writer"]["visible"] = False
+	params["elements"]["director"]["visible"] = False
+	params["elements"]["cast"]["visible"] = False
+	params["elements"]["leafCount"]["visible"] = False
+	params["elements"]["unviewedLeafCount"]["visible"] = False
+	params["elements"]["viewedLeafCount"]["visible"] = False
+	params["elements"]["videoCodec"]["visible"] = False
+	params["elements"]["bitrate"]["visible"] = False
+	params["elements"]["videoFrameRate"]["visible"] = False
+	params["elements"]["audioChannels"]["visible"] = False
+	params["elements"]["aspectRatio"]["visible"] = False
+	params["elements"]["videoResolution"]["visible"] = False
+	params["elements"]["audioCodec"]["visible"] = False
+	params["elements"]["file"]["visible"] = False
+	params["elements"]["genre"]["visible"] = False
+	params["elements"]["studio"]["visible"] = False
 
 	# add addional params in elements
 	# params["elements"]["backdrop"]["height"]                       = "315"
@@ -382,6 +402,8 @@ def getMusicViewDefaults():
 #===========================================================================
 #
 #===========================================================================
+
+
 def translateValues(value):
 	#printl("", "DP_ViewFactory::translateValues", "S")
 
@@ -398,6 +420,8 @@ def translateValues(value):
 #===========================================================================
 #
 #===========================================================================
+
+
 def getGuiElements():
 	printl("", "DP_ViewFactory::getGuiElements", "S")
 

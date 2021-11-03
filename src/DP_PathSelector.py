@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 DreamPlex Plugin by DonDavici, 2012
- 
+
 https://github.com/DonDavici/DreamPlex
 
 Some of the code is from other plugins:
@@ -36,16 +36,18 @@ from .__common__ import printl2 as printl
 from .__init__ import _ # _ is translation
 
 #===========================================================================
-# 
+#
 #===========================================================================
+
+
 class DPS_PathSelector(Screen, DPH_PlexScreen):
 
 	#===========================================================================
-	# 
+	#
 	#===========================================================================
 	def __init__(self, session, initDir, myType):
 		printl("", self, "S")
-		
+
 		Screen.__init__(self, session)
 		DPH_PlexScreen.__init__(self)
 
@@ -67,19 +69,19 @@ class DPS_PathSelector(Screen, DPH_PlexScreen):
 			"ok": self.ok,
 			"green": self.green,
 			"red": self.cancel
-			
+
 		}, -1)
 
 		self["targetText"] = Label()
 
-		self["btn_red"]			= Pixmap()
-		self["btn_redText"]		= Label()
+		self["btn_red"] = Pixmap()
+		self["btn_redText"] = Label()
 
-		self["btn_green"]		= Pixmap()
-		self["btn_greenText"]   = Label()
+		self["btn_green"] = Pixmap()
+		self["btn_greenText"] = Label()
 
 		self.onLayoutFinish.append(self.finishLayout)
-		
+
 		printl("", self, "C")
 
 	#===========================================================================
@@ -102,91 +104,91 @@ class DPS_PathSelector(Screen, DPH_PlexScreen):
 		printl("", self, "C")
 
 	#===========================================================================
-	# 
+	#
 	#===========================================================================
 	def cancel(self):
 		printl("", self, "S")
-		
+
 		self.close(self["filelist"].getSelection()[0], self.myType)
-		
+
 		printl("", self, "C")
-	
+
 	#===========================================================================
-	# 
+	#
 	#===========================================================================
 	def green(self):
 		printl("", self, "S")
-		
+
 		self.close(self["filelist"].getSelection()[0], self.myType)
-		
+
 		printl("", self, "C")
 
 	#===========================================================================
-	# 
+	#
 	#===========================================================================
 	def up(self):
 		printl("", self, "S")
-		
+
 		self["filelist"].up()
 		self.updateTarget()
-		
+
 		printl("", self, "C")
 
 	#===========================================================================
-	# 
+	#
 	#===========================================================================
 	def down(self):
 		printl("", self, "S")
-		
+
 		self["filelist"].down()
 		self.updateTarget()
-		
+
 		printl("", self, "C")
 
 	#===========================================================================
-	# 
+	#
 	#===========================================================================
 	def left(self):
 		printl("", self, "S")
-		
+
 		self["filelist"].pageUp()
 		self.updateTarget()
-		
+
 		printl("", self, "C")
 
 	#===========================================================================
-	# 
+	#
 	#===========================================================================
 	def right(self):
 		printl("", self, "S")
-		
+
 		self["filelist"].pageDown()
 		self.updateTarget()
-		
-		printl("", self, "C")
-	
-	#===========================================================================
-	# 
-	#===========================================================================
-	def ok(self):
-		printl("", self, "S")
-		
-		if self["filelist"].canDescent():
-			self["filelist"].descent()
-			self.updateTarget()
-			
+
 		printl("", self, "C")
 
 	#===========================================================================
-	# 
+	#
+	#===========================================================================
+	def ok(self):
+		printl("", self, "S")
+
+		if self["filelist"].canDescent():
+			self["filelist"].descent()
+			self.updateTarget()
+
+		printl("", self, "C")
+
+	#===========================================================================
+	#
 	#===========================================================================
 	def updateTarget(self):
 		printl("", self, "S")
-		
+
 		currFolder = self["filelist"].getSelection()[0]
 		if currFolder is not None:
 			self["target"].setText(currFolder)
 		else:
 			self["target"].setText(_("Invalid Location"))
-			
+
 		printl("", self, "C")

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 DreamPlex Plugin by DonDavici, 2012
- 
+
 https://github.com/DonDavici/DreamPlex
 
 Some of the code is from other plugins:
@@ -73,6 +73,8 @@ SUBTITLES_CONTENT = None
 #===============================================================================
 #
 #===============================================================================
+
+
 class InfobarAudioSelectionExtended(InfoBarAudioSelection):
 	def __init__(self):
 		InfoBarAudioSelection.__init__(self)
@@ -86,6 +88,8 @@ class InfobarAudioSelectionExtended(InfoBarAudioSelection):
 #===============================================================================
 #
 #===============================================================================
+
+
 class myAudioSelection(AudioSelection):
 	def __init__(self, session, infobar=None):
 		AudioSelection.__init__(self, session, infobar)
@@ -99,6 +103,8 @@ class myAudioSelection(AudioSelection):
 #===============================================================================
 #
 #===============================================================================
+
+
 class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 		InfoBarSeek, InfobarAudioSelectionExtended, HelpableScreen,
 		InfoBarServiceNotifications, InfoBarSimpleEventView,
@@ -108,7 +114,7 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 	ENIGMA_SERVICETS_ID = 0x1		#1
 	ENIGMA_SERVIDEM2_ID = 0x3		#3
 	ENIGMA_SERVICEGS_ID = 0x1001	#4097
-	
+
 	seek = None
 	resume = False
 	resumeStamp = 0
@@ -121,7 +127,7 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 	videoData = None
 	mediaData = None
 	multiUser = False
-	
+
 	tagline = ""
 	summary = ""
 	year = ""
@@ -133,7 +139,7 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 	videoCodec = ""
 	videoResolution = ""
 	videoFrameRate = ""
-	
+
 	nTracks = False
 	switchedLanguage = False
 	timeshift_enabled = False
@@ -216,10 +222,12 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 		self["endingTime"] = Label()
 
 		# init volume object
-		self.volumeHandler= eDVBVolumecontrol.getInstance()
+		self.volumeHandler = eDVBVolumecontrol.getInstance()
 		# only images >= 05.08.2010, must use try/except
-		try: self.volumeControlInstance = VolumeControl.instance
-		except: pass
+		try:
+			self.volumeControlInstance = VolumeControl.instance
+		except:
+			pass
 
 		# Poster
 		self.EXpicloadPoster = ePicLoad()
@@ -228,11 +236,10 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 		if self.has_key('MovieListActions'):
 			self["MovieListActions"].setEnabled(False)
 
-		self.__event_tracker = ServiceEventTracker(screen=self, eventmap=
-		{
-			iPlayableService.evUser+10: self.__evAudioDecodeError,
-			iPlayableService.evUser+11: self.__evVideoDecodeError,
-			iPlayableService.evUser+12: self.__evPluginError,
+		self.__event_tracker = ServiceEventTracker(screen=self, eventmap={
+			iPlayableService.evUser + 10: self.__evAudioDecodeError,
+			iPlayableService.evUser + 11: self.__evVideoDecodeError,
+			iPlayableService.evUser + 12: self.__evPluginError,
 			iPlayableService.evBuffering: self.__evUpdatedBufferInfo,
 			iPlayableService.evEOF: self.__evEOF,
 			iPlayableService.evUpdatedInfo: self.__evUpdatedInfo,
@@ -279,14 +286,14 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 		self.startTimelineWatcher()
 
 		if self.timelineWatcher is not None:
-			self.timelineWatcher.start(5000,False)
+			self.timelineWatcher.start(5000, False)
 
 		printl("", self, "C")
-
 
 	#==============================================================================
 	# is called automatically
 	#==============================================================================
+
 	def createSummary(self):
 		printl("", self, "S")
 
@@ -349,27 +356,27 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 	#===========================================================
 	#
 	#===========================================================
-	def selectMedia(self, count, options, server ):
+	def selectMedia(self, count, options, server):
 		printl("", self, "S")
 
 		#if we have two or more files for the same movie, then present a screen
 		self.options = options
 		self.server = server
-		self.dvdplayback=False
+		self.dvdplayback = False
 
 		if not self.options:
 			response = Singleton().getPlexInstance().getLastResponse()
-			self.session.open(MessageBox,(_("Error:") + "\n%s") % response, MessageBox.TYPE_INFO)
+			self.session.open(MessageBox, (_("Error:") + "\n%s") % response, MessageBox.TYPE_INFO)
 		else:
 			if count > 1:
 				printl("we have more than one playable part ...", self, "I")
-				indexCount=0
+				indexCount = 0
 				functionList = []
 
 				for items in self.options:
 					printl("item: " + str(items), self, "D")
 					if items[1] is not None:
-						name=items[1].split('/')[-1]
+						name = items[1].split('/')[-1]
 					else:
 						size = convertSize(int(items[3]))
 						duration = time.strftime('%H:%M:%S', time.gmtime(int(items[4])))
@@ -377,8 +384,8 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 						name = items[0] + " (" + items[2] + " / " + size + " / " + duration + ")"
 
 					printl("name " + str(name), self, "D")
-					functionList.append((name ,indexCount, ))
-					indexCount+=1
+					functionList.append((name, indexCount, ))
+					indexCount += 1
 
 				self.session.openWithCallback(self.setSelectedMedia, ChoiceBox, title=_("Select media to play"), list=functionList)
 
@@ -402,7 +409,7 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 
 		Singleton().getPlexInstance().setPlaybackType(str(self.playbackMode))
 
-		mediaFileUrl = Singleton().getPlexInstance().mediaType({'key': self.options[result][0], 'file' : self.options[result][1]}, self.server)
+		mediaFileUrl = Singleton().getPlexInstance().mediaType({'key': self.options[result][0], 'file': self.options[result][1]}, self.server)
 		printl("We have selected media at " + mediaFileUrl, self, "I")
 
 		self.buildPlayerData(mediaFileUrl)
@@ -442,7 +449,7 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 				suggestion = _("Please verify you direct local settings")
 				fallback = _("I will now try to play the file via transcode.")
 
-				self.session.openWithCallback(self.checkResume, MessageBox,_("Warning:") + "\n%s\n\n%s\n\n%s\n\n%s" % (message, locations, suggestion, fallback), MessageBox.TYPE_ERROR)
+				self.session.openWithCallback(self.checkResume, MessageBox, _("Warning:") + "\n%s\n\n%s\n\n%s\n\n%s" % (message, locations, suggestion, fallback), MessageBox.TYPE_ERROR)
 			else:
 				self.checkResume(resumeStamp)
 
@@ -458,7 +465,7 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 			self.session.openWithCallback(self.handleResume, MessageBox, _(" This file was partially played.\n\n Do you want to resume?"), MessageBox.TYPE_YESNO)
 
 		elif self.forceResume:
-			self.play(resume = True)
+			self.play(resume=True)
 
 		else:
 			self.play()
@@ -472,7 +479,7 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 		printl("", self, "S")
 
 		if confirm:
-			self.play(resume = True)
+			self.play(resume=True)
 
 		else:
 			self.play()
@@ -498,7 +505,7 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 		#if getOeVersion() != "oe22":
 		#	self.EXpicloadPoster.startDecode(self.whatPoster,0,0,False)
 		#else:
-			self.EXpicloadPoster.startDecode(self.whatPoster,False)
+			self.EXpicloadPoster.startDecode(self.whatPoster, False)
 
 		self.ptr = self.EXpicloadPoster.getData()
 
@@ -521,6 +528,7 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 	#===========================================================================
 	#
 	#===========================================================================
+
 	def setServiceReferenceData(self):
 		printl("", self, "S")
 
@@ -528,7 +536,7 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 
 		self.sref = eServiceReference(self.ENIGMA_SERVICE_ID, 0, self.url)
 		self.sref.setName(self.title)
-		
+
 		printl("", self, "C")
 
 	#===========================================================================
@@ -538,7 +546,7 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 		printl("", self, "S")
 
 		# check for playable services
-		printl( "Checking for usable gstreamer service (builtin)... ",self, "I")
+		printl("Checking for usable gstreamer service (builtin)... ", self, "I")
 
 		# lets built the sref for the movieplayer out of the gathered information
 		if self.url[:4] == "http": #this means we are in streaming mode so we will use sref 4097
@@ -615,7 +623,7 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 	#===========================================================================
 	#
 	#===========================================================================
-	def play(self, resume = False):
+	def play(self, resume=False):
 		printl("", self, "S")
 
 		self.session.nav.stopService()
@@ -647,10 +655,10 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 
 			if self.timelineWatcher is not None:
 				# we start here too because it seems that direct local does not hit the buffer full function
-				self.timelineWatcher.start(5000,False)
+				self.timelineWatcher.start(5000, False)
 
 			if self.subtitleWatcher is not None:
-				self.subtitleWatcher.start(10000,False)
+				self.subtitleWatcher.start(10000, False)
 
 		else:
 			self["bufferslider"].setValue(1)
@@ -704,7 +712,7 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 
 					elif x[0] == 1:
 						description = "TTX"
-						number = "%x%02x" % (x[3],x[2])
+						number = "%x%02x" % (x[3], x[2])
 
 					elif x[0] == 2:
 						types = (_("<unknown>"), "UTF-8 text", "SSA", "AAS", ".SRT file", "VOB", "PGS (unsupported)")
@@ -795,7 +803,7 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 	def pauseService(self):
 		printl("", self, "S")
 
-		if self.playbackType == "1"  and self.universalTranscoder:
+		if self.playbackType == "1" and self.universalTranscoder:
 			self.transcoderHeartbeat = eTimer()
 
 			if getOeVersion() != "oe22":
@@ -803,12 +811,12 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 			else:
 				self.transcoderHeartbeatConn = self.transcoderHeartbeat.timeout.connect(self.keepTranscoderAlive)
 
-			self.transcoderHeartbeat.start(10000,False)
+			self.transcoderHeartbeat.start(10000, False)
 
 		if self.timelineWatcher is not None:
 			self.timelineWatcher.stop()
 
-		super(DP_Player,self).pauseService()
+		super(DP_Player, self).pauseService()
 
 		printl("", self, "C")
 
@@ -825,12 +833,13 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 			self.transcoderHeartbeat.stop()
 
 		if self.timelineWatcher is not None:
-			self.timelineWatcher.start(30000,False)
+			self.timelineWatcher.start(30000, False)
 
 		printl("", self, "S")
 	#===========================================================================
 	#
 	#===========================================================================
+
 	def getTitle(self):
 		printl("", self, "S")
 
@@ -870,19 +879,19 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 		printl("", self, "C")
 
 	#===========================================================================
-	# 
+	#
 	#===========================================================================
 	def isValidServiceId(self, myId):
 		printl("", self, "S")
-		
+
 		testSRef = eServiceReference(myId, 0, "Just a TestReference")
 		info = eServiceCenter.getInstance().info(testSRef)
-		
+
 		printl("", self, "C")
 		return info is not None
 
 	#===========================================================================
-	# 
+	#
 	#===========================================================================
 	def __evUpdatedBufferInfo(self):
 		#printl("", self, "S")
@@ -891,11 +900,11 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 			self.bufferFull()
 		else:
 			self.bufferInfo()
-		
+
 		#printl("", self, "C")
 
 	#===========================================================================
-	# 
+	#
 	#===========================================================================
 	def ok(self):
 		#printl("", self, "S")
@@ -906,9 +915,9 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 		self.toggleShow()
 
 		#printl("", self, "C")
-	
+
 	#===========================================================================
-	# 
+	#
 	#===========================================================================
 	def bufferInfo(self):
 		#printl("", self, "S")
@@ -931,7 +940,7 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 			if self.bufferPercent > 95:
 				self.bufferFull()
 
-			if self.bufferPercent == 0 and not self.endReached and (bufferInfo[1] != 0 and bufferInfo[2] !=0):
+			if self.bufferPercent == 0 and not self.endReached and (bufferInfo[1] != 0 and bufferInfo[2] != 0):
 				self.bufferEmpty()
 		except:
 			pass
@@ -939,96 +948,96 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 		#printl("", self, "C")
 
 	#===========================================================================
-	# 
+	#
 	#===========================================================================
 	def __evAudioDecodeError(self):
 		printl("", self, "S")
-		
+
 		try:
 			currPlay = self.session.nav.getCurrentService()
 			sTagAudioCodec = currPlay.info().getInfoString(iServiceInformation.sTagAudioCodec)
-			printl( "audio-codec %s can't be decoded by hardware" % sTagAudioCodec, self, "I")
+			printl("audio-codec %s can't be decoded by hardware" % sTagAudioCodec, self, "I")
 			Notifications.AddNotification(MessageBox, _("This Box can't decode %s streams!") % sTagAudioCodec, type=MessageBox.TYPE_INFO, timeout=10)
-		
+
 		except Exception as e:
 			printl("exception: " + str(e), self, "W")
-		
+
 		printl("", self, "C")
 
 	#===========================================================================
-	# 
+	#
 	#===========================================================================
 	def __evVideoDecodeError(self):
 		printl("", self, "S")
-		
+
 		try:
 			currPlay = self.session.nav.getCurrentService()
 			sTagVideoCodec = currPlay.info().getInfoString(iServiceInformation.sTagVideoCodec)
-			printl( "video-codec %s can't be decoded by hardware" % sTagVideoCodec, self, "I")
+			printl("video-codec %s can't be decoded by hardware" % sTagVideoCodec, self, "I")
 			Notifications.AddNotification(MessageBox, _("This Box can't decode %s streams!") % sTagVideoCodec, type=MessageBox.TYPE_INFO, timeout=10)
-		
+
 		except Exception as e:
 			printl("exception: " + str(e), self, "W")
-		
+
 		printl("", self, "C")
 
 	#===========================================================================
-	# 
+	#
 	#===========================================================================
 	def __evPluginError(self):
 		printl("", self, "S")
-		
+
 		try:
 			currPlay = self.session.nav.getCurrentService()
-			message = currPlay.info().getInfoString(iServiceInformation.sUser+12)
-			printl( "[PlexPlayer] PluginError " + message, self, "I")
+			message = currPlay.info().getInfoString(iServiceInformation.sUser + 12)
+			printl("[PlexPlayer] PluginError " + message, self, "I")
 			Notifications.AddNotification(MessageBox, _("Your Box can't decode this video stream!\n%s") % message, type=MessageBox.TYPE_INFO, timeout=10)
-		
+
 		except Exception as e:
 			printl("exception: " + str(e), self, "W")
-		
+
 		printl("", self, "C")
 
 	#===========================================================================
-	# 
+	#
 	#===========================================================================
 	def __evEOF(self):
 		printl("", self, "S")
-		
-		printl( "got evEOF", self, "W")
-		
+
+		printl("got evEOF", self, "W")
+
 		try:
-			err = self.session.nav.getCurrentService().info().getInfoString(iServiceInformation.sUser+12)
-			printl( "Error: " + str(err), self, "W")
-			
+			err = self.session.nav.getCurrentService().info().getInfoString(iServiceInformation.sUser + 12)
+			printl("Error: " + str(err), self, "W")
+
 			if err != "":
 				Notifications.AddNotification(MessageBox, _("Your Box can't decode this video stream!\n%s") % err, type=MessageBox.TYPE_INFO, timeout=10)
-		
+
 		except Exception as e:
 			printl("exception: " + str(e), self, "W")
-			
+
 		printl("", self, "C")
 
 	#===========================================================================
-	# 
+	#
 	#===========================================================================
 	#noinspection PyUnusedLocal
-	def seekWatcher(self,*args):
+	def seekWatcher(self, *args):
 		printl("", self, "S")
-		
-		printl( "seekWatcher started", self, "I")
+
+		printl("seekWatcher started", self, "I")
 		try:
 			while self is not None and self.resumeStamp is not None:
 				self.seekToStartPos()
 				sleep(1)
 		except Exception as e:
 			printl("stopping due to exception in seektostartpos, eg. stopped playback before ready ..." + str(e), self, "W")
-		
-		printl( "seekWatcher finished ", self, "I")
+
+		printl("seekWatcher finished ", self, "I")
 		printl("", self, "C")
-			
+
 	#===========================================================================
-	# 
+	#
 	#===========================================================================
 	def seekToStartPos(self):
 		printl("", self, "S")
@@ -1040,17 +1049,17 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 
 					r = seek.getLength()
 					if not r[0]:
-						printl ("got duration", self, "D")
+						printl("got duration", self, "D")
 						if r[1] == 0:
-							printl( "duration 0", self, "D")
+							printl("duration 0", self, "D")
 							return
 						length = r[1]
 
 					r = seek.getPlayPosition()
 					if not r[0]:
-						printl( "playbacktime " + str(r[1]), self, "D")
+						printl("playbacktime " + str(r[1]), self, "D")
 						if r[1] < 90000:# ~2 sekunden
-							printl( "do not seek yet " + str(r[1]), self, "D")
+							printl("do not seek yet " + str(r[1]), self, "D")
 							printl("", self, "C")
 							return
 					else:
@@ -1058,10 +1067,10 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 						return
 
 					elapsed = self.resumeStamp * 90000
-					printl( "seeking to " + str(time) + " length " + str(length) + " ", self, "D")
+					printl("seeking to " + str(time) + " length " + str(length) + " ", self, "D")
 
 					if elapsed < 90000:
-						printl( "skip seeking < 10s", self, "D")
+						printl("skip seeking < 10s", self, "D")
 						printl("", self, "C")
 						return
 
@@ -1074,40 +1083,40 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 		printl("", self, "C")
 
 	#===========================================================================
-	# 
+	#
 	#===========================================================================
 	def bufferFull(self):
 		#printl("", self, "S")
-		
-		if self.seekstate != self.SEEK_STATE_PLAY :
-			printl( "Buffer filled start playing", self, "I")
+
+		if self.seekstate != self.SEEK_STATE_PLAY:
+			printl("Buffer filled start playing", self, "I")
 			self.setSeekState(self.SEEK_STATE_PLAY)
 
 		if self.timelineWatcher is not None:
-			self.timelineWatcher.start(5000,False)
+			self.timelineWatcher.start(5000, False)
 
 		#printl("", self, "C")
 
 	#===========================================================================
-	# 
+	#
 	#===========================================================================
 	def bufferEmpty(self):
 		#printl("", self, "S")
-		
+
 		if self.timelineWatcher is not None:
 			self.timelineWatcher.stop()
 
 		#printl("", self, "C")
-		
 
 	#===========================================================================
-	# 
+	#
 	#===========================================================================
+
 	def leavePlayer(self):
 		printl("", self, "S")
-		
+
 		self.leavePlayerConfirmed(True)
-		
+
 		printl("", self, "C")
 
 	#===========================================================================
@@ -1117,7 +1126,7 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 		printl("", self, "S")
 
 		if config.plugins.dreamplex.exitFunction.value == "2":
-			self.close((True, (self.playerData,self.ptr, self.id, self.currentIndex)))
+			self.close((True, (self.playerData, self.ptr, self.id, self.currentIndex)))
 
 		elif config.plugins.dreamplex.exitFunction.value == "1":
 			self.leavePlayer()
@@ -1125,7 +1134,7 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 		printl("", self, "C")
 
 	#===========================================================================
-	# 
+	#
 	#===========================================================================
 	def leavePlayerConfirmed(self, answer):
 		printl("", self, "S")
@@ -1160,7 +1169,7 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 		printl("", self, "C")
 
 	#===========================================================================
-	# 
+	#
 	#===========================================================================
 	def doEofInternal(self, playing):
 		printl("", self, "S")
@@ -1173,7 +1182,7 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 				self.playNextEntry()
 		else:
 			self.leavePlayerConfirmed("EOF")
-		
+
 		printl("", self, "C")
 
 	#===========================================================================
@@ -1192,7 +1201,7 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 		return False
 
 	#===========================================================================
-	# 
+	#
 	#===========================================================================
 	def handleProgress(self, EOF=False):
 		printl("", self, "S")
@@ -1203,8 +1212,8 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 			printl("progress data available, ...", self, "D")
 
 			if not EOF and currentTime is not None and currentTime > 0 and totalTime is not None and totalTime > 0:
-				progress = currentTime / float(totalTime/100.0)
-				printl( "played time is %s secs of %s @ %s%%" % ( currentTime, totalTime, progress),self, "I" )
+				progress = currentTime / float(totalTime / 100.0)
+				printl("played time is %s secs of %s @ %s%%" % (currentTime, totalTime, progress), self, "I")
 			else:
 				progress = 100
 				printl("End of file reached", self, "D")
@@ -1213,7 +1222,7 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 				self.timelineWatcher.stop()
 
 				urlPath = self.server + "/:/timeline?containerKey=/library/sections/onDeck&key=/library/metadata/" + self.id + "&ratingKey=" + self.id
-				urlPath += "&state=stopped&time=" + str(currentTime*1000) + "&duration=" + str(totalTime*1000)
+				urlPath += "&state=stopped&time=" + str(currentTime * 1000) + "&duration=" + str(totalTime * 1000)
 				self.plexInstance.doRequest(urlPath)
 
 			#Legacy PMS Server server support before MultiUser version v0.9.8.0 and if we are not connected via myPlex
@@ -1223,13 +1232,13 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 
 				#If we are less than 95% complete, store resume time
 				elif progress < 95:
-					printl("Less than 95% progress, will store resume time", self, "I" )
-					self.plexInstance.doRequest("http://"+self.server+"/:/progress?key="+self.id+"&identifier=com.plexapp.plugins.library&time="+str(currentTime*1000))
+					printl("Less than 95% progress, will store resume time", self, "I")
+					self.plexInstance.doRequest("http://" + self.server + "/:/progress?key=" + self.id + "&identifier=com.plexapp.plugins.library&time=" + str(currentTime * 1000))
 
 				#Otherwise, mark as watched
 				else:
-					printl( "Movie marked as watched. Over 95% complete", self, "I")
-					self.plexInstance.doRequest("http://"+self.server+"/:/scrobble?key="+self.id+"&identifier=com.plexapp.plugins.library")
+					printl("Movie marked as watched. Over 95% complete", self, "I")
+					self.plexInstance.doRequest("http://" + self.server + "/:/scrobble?key=" + self.id + "&identifier=com.plexapp.plugins.library")
 
 		except:
 			printl("no progress data maybe playback never started, returning ...", self, "D")
@@ -1243,7 +1252,7 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 	def keepTranscoderAlive(self):
 		printl("", self, "S")
 
-		self.plexInstance.doRequest("http://"+self.server+"/video/:/transcode/universal/ping?session=" + self.transcodingSession)
+		self.plexInstance.doRequest("http://" + self.server + "/video/:/transcode/universal/ping?session=" + self.transcodingSession)
 
 		printl("", self, "C")
 
@@ -1252,16 +1261,16 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 	#===========================================================================
 	def stopTranscoding(self):
 		printl("", self, "S")
-		
+
 		if self.universalTranscoder:
-			self.plexInstance.doRequest("http://"+self.server+"/video/:/transcode/universal/stop?session=" + self.transcodingSession)
+			self.plexInstance.doRequest("http://" + self.server + "/video/:/transcode/universal/stop?session=" + self.transcodingSession)
 		else:
-			self.plexInstance.doRequest("http://"+self.server+"/video/:/transcode/segmented/stop?session=" + self.transcodingSession)
-		
+			self.plexInstance.doRequest("http://" + self.server + "/video/:/transcode/segmented/stop?session=" + self.transcodingSession)
+
 		printl("", self, "C")
-	
+
 	#===========================================================================
-	# 
+	#
 	#===========================================================================
 	def isPlaying(self):
 		printl("", self, "S")
@@ -1283,29 +1292,29 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 	# audioTrackWatcher
 	#===========================================================================
 	#noinspection PyUnusedLocal
-	def audioTrackWatcher(self,*args):
+	def audioTrackWatcher(self, *args):
 		printl("", self, "S")
-		
+
 		try:
 			while self.nTracks == False and self is not None:
 				self.setAudioTrack()
 				sleep(1)
-		
-		except Exception as e:	
+
+		except Exception as e:
 			printl("exception: " + str(e), self, "E")
-		
+
 		printl("", self, "C")
-	
+
 	#===========================================================================
-	# 
+	#
 	#===========================================================================
 	def updateTimeline(self):
-		printl("" ,self,"S")
+		printl("", self, "S")
 
 		try:
 			currentTime = self.getPlayPosition()[1] / 90000
 			totalTime = self.getPlayLength()[1] / 90000
-			progress = int(( float(currentTime) / float(totalTime) ) * 100)
+			progress = int((float(currentTime) / float(totalTime)) * 100)
 		except:
 			return
 
@@ -1330,13 +1339,13 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 				seekState = self.seekstate
 
 				if seekState == self.SEEK_STATE_PAUSE:
-					printl( "Movies PAUSED time: %s secs of %s @ %s%%" % ( currentTime, totalTime, progress), self,"D" )
-					urlPath += "&state=paused&time=" + str(currentTime*1000) + "&duration=" + str(totalTime*1000)
+					printl("Movies PAUSED time: %s secs of %s @ %s%%" % (currentTime, totalTime, progress), self, "D")
+					urlPath += "&state=paused&time=" + str(currentTime * 1000) + "&duration=" + str(totalTime * 1000)
 					self.plexInstance.doRequest(urlPath)
 
-				elif seekState == self.SEEK_STATE_PLAY :
-					printl( "Movies PLAYING time: %s secs of %s @ %s%%" % ( currentTime, totalTime, progress),self,"D" )
-					urlPath += "&state=playing&time=" + str(currentTime*1000) + "&duration=" + str(totalTime*1000)
+				elif seekState == self.SEEK_STATE_PLAY:
+					printl("Movies PLAYING time: %s secs of %s @ %s%%" % (currentTime, totalTime, progress), self, "D")
+					urlPath += "&state=playing&time=" + str(currentTime * 1000) + "&duration=" + str(totalTime * 1000)
 					self.plexInstance.doRequest(urlPath)
 
 				# todo add buffering here if needed
@@ -1349,23 +1358,23 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 				printl("exception: " + str(e), self, "E")
 				return False
 
-		printl("" ,self,"C")
+		printl("", self, "C")
 		return True
 
 	#===========================================================================
 	#
 	#===========================================================================
 	def getPlayerState(self):
-		printl("" ,self,"S")
+		printl("", self, "S")
 		params = {}
 
 		try:
 			currentTime = self.getPlayPosition()[1] / 90000
 			totalTime = self.getPlayLength()[1] / 90000
 
-			params["duration"] = str(totalTime*1000)
+			params["duration"] = str(totalTime * 1000)
 
-			params["progress"] = str(currentTime*1000)
+			params["progress"] = str(currentTime * 1000)
 
 			if self.seekstate == self.SEEK_STATE_PAUSE:
 				params["state"] = "paused"
@@ -1378,19 +1387,19 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 
 			params["lastKey"] = "/library/metadata/" + str(self.id)
 
-			printl("" ,self,"C")
+			printl("", self, "C")
 			return params
 
 		except:
 
-			printl("" ,self,"C")
+			printl("", self, "C")
 			return False
 
 	#===========================================================================
 	#
 	#===========================================================================
 	def getPlayer(self):
-		printl("" ,self,"S")
+		printl("", self, "S")
 		ret = None
 
 		if self.seekstate == self.SEEK_STATE_PAUSE or self.seekstate == self.SEEK_STATE_PLAY:
@@ -1401,57 +1410,56 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 				player['type'] = "video"
 				ret["video"] = player
 
-		printl("" ,self,"C")
+		printl("", self, "C")
 		return ret
 
 	#===========================================================================
 	#
 	#===========================================================================
 	def getMediaType(self):
-		printl("" ,self,"S")
+		printl("", self, "S")
 
 		# todo someday there might be music and photo if needed
 		mediaType = "video"
 
-		printl("" ,self,"C")
+		printl("", self, "C")
 		return mediaType
 
 	#===========================================================================
-	# 
+	#
 	#===========================================================================
 	def setAudioTrack(self):
 		printl("", self, "S")
 		if not self.switchedLanguage:
 			try:
 				service = self.session.nav.getCurrentService()
-		
-		
+
 				tracks = service and self.getServiceInterface("audioTracks")
 				nTracks = tracks and tracks.getNumberOfTracks() or 0
-				
+
 				if not nTracks:
 					printl("no tracks found yet ... retrying later", self, "D")
 					return
-				
+
 				self.nTracks = True
 				trackList = []
-				
+
 				for i in xrange(nTracks):
 					audioInfo = tracks.getTrackInfo(i)
 					lang = audioInfo.getLanguage()
 					printl("lang: " + str(lang), self, "D")
 					trackList += [str(lang)]
-				
+
 				systemLanguage = language.getLanguage()[:2] # getLanguage returns e.g. "fi_FI" for "language_country"
-				printl("found systemLanguage: " +  systemLanguage, self, "I")
+				printl("found systemLanguage: " + systemLanguage, self, "I")
 				#systemLanguage = "en"
-				
+
 				self.tryAudioEnable(trackList, systemLanguage, tracks)
-			
+
 			except Exception as e:
-				printl("audioTrack exception: " + str(e), self, "W") 
-		
-		printl("", self, "C")   
+				printl("audioTrack exception: " + str(e), self, "W")
+
+		printl("", self, "C")
 
 	#===========================================================================
 	# tryAudioEnable
@@ -1467,65 +1475,65 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 				printl("audio track match: " + str(e), self, "I")
 				sleep(2)
 				tracks.selectTrack(index)
-				
+
 				printl("", self, "S")
 				index += 1
 			else:
 				printl("no audio track match with " + str(e), self, "I")
-		
+
 		self.switchedLanguage = True
 		printl("", self, "S")
-		
-	
+
 	#===========================================================================
 	# getServiceInterface
 	#===========================================================================
+
 	def getServiceInterface(self, iface):
 		printl("", self, "S")
 		service = self.session.nav.getCurrentService() # self.service
 		if service:
 			attr = getattr(service, iface, None)
 			if callable(attr):
-				printl("", self, "C")   
+				printl("", self, "C")
 				return attr()
-		
-		printl("", self, "C")   
+
+		printl("", self, "C")
 		return None
-	
+
 	#===========================================================================
-	# 
+	#
 	#===========================================================================
 	def seekToMinute(self, minutes):
 		printl("", self, "S")
 
-		self.resumeStamp = int(minutes)*60
+		self.resumeStamp = int(minutes) * 60
 		self.seekToStartPos()
 
-		printl("", self, "C")   
+		printl("", self, "C")
 
 	#===========================================================================
-	# 
+	#
 	#===========================================================================
 	def seekManual(self):
 		printl("", self, "S")
-		
+
 		self.session.openWithCallback(self.seekToMinute, MinuteInput)
-		
+
 		printl("", self, "C")
-		
+
 	#===========================================================================
-	# 
+	#
 	#===========================================================================
 	def getPlayLength(self):
 		printl("", self, "S")
-		
+
 		length = self.seek.getLength()
-		
+
 		printl("", self, "C")
 		return length
-	
+
 	#===========================================================================
-	# 
+	#
 	#===========================================================================
 	def getPlayPosition(self):
 		printl("", self, "S")
@@ -1534,7 +1542,7 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 			position = self.seek.getPlayPosition()
 		except:
 			return None
-		
+
 		printl("", self, "C")
 		return position
 
@@ -1549,13 +1557,12 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 
 		self.poster_postfix = "_poster_" + self.width + "x" + self.height + "_v2.jpg"
 
-
 		if self.isShow:
 			self.whatPoster = mediaPath + image_prefix + "_" + self.show_id + self.poster_postfix
 		else:
 			self.whatPoster = mediaPath + image_prefix + "_" + self.media_id + self.poster_postfix
 
-		printl( "what poster: " + self.whatPoster, self, "D")
+		printl("what poster: " + self.whatPoster, self, "D")
 
 		printl("builded poster data: " + str(self.whatPoster), self, "D")
 
@@ -1582,8 +1589,8 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 
 		download_url = download_url.replace('&width=999&height=999', '&width=' + self.width + '&height=' + self.height)
 
-		printl( "download url: " + download_url, self, "D")
-		printl( "what poster: " + self.whatPoster, self, "D")
+		printl("download url: " + download_url, self, "D")
+		printl("what poster: " + self.whatPoster, self, "D")
 
 		if download_url != "":
 			response = self.plexInstance.doRequest(download_url)
@@ -1615,5 +1622,3 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 		copy2(self.whatPoster, self.tempPoster)
 
 		printl("", self, "C")
-
-

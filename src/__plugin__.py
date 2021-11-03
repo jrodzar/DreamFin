@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 DreamPlex Plugin by DonDavici, 2012
- 
+
 https://github.com/DonDavici/DreamPlex
 
 Some of the code is from other plugins:
@@ -30,11 +30,13 @@ from .__common__ import printl2 as printl
 gPlugins = []
 
 #===============================================================================
-# 
+#
 #===============================================================================
+
+
 def registerPlugin(plugin):
 	printl("", "__plugin__::registerPlugin", "S")
-	
+
 	ps = []
 	if type(plugin) is list:
 		ps = plugin
@@ -44,15 +46,17 @@ def registerPlugin(plugin):
 		if p not in gPlugins:
 			printl("registered: name=" + str(p.name) + " where=" + str(p.where), "__plugin__::registerPlugin", "D")
 			gPlugins.append(p)
-	
+
 	printl("", "__plugin__::registerPlugin", "C")
 
 #===============================================================================
-# 
+#
 #===============================================================================
-def getPlugins(where = None):
+
+
+def getPlugins(where=None):
 	printl("", "__plugin__::getPlugins", "S")
-	
+
 	if where is None:
 		printl("", "__plugin__::getPlugins", "C")
 		return gPlugins
@@ -61,32 +65,36 @@ def getPlugins(where = None):
 		for plugin in gPlugins:
 			if plugin.where == where:
 				plist.append(plugin)
-		
+
 		plist.sort(key=lambda x: x.weight)
 		printl(str(plist), "__plugin__::getPlugins", "D")
-		
+
 		printl("", "__plugin__::getPlugins", "C")
 		return plist
-	
+
 #===============================================================================
-# 
+#
 #===============================================================================
+
+
 def getPlugin(pid, where):
 	printl("", "__plugin__::getPlugin", "S")
-	
+
 	for plugin in gPlugins:
 		if plugin.pid == pid and plugin.where == where:
-			
+
 			printl("plugin found ... " + str(plugin), "__plugin__::getPlugin", "D")
 			printl("", "__plugin__::getPlugin", "C")
 			return plugin
-	
+
 	printl("", "__plugin__::getPlugin", "C")
 	return None
 
 #===============================================================================
-# 
+#
 #===============================================================================
+
+
 class Plugin(object):
 	# constants
 	MENU_SERVER = 1
@@ -109,7 +117,7 @@ class Plugin(object):
 	where = None
 
 	#===========================================================================
-	# 
+	#
 	#===========================================================================
 	def __init__(self, pid, name=None, desc=None, start=None, where=None, fnc=None):
 		printl("", self, "S")

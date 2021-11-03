@@ -27,6 +27,8 @@ from .__init__ import _ # _ is translation
 #===============================================================================
 # fictive setting for translation of returned strings from PlexServer
 #===============================================================================
+
+
 def _StringsForTransalation():
 	a = _("All")
 	a = _("All Movies")
@@ -59,4 +61,3 @@ def _StringsForTransalation():
 	a = _("Movies")
 	a = _("Shows")
 	a = _("Series")
-

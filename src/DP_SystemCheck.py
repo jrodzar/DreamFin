@@ -46,6 +46,8 @@ from .__init__ import getVersion, _ # _ is translation
 #===============================================================================
 #
 #===============================================================================
+
+
 class DPS_SystemCheck(Screen):
 
 	archVersion = None
@@ -57,7 +59,7 @@ class DPS_SystemCheck(Screen):
 
 		Screen.__init__(self, session)
 
-		self["actions"] = ActionMap(["ColorActions", "SetupActions" ],
+		self["actions"] = ActionMap(["ColorActions", "SetupActions"],
 		{
 		"ok": self.startSelection,
 		"cancel": self.cancel,
@@ -124,7 +126,7 @@ class DPS_SystemCheck(Screen):
 			self.checkForUpdate()
 		elif content == "revoke_cache":
 			revokeCacheFiles()
-			self.session.openWithCallback(self.close, MessageBox,_("Cache files successfully deleted."), MessageBox.TYPE_INFO)
+			self.session.openWithCallback(self.close, MessageBox, _("Cache files successfully deleted."), MessageBox.TYPE_INFO)
 		else:
 			self.package = content
 
@@ -141,7 +143,7 @@ class DPS_SystemCheck(Screen):
 		self.package = "python-pyopenssl"
 
 		if testInetConnectivity() and self.checkInstallationState(True):
-			printl( "Starting request", self, "D")
+			printl("Starting request", self, "D")
 
 			#conn = httplib.HTTPSConnection("api.github.com",timeout=10, port=443)
 			#conn.request(url="/repos/DonDavici/DreamPlex/tags", method="GET", headers=getUserAgentHeader())
@@ -167,15 +169,15 @@ class DPS_SystemCheck(Screen):
 
 			if latestVersion > installedVersion:
 				self.latestVersion = latestVersion
-				self.session.openWithCallback(self.startUpdate, MessageBox,_("Your current Version is " + str(installedVersion) + "\nUpdate to revision " + str(latestVersion) + " found!\n\nDo you want to update now?"), MessageBox.TYPE_YESNO)
+				self.session.openWithCallback(self.startUpdate, MessageBox, _("Your current Version is " + str(installedVersion) + "\nUpdate to revision " + str(latestVersion) + " found!\n\nDo you want to update now?"), MessageBox.TYPE_YESNO)
 
 			else:
 				if not silent:
-					self.session.openWithCallback(self.close, MessageBox,_("No update available"), MessageBox.TYPE_INFO)
+					self.session.openWithCallback(self.close, MessageBox, _("No update available"), MessageBox.TYPE_INFO)
 
 		else:
 			if not silent:
-				self.session.openWithCallback(self.close, MessageBox,_("No internet connection available or openssl is not installed!"), MessageBox.TYPE_INFO)
+				self.session.openWithCallback(self.close, MessageBox, _("No internet connection available or openssl is not installed!"), MessageBox.TYPE_INFO)
 
 		printl("", self, "C")
 
@@ -262,7 +264,7 @@ class DPS_SystemCheck(Screen):
 
 		printl("cmd: " + str(cmd), self, "D")
 
-		self.session.open(SConsole,"Excecuting command:", [cmd] , self.finishupdate)
+		self.session.open(SConsole, "Excecuting command:", [cmd], self.finishupdate)
 
 		printl("", self, "C")
 
@@ -343,7 +345,7 @@ class DPS_SystemCheck(Screen):
 	def executeInstallationCommand(self, command):
 		printl("", self, "S")
 
-		self.session.open(SConsole,"Excecuting command:", [command] , self.finishupdate)
+		self.session.open(SConsole, "Excecuting command:", [command], self.finishupdate)
 
 		printl("", self, "C")
 
@@ -353,7 +355,7 @@ class DPS_SystemCheck(Screen):
 	def cancel(self):
 		printl("", self, "S")
 
-		self.close(False,self.session)
+		self.close(False, self.session)
 
 		printl("", self, "C")
 
@@ -364,7 +366,7 @@ class DPS_SystemCheck(Screen):
 		printl("", self, "S")
 
 		time.sleep(2)
-		self.session.openWithCallback(self.e2restart, MessageBox,_("Enigma2 must be restarted!\nShould Enigma2 now restart?"), MessageBox.TYPE_YESNO)
+		self.session.openWithCallback(self.e2restart, MessageBox, _("Enigma2 must be restarted!\nShould Enigma2 now restart?"), MessageBox.TYPE_YESNO)
 
 		printl("", self, "C")
 

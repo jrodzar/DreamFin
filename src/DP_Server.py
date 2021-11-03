@@ -51,9 +51,11 @@ from .DPH_Singleton import Singleton
 #===============================================================================
 #
 #===============================================================================
+
+
 class DPS_Server(Screen, DPH_PlexScreen):
 
-	def __init__(self, session, what = None):
+	def __init__(self, session, what=None):
 		printl("", self, "S")
 
 		Screen.__init__(self, session)
@@ -63,7 +65,7 @@ class DPS_Server(Screen, DPH_PlexScreen):
 
 		self.guiElements = getGuiElements()
 
-		self["entryList"]= List(self.builEntryList(), True)
+		self["entryList"] = List(self.builEntryList(), True)
 		self["header"] = Label()
 		self["columnHeader"] = Label()
 
@@ -79,14 +81,14 @@ class DPS_Server(Screen, DPH_PlexScreen):
 		self["btn_blueText"] = Label()
 		self["btn_blue"] = Pixmap()
 
-		self["actions"] = ActionMap(["WizardActions","MenuActions","ShortcutActions"],
+		self["actions"] = ActionMap(["WizardActions", "MenuActions", "ShortcutActions"],
 			{
-			 "ok"	:	self.keyOk,
-			 "back"	:	self.keyClose,
-			 "red"	:	self.keyRed,
-			 "yellow":	self.keyYellow,
-			 "green":	self.keyGreen,
-			 "blue":	self.keyBlue,
+			 "ok": self.keyOk,
+			 "back": self.keyClose,
+			 "red": self.keyRed,
+			 "yellow": self.keyYellow,
+			 "green": self.keyGreen,
+			 "blue": self.keyBlue,
 			 }, -1)
 		self.what = what
 
@@ -134,7 +136,7 @@ class DPS_Server(Screen, DPH_PlexScreen):
 				text2 = serverConfig.myplexUsername.value
 			else:
 				text1 = "%d.%d.%d.%d" % tuple(serverConfig.ip.value)
-				text2 = "%d"% serverConfig.port.value
+				text2 = "%d" % serverConfig.port.value
 
 			active = str(serverConfig.state.value)
 
@@ -221,7 +223,7 @@ class DPS_Server(Screen, DPH_PlexScreen):
 		if sel is None:
 			return
 
-		printl("config selction: " +  str(sel), self, "D")
+		printl("config selction: " + str(sel), self, "D")
 		self.session.openWithCallback(self.updateList, DPS_ServerConfig, sel)
 
 		printl("", self, "C")
@@ -242,7 +244,7 @@ class DPS_Server(Screen, DPH_PlexScreen):
 		if serverConfig is None:
 			return
 
-		printl("config selction: " +  str(serverConfig), self, "D")
+		printl("config selction: " + str(serverConfig), self, "D")
 		self.session.open(DPS_Syncer, "sync", serverConfig)
 
 		printl("", self, "C")
@@ -263,7 +265,7 @@ class DPS_Server(Screen, DPH_PlexScreen):
 
 		client.stop_discovery()
 		serverList = client.getServerList()
-		printl("serverList: " + str(serverList),self, "D")
+		printl("serverList: " + str(serverList), self, "D")
 
 		menu = []
 		for server in serverList:
@@ -298,13 +300,15 @@ class DPS_Server(Screen, DPH_PlexScreen):
 #===============================================================================
 #
 #===============================================================================
+
+
 class DPS_ServerConfig(ConfigListScreen, Screen, DPH_PlexScreen):
 
 	useMappings = False
 	useHomeUsers = False
 	authenticated = False
 
-	def __init__(self, session, entry, data = None):
+	def __init__(self, session, entry, data=None):
 		printl("", self, "S")
 
 		Screen.__init__(self, session)
@@ -343,7 +347,7 @@ class DPS_ServerConfig(ConfigListScreen, Screen, DPH_PlexScreen):
 			if data is not None:
 				ipBlocks = data.get("server").split(".")
 				self.current.name.value = data.get("serverName")
-				self.current.ip.value = [int(ipBlocks[0]),int(ipBlocks[1]),int(ipBlocks[2]),int(ipBlocks[3])]
+				self.current.ip.value = [int(ipBlocks[0]), int(ipBlocks[1]), int(ipBlocks[2]), int(ipBlocks[3])]
 				self.current.port.value = int(data.get("port"))
 
 		else:
@@ -387,7 +391,7 @@ class DPS_ServerConfig(ConfigListScreen, Screen, DPH_PlexScreen):
 
 		if not self.authenticated:
 			if self.current.protectSettings.value:
-				self.session.openWithCallback(self.askForPin, InputBox, title=_("Please enter the pincode!") , type=Input.PIN)
+				self.session.openWithCallback(self.askForPin, InputBox, title=_("Please enter the pincode!"), type=Input.PIN)
 			else:
 				self.authenticated = True
 				self.createSetup()
@@ -410,7 +414,7 @@ class DPS_ServerConfig(ConfigListScreen, Screen, DPH_PlexScreen):
 				self.authenticated = True
 				self.createSetup()
 			else:
-				self.session.open(MessageBox,"The pin was wrong! Returning ...", MessageBox.TYPE_INFO)
+				self.session.open(MessageBox, "The pin was wrong! Returning ...", MessageBox.TYPE_INFO)
 				self.close()
 
 		printl("", self, "C")
@@ -421,7 +425,7 @@ class DPS_ServerConfig(ConfigListScreen, Screen, DPH_PlexScreen):
 	def createSetup(self):
 		printl("", self, "S")
 
-		separator = "".ljust(250,"_")
+		separator = "".ljust(250, "_")
 
 		self.cfglist = []
 		##
@@ -714,10 +718,10 @@ class DPS_ServerConfig(ConfigListScreen, Screen, DPH_PlexScreen):
 			if token:
 				self.current.myplexLocalToken.value = token
 				self.current.myplexLocalToken.save()
-				self.session.open(MessageBox,(_("Local Token:") + "\n%s \n" + _("for the user:") + "\n%s") % (token, self.current.myplexTokenUsername.value), MessageBox.TYPE_INFO)
+				self.session.open(MessageBox, (_("Local Token:") + "\n%s \n" + _("for the user:") + "\n%s") % (token, self.current.myplexTokenUsername.value), MessageBox.TYPE_INFO)
 			else:
 				response = self.plexInstance.getLastResponse()
-				self.session.open(MessageBox,(_("Error:") + "\n%s \n" + _("for the user:") + "\n%s") % (response, self.current.myplexTokenUsername.value), MessageBox.TYPE_INFO)
+				self.session.open(MessageBox, (_("Error:") + "\n%s \n" + _("for the user:") + "\n%s") % (response, self.current.myplexTokenUsername.value), MessageBox.TYPE_INFO)
 
 		printl("", self, "C")
 
@@ -733,10 +737,10 @@ class DPS_ServerConfig(ConfigListScreen, Screen, DPH_PlexScreen):
 		token = self.plexInstance.getNewMyPlexToken()
 
 		if token:
-			self.session.openWithCallback(self.saveNow, MessageBox,(_("myPlex Token:") + "\n%s \n" + _("for the user:") + "\n%s \n" + _("with the id:") + "\n%s") % (token, self.current.myplexTokenUsername.value, self.current.myplexId.value), MessageBox.TYPE_INFO)
+			self.session.openWithCallback(self.saveNow, MessageBox, (_("myPlex Token:") + "\n%s \n" + _("for the user:") + "\n%s \n" + _("with the id:") + "\n%s") % (token, self.current.myplexTokenUsername.value, self.current.myplexId.value), MessageBox.TYPE_INFO)
 		else:
 			response = self.plexInstance.getLastResponse()
-			self.session.openWithCallback(self.saveNow, MessageBox,(_("Error:") + "\n%s \n" + _("for the user:") + "\n%s") % (response, self.current.myplexTokenUsername.value), MessageBox.TYPE_INFO)
+			self.session.openWithCallback(self.saveNow, MessageBox, (_("Error:") + "\n%s \n" + _("for the user:") + "\n%s") % (response, self.current.myplexTokenUsername.value), MessageBox.TYPE_INFO)
 
 		printl("", self, "C")
 
@@ -754,4 +758,3 @@ class DPS_ServerConfig(ConfigListScreen, Screen, DPH_PlexScreen):
 		#self.session.open(MessageBox,(_("myPlex Token:") + "\n%s \n" + _("myPlex Localtoken:") + "\n%s \n"+ _("for the user:") + "\n%s") % (self.current.myplexToken.value, self.current.myplexLocalToken.value, self.current.myplexTokenUsername.value), MessageBox.TYPE_INFO)
 
 		printl("", self, "C")
-
