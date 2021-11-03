@@ -29,12 +29,12 @@ from Screens.Screen import Screen
 
 from Components.config import config
 
-from DP_ViewFactory import getViews
-from DP_View import DP_View
+from .DP_ViewFactory import getViews
+from .DP_View import DP_View
 
-from DPH_Singleton import Singleton
+from .DPH_Singleton import Singleton
 
-from __common__ import printl2 as printl
+from .__common__ import printl2 as printl
 
 #===============================================================================
 # 

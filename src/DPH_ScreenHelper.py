@@ -35,10 +35,10 @@ from Screens.Screen import Screen
 
 from skin import parseColor
 
-from DPH_Singleton import Singleton
-from DP_ViewFactory import translateValues
+from .DPH_Singleton import Singleton
+from .DP_ViewFactory import translateValues
 
-from __common__ import printl2 as printl, addNewScreen, closePlugin, getSkinResolution, getSkinHighlightedColor, getSkinNormalColor
+from .__common__ import printl2 as printl, addNewScreen, closePlugin, getSkinResolution, getSkinHighlightedColor, getSkinNormalColor
 
 #===============================================================================
 #

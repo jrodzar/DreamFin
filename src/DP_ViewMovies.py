@@ -22,10 +22,10 @@ You should have received a copy of the GNU General Public License
 #===============================================================================
 # IMPORT
 #===============================================================================
-from DP_View import DP_View
+from .DP_View import DP_View
 
-from __common__ import printl2 as printl, encodeThat
-from __init__ import _ # _ is translation
+from .__common__ import printl2 as printl, encodeThat
+from .__init__ import _ # _ is translation
 
 #===============================================================================
 # 

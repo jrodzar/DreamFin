@@ -22,7 +22,7 @@ You should have received a copy of the GNU General Public License
 #=================================
 #IMPORT
 #=================================
-from __init__ import _ # _ is translation
+from .__init__ import _ # _ is translation
 
 #===============================================================================
 # fictive setting for translation of returned strings from PlexServer

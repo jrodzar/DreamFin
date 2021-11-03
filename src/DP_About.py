@@ -28,9 +28,9 @@ from Components.config import config
 
 from Screens.Screen import Screen
 
-from __common__ import printl2 as printl, getVersion, getSkinAuthors
-from __init__ import _ # _ is translation
-from plugin import getHttpDeamonInformation
+from .__common__ import printl2 as printl, getVersion, getSkinAuthors
+from .__init__ import _ # _ is translation
+from .plugin import getHttpDeamonInformation
 
 #===============================================================================
 #

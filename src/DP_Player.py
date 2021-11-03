@@ -58,12 +58,12 @@ from Screens.InfoBarGenerics import InfoBarShowHide, \
 	InfoBarExtensions, InfoBarNotifications, \
 	InfoBarSubtitleSupport, InfoBarServiceErrorPopupSupport, InfoBarCueSheetSupport
 
-from DPH_Singleton import Singleton
-from DP_Summary import DreamplexPlayerSummary
-from DPH_ScreenHelper import DPH_ScreenHelper
+from .DPH_Singleton import Singleton
+from .DP_Summary import DreamplexPlayerSummary
+from .DPH_ScreenHelper import DPH_ScreenHelper
 
-from __common__ import printl2 as printl, convertSize, encodeThat, getOeVersion
-from __init__ import _ # _ is translation
+from .__common__ import printl2 as printl, convertSize, encodeThat, getOeVersion
+from .__init__ import _ # _ is translation
 
 
 # we need this to see the states for subtitles also in audioselction with yellow button

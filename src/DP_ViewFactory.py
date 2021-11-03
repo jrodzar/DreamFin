@@ -28,9 +28,9 @@ from Screens.MessageBox import MessageBox
 from Tools import Notifications
 from Components.config import config, configfile
 
-from DPH_Singleton import Singleton
+from .DPH_Singleton import Singleton
 
-from __common__ import printl2 as printl, getSkinDebugMode
+from .__common__ import printl2 as printl, getSkinDebugMode
 
 #===========================================================================
 #

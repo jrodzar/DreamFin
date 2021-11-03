@@ -34,11 +34,11 @@ from Screens.MessageBox import MessageBox
 from Screens.Screen import Screen
 from Screens.VirtualKeyBoard import VirtualKeyBoard
 
-from __common__ import printl2 as printl, checkXmlFile, getXmlContent, writeXmlContent
-from __init__ import _ # _ is translation
+from .__common__ import printl2 as printl, checkXmlFile, getXmlContent, writeXmlContent
+from .__init__ import _ # _ is translation
 
-from DP_PathSelector import DPS_PathSelector
-from DP_ViewFactory import getGuiElements
+from .DP_PathSelector import DPS_PathSelector
+from .DP_ViewFactory import getGuiElements
 
 #===============================================================================
 # import cProfile

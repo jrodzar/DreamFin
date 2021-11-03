@@ -31,11 +31,11 @@ from BaseHTTPServer import BaseHTTPRequestHandler
 
 from Components.config import config
 
-from DPH_Singleton import Singleton
-from DP_PlexLibrary import PlexLibrary
-from DPH_SubscriptionManager import SubscriptionManager
+from .DPH_Singleton import Singleton
+from .DP_PlexLibrary import PlexLibrary
+from .DPH_SubscriptionManager import SubscriptionManager
 
-from __common__ import printl2 as printl, getUUID, getVersion, getMyIp, getPlexHeaders, getOKMsg, getXMLHeader
+from .__common__ import printl2 as printl, getUUID, getVersion, getMyIp, getPlexHeaders, getOKMsg, getXMLHeader
 
 #===============================================================================
 #

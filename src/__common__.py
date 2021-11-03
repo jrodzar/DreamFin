@@ -35,7 +35,7 @@ from skin import loadSkin
 from Components.config import config
 from Components.AVSwitch import AVSwitch
 
-from DPH_Singleton import Singleton
+from .DPH_Singleton import Singleton
 
 #===============================================================================
 # import cProfile

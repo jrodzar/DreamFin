@@ -37,17 +37,17 @@ from Screens.ChoiceBox import ChoiceBox
 from Screens.InputBox import InputBox
 from Screens.Screen import Screen
 
-from __common__ import printl2 as printl
-from __init__ import initServerEntryConfig, _ # _ is translation
+from .__common__ import printl2 as printl
+from .__init__ import initServerEntryConfig, _ # _ is translation
 
-from DP_PlexLibrary import PlexLibrary
-from DP_Mappings import DPS_Mappings
-from DP_Users import DPS_Users
-from DP_Syncer import DPS_Syncer
-from DPH_PlexGdm import PlexGdm
-from DPH_ScreenHelper import DPH_PlexScreen
-from DP_ViewFactory import getGuiElements
-from DPH_Singleton import Singleton
+from .DP_PlexLibrary import PlexLibrary
+from .DP_Mappings import DPS_Mappings
+from .DP_Users import DPS_Users
+from .DP_Syncer import DPS_Syncer
+from .DPH_PlexGdm import PlexGdm
+from .DPH_ScreenHelper import DPH_PlexScreen
+from .DP_ViewFactory import getGuiElements
+from .DPH_Singleton import Singleton
 #===============================================================================
 #
 #===============================================================================
@@ -633,7 +633,7 @@ class DPS_ServerConfig(ConfigListScreen, Screen, DPH_PlexScreen):
 			config.plugins.dreamplex.entriescount.save()
 
 		#if self.current.machineIdentifier.value == "":
-		from DP_PlexLibrary import PlexLibrary
+		from .DP_PlexLibrary import PlexLibrary
 		self.plexInstance = Singleton().getPlexInstance(PlexLibrary(self.session, self.current))
 
 		machineIdentifiers = ""

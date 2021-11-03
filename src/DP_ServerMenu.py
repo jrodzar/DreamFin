@@ -34,17 +34,17 @@ from Screens.MessageBox import MessageBox
 from Screens.ChoiceBox import ChoiceBox
 from Screens.InputBox import InputBox
 
-from DPH_Singleton import Singleton
-from DPH_MovingLabel import DPH_HorizontalMenu
-from DP_HelperScreens import DPS_InputBox
-from DP_Syncer import DPS_Syncer
-from DPH_ScreenHelper import DPH_ScreenHelper, DPH_Screen, DPH_Filter, DPH_PlexScreen
-from DP_ViewFactory import getGuiElements
-from DP_Users import DPS_Users
+from .DPH_Singleton import Singleton
+from .DPH_MovingLabel import DPH_HorizontalMenu
+from .DP_HelperScreens import DPS_InputBox
+from .DP_Syncer import DPS_Syncer
+from .DPH_ScreenHelper import DPH_ScreenHelper, DPH_Screen, DPH_Filter, DPH_PlexScreen
+from .DP_ViewFactory import getGuiElements
+from .DP_Users import DPS_Users
 
-from __common__ import printl2 as printl, getLiveTv
-from __plugin__ import Plugin
-from __init__ import _ # _ is translation
+from .__common__ import printl2 as printl, getLiveTv
+from .__plugin__ import Plugin
+from .__init__ import _ # _ is translation
 
 #===============================================================================
 #

@@ -48,18 +48,18 @@ from enigma import ePicLoad
 from urllib import quote_plus
 from twisted.web.client import downloadPage
 
-from DP_Player import DP_Player
-from DP_Settings import DPS_Settings
-from DP_Server import DPS_Server
+from .DP_Player import DP_Player
+from .DP_Settings import DPS_Settings
+from .DP_Server import DPS_Server
 
-from DPH_StillPicture import StillPicture
-from DPH_Singleton import Singleton
-from DPH_ScreenHelper import DPH_ScreenHelper, DPH_MultiColorFunctions, DPH_Screen, DPH_Filter
-from DP_ViewFactory import getNoneDirectoryElements, getDefaultDirectoryElementsList, getGuiElements
+from .DPH_StillPicture import StillPicture
+from .DPH_Singleton import Singleton
+from .DPH_ScreenHelper import DPH_ScreenHelper, DPH_MultiColorFunctions, DPH_Screen, DPH_Filter
+from .DP_ViewFactory import getNoneDirectoryElements, getDefaultDirectoryElementsList, getGuiElements
 
-from __common__ import printl2 as printl, loadPicture, durationToTime, getLiveTv, encodeThat, getOeVersion, checkXmlFile, getXmlContent, getSkinResolution
-from __plugin__ import Plugin
-from __init__ import _ # _ is translation
+from .__common__ import printl2 as printl, loadPicture, durationToTime, getLiveTv, encodeThat, getOeVersion, checkXmlFile, getXmlContent, getSkinResolution
+from .__plugin__ import Plugin
+from .__init__ import _ # _ is translation
 
 #===========================================================================
 #
@@ -773,7 +773,7 @@ class DP_View(DPH_Screen, DPH_ScreenHelper, DPH_MultiColorFunctions, DPH_Filter)
 	def useForMappingHelper(self):
 		printl("", self, "S")
 		import string
-		from DP_Mappings import DPS_MappingsEntryList
+		from .DP_Mappings import DPS_MappingsEntryList
 
 		isWindowsLocation = False
 		remotePath = self["file"].getText()

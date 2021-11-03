@@ -30,7 +30,7 @@ from Components.Renderer.Renderer import Renderer
 from Components.ServiceEventTracker import ServiceEventTracker, InfoBarBase
 from Components.config import config
 
-from __common__ import printl2 as printl, getBoxInformation, getOeVersion
+from .__common__ import printl2 as printl, getBoxInformation, getOeVersion
 
 #===============================================================================
 #

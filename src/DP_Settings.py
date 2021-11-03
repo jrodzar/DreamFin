@@ -35,12 +35,12 @@ from Components.Pixmap import Pixmap
 from Screens.Screen import Screen
 from Screens.HelpMenu import HelpableScreen
 
-from __common__ import printl2 as printl
-from __init__ import _ # _ is translation
+from .__common__ import printl2 as printl
+from .__init__ import _ # _ is translation
 
-from DP_PathSelector import DPS_PathSelector
-from DPH_ScreenHelper import DPH_PlexScreen
-from DP_ViewFactory import getGuiElements
+from .DP_PathSelector import DPS_PathSelector
+from .DPH_ScreenHelper import DPH_PlexScreen
+from .DP_ViewFactory import getGuiElements
 
 #===============================================================================
 #

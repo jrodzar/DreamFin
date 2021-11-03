@@ -42,9 +42,9 @@ from Tools.Directories import fileExists, copyfile
 
 from Screens.Screen import Screen
 
-from __plugin__ import getPlugin, Plugin
-from __common__ import printl2 as printl, getXmlContent, getPlexHeader, encodeThat, getUUID, revokeCacheFiles
-from __init__ import _ # _ is translation
+from .__plugin__ import getPlugin, Plugin
+from .__common__ import printl2 as printl, getXmlContent, getPlexHeader, encodeThat, getUUID, revokeCacheFiles
+from .__init__ import _ # _ is translation
 
 #===============================================================================
 # import cProfile

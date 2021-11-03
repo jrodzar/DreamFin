@@ -24,8 +24,8 @@ You should have received a copy of the GNU General Public License
 from enigma import eTimer
 from Components.Label import MultiColorLabel
 from skin import parseColor
-from __common__ import printl2 as printl
-from DPH_Singleton import Singleton
+from .__common__ import printl2 as printl
+from .DPH_Singleton import Singleton
 
 class DPH_HorizontalMenu(object):
 	highlightedColor = "#e69405"

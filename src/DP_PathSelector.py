@@ -29,11 +29,11 @@ from Components.ActionMap import ActionMap
 from Components.FileList import FileList
 from Components.Label import Label
 
-from DP_ViewFactory import getGuiElements
-from DPH_ScreenHelper import DPH_PlexScreen
+from .DP_ViewFactory import getGuiElements
+from .DPH_ScreenHelper import DPH_PlexScreen
 
-from __common__ import printl2 as printl
-from __init__ import _ # _ is translation
+from .__common__ import printl2 as printl
+from .__init__ import _ # _ is translation
 
 #===========================================================================
 # 

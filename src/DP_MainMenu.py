@@ -31,22 +31,22 @@ from Components.config import config
 
 from Screens.MessageBox import MessageBox
 
-from DP_PlexLibrary import PlexLibrary
-from DP_SystemCheck import DPS_SystemCheck
-from DP_Settings import DPS_Settings
-from DP_Server import DPS_Server
-from DP_About import DPS_About
-from DP_ServerMenu import DPS_ServerMenu
-from DP_Syncer import DPS_Syncer
+from .DP_PlexLibrary import PlexLibrary
+from .DP_SystemCheck import DPS_SystemCheck
+from .DP_Settings import DPS_Settings
+from .DP_Server import DPS_Server
+from .DP_About import DPS_About
+from .DP_ServerMenu import DPS_ServerMenu
+from .DP_Syncer import DPS_Syncer
 
-from DPH_Singleton import Singleton
-from DPH_MovingLabel import DPH_HorizontalMenu
-from DPH_WOL import wake_on_lan
-from DPH_ScreenHelper import DPH_ScreenHelper, DPH_Screen
+from .DPH_Singleton import Singleton
+from .DPH_MovingLabel import DPH_HorizontalMenu
+from .DPH_WOL import wake_on_lan
+from .DPH_ScreenHelper import DPH_ScreenHelper, DPH_Screen
 
-from __common__ import printl2 as printl, testPlexConnectivity, testInetConnectivity, saveLiveTv
-from __plugin__ import Plugin
-from __init__ import _ # _ is translation
+from .__common__ import printl2 as printl, testPlexConnectivity, testInetConnectivity, saveLiveTv
+from .__plugin__ import Plugin
+from .__init__ import _ # _ is translation
 
 #===============================================================================
 #

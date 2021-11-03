@@ -12,11 +12,11 @@ except:
 
 from Components.config import config, configfile
 
-from DP_Player import DP_Player
+from .DP_Player import DP_Player
 from enigma import eTimer
 
-from __init__ import prepareEnvironment, startEnvironment, _ # _ is translation
-from __common__ import getUUID, saveLiveTv, getLiveTv, getOeVersion, getBoxResolution
+from .__init__ import prepareEnvironment, startEnvironment, _ # _ is translation
+from .__common__ import getUUID, saveLiveTv, getLiveTv, getOeVersion, getBoxResolution
 
 #===============================================================================
 # GLOBALS
@@ -40,7 +40,7 @@ def main(session, **kwargs):
 #
 #===========================================================================
 def DPS_MainMenu(*args, **kwargs):
-	import DP_MainMenu
+	from . import DP_MainMenu
 
  	# this loads the skin
 	startEnvironment()
@@ -79,7 +79,7 @@ def Autostart(reason, session=None, **kwargs):
 #
 #===========================================================================
 def startRemoteDeamon():
-	from DPH_RemoteListener import HttpDeamon
+	from .DPH_RemoteListener import HttpDeamon
 	global HttpDeamonThread
 	global HttpDeamonStarted
 

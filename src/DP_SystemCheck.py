@@ -39,9 +39,9 @@ from Screens.MessageBox import MessageBox
 from Screens.Screen import Screen
 from Screens.Console import Console as SConsole
 
-from __common__ import printl2 as printl, testInetConnectivity, getUserAgentHeader, getBoxArch, getOeVersion, revokeCacheFiles
+from .__common__ import printl2 as printl, testInetConnectivity, getUserAgentHeader, getBoxArch, getOeVersion, revokeCacheFiles
 
-from __init__ import getVersion, _ # _ is translation
+from .__init__ import getVersion, _ # _ is translation
 
 #===============================================================================
 #

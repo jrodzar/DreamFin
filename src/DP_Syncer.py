@@ -44,13 +44,13 @@ from Screens.Screen import Screen
 
 from Tools.Directories import fileExists
 
-from DP_PlexLibrary import PlexLibrary
-from DP_ViewFactory import getViews, getGuiElements
-from DPH_Singleton import Singleton
-from DPH_ScreenHelper import DPH_ScreenHelper, DPH_PlexScreen
+from .DP_PlexLibrary import PlexLibrary
+from .DP_ViewFactory import getViews, getGuiElements
+from .DPH_Singleton import Singleton
+from .DPH_ScreenHelper import DPH_ScreenHelper, DPH_PlexScreen
 
-from __common__ import printl2 as printl, isValidSize, encodeThat, getSkinResolution, getOeVersion
-from __init__ import _ # _ is translation
+from .__common__ import printl2 as printl, isValidSize, encodeThat, getSkinResolution, getOeVersion
+from .__init__ import _ # _ is translation
 
 #===========================================================================
 #

@@ -29,12 +29,12 @@ from threading import Thread
 
 from Components.config import config
 
-from DPH_PlexGdm import PlexGdm
-from DPH_RemoteHandler import RemoteHandler
-from DP_Syncer import ThreadQueue
-from DPH_SubscriptionManager import SubscriptionManager
+from .DPH_PlexGdm import PlexGdm
+from .DPH_RemoteHandler import RemoteHandler
+from .DP_Syncer import ThreadQueue
+from .DPH_SubscriptionManager import SubscriptionManager
 
-from __common__ import printl2 as printl, getMyIp
+from .__common__ import printl2 as printl, getMyIp
 
 #===============================================================================
 #

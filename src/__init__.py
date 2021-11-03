@@ -40,10 +40,10 @@ from Components.Language import language
 from Tools.Directories import resolveFilename, SCOPE_PLUGINS, SCOPE_SKIN, SCOPE_CURRENT_SKIN, SCOPE_LANGUAGE
 
 
-from DPH_Singleton import Singleton
-from DP_ViewFactory import getViews
+from .DPH_Singleton import Singleton
+from .DP_ViewFactory import getViews
 
-from __common__ import getVersion, registerPlexFonts, loadSkinParams, loadPlexSkin, checkPlexEnvironment, getBoxInformation ,printl2 as printl, getXmlContent, getBoxResolution, getSkinFolder, setSkinFolder, getSkinResolution
+from .__common__ import getVersion, registerPlexFonts, loadSkinParams, loadPlexSkin, checkPlexEnvironment, getBoxInformation ,printl2 as printl, getXmlContent, getBoxResolution, getSkinFolder, setSkinFolder, getSkinResolution
 
 #===============================================================================
 #
@@ -361,11 +361,11 @@ def loadPlexPlugins():
 	printl("", "__init__::loadPlexPlugins", "S")
 
 	# we have to load them here because they are not ready though
-	from DP_LibMovies import DP_LibMovies
-	from DP_LibShows import DP_LibShows
-	from DP_LibMusic import DP_LibMusic
-	from DP_LibMixed import DP_LibMixed
-	from __plugin__ import registerPlugin, Plugin
+	from .DP_LibMovies import DP_LibMovies
+	from .DP_LibShows import DP_LibShows
+	from .DP_LibMusic import DP_LibMusic
+	from .DP_LibMixed import DP_LibMixed
+	from .__plugin__ import registerPlugin, Plugin
 
 	printl("registering ... movies", "__init__::loadPlexPlugins", "D")
 	registerPlugin(Plugin(pid="movies", name=_("Movies"), start=DP_LibMovies, where=Plugin.MENU_MOVIES))

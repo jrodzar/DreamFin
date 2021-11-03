@@ -25,10 +25,10 @@ You should have received a copy of the GNU General Public License
 from Screens.InputBox import InputBox
 from Screens.Screen import Screen
 
-from DPH_ScreenHelper import DPH_ScreenHelper
+from .DPH_ScreenHelper import DPH_ScreenHelper
 
-from __common__ import printl2 as printl
-from __init__ import _ # _ is translation
+from .__common__ import printl2 as printl
+from .__init__ import _ # _ is translation
 
 #===============================================================================
 #

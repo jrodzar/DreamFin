@@ -51,7 +51,7 @@ import urllib2
 
 from Components.config import config
 
-from __common__ import printl2 as printl, getUUID, getBoxInformation, getVersion, getMyIp
+from .__common__ import printl2 as printl, getUUID, getBoxInformation, getVersion, getMyIp
 
 #===============================================================================
 #

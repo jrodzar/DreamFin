@@ -28,7 +28,7 @@ import httplib
 import traceback
 import string
 
-from __common__ import printl2 as printl, getUUID, timeToMillis, getPlexHeaders, getXMLHeader
+from .__common__ import printl2 as printl, getUUID, timeToMillis, getPlexHeaders, getXMLHeader
 
 #===========================================================================
 #
