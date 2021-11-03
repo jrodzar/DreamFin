@@ -24,7 +24,11 @@ You should have received a copy of the GNU General Public License
 #===============================================================================
 import re
 import threading
-import httplib
+try:
+	from http.client import HTTPConnection, HTTPSConnection
+except:
+	from httplib import HTTPConnection, HTTPSConnection
+
 import traceback
 import string
 
@@ -302,9 +306,9 @@ class RequestMgr:
 		conn = self.conns.get(protocol+host+str(port), False)
 		if not conn:
 			if protocol=="https":
-				conn = httplib.HTTPSConnection(host, port)
+				conn = HTTPSConnection(host, port)
 			else:
-				conn = httplib.HTTPConnection(host, port)
+				conn = HTTPConnection(host, port)
 		return conn
 
 	#===========================================================================
