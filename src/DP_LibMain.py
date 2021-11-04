@@ -23,8 +23,10 @@ You should have received a copy of the GNU General Public License
 # IMPORT
 #===============================================================================
 import os
-import cPickle as pickle
-
+try:
+	import cPickle as pickle
+except:
+	import pickle
 from Screens.Screen import Screen
 
 from Components.config import config

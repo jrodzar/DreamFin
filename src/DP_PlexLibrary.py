@@ -28,7 +28,10 @@ import sys
 import base64
 import hmac
 # import uuid
-import cPickle as pickle
+try:
+	import cPickle as pickle
+except:
+	import pickle
 
 from time import time
 

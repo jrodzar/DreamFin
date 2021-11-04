@@ -1,4 +1,4 @@
-<skins>
+<skin>
 	<!--DPS_MainMenu -->
 	<screen name="DPS_MainMenu" position="0,0" size="1280,720" title=" " backgroundColor="#ffffffff" flags="wfNoBorder">
 		<!-- background -->
@@ -843,4 +843,4 @@
 		</widget>
 </screen>
 
-</skins>
+</skin>

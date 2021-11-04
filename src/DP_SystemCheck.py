@@ -24,7 +24,7 @@ You should have received a copy of the GNU General Public License
 #=================================
 import sys
 import time
-import httplib
+#import httplib
 import ssl
 
 from os import system, popen
