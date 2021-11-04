@@ -28,6 +28,13 @@ global_session = None
 notifyWatcher = None
 notifyWatcherConn = None
 
+class GlobalVars:
+
+    def __init__(self):
+        self.lastKey = None
+
+globalvars = GlobalVars()
+
 #===============================================================================
 # main
 # Actions to take place when starting the plugin over extensions
@@ -116,7 +123,6 @@ def getHttpDeamonInformation():
 	return HttpDeamonThread.getDeamonState()
 
 
-lastKey = None
 #===========================================================================
 # msg as second params is needed -. do not remove even if it is not used
 # form outside!!!!
@@ -141,13 +147,12 @@ def gotThreadMsg(msg):
 			startNotifier()
 
 		elif command == "playMedia":
-			global lastKey
-			if data["currentKey"] != lastKey:
+			if data["currentKey"] != globalvars.lastKey:
 				startPlayback(data)
 			else:
 				print("dropping mediaplay command ...")
 
-			lastKey = data["currentKey"]
+			globalvars.lastKey = data["currentKey"]
 
 		elif command == "pause":
 			if isinstance(global_session.current_dialog, DP_Player):
@@ -178,8 +183,7 @@ def gotThreadMsg(msg):
 				global_session.current_dialog.setVolume(int(data["volume"]))
 
 		elif command == "stop":
-			global lastKey
-			lastKey = None
+			globalvars.lastKey = None
 			stopPlayback(restartLiveTv=True)
 
 		elif command == "addSubscriber":

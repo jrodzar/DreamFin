@@ -2837,7 +2837,7 @@ class PlexLibrary(Screen):
 
 		resp = urlopen(req)
 		if resp is None:
-			raise IOError, "No response from Server"
+			raise IOError("No response from Server")
 		urls = []
 		for line in resp:
 			if line[0] != '#':
