@@ -21,17 +21,15 @@ from .__common__ import getUUID, saveLiveTv, getLiveTv, getOeVersion, getBoxReso
 #===============================================================================
 # GLOBALS
 #===============================================================================
-HttpDeamonThread = None
-HttpDeamonThreadConn = None
-HttpDeamonStarted = False
-global_session = None
-notifyWatcher = None
-notifyWatcherConn = None
-
 class GlobalVars:
-
-    def __init__(self):
-        self.lastKey = None
+	def __init__(self):
+		self.lastKey = None
+		self.global_session = None
+		self.HttpDeamonThread = None
+		self.HttpDeamonThreadConn = None
+		self.HttpDeamonStarted = False
+		self.notifyWatcher = None
+		self.notifyWatcherConn = None
 
 globalvars = GlobalVars()
 
@@ -87,8 +85,8 @@ def Autostart(reason, session=None, **kwargs):
 		config.plugins.dreamplex.save()
 		configfile.save()
 
-		if config.plugins.dreamplex.remoteAgent.value and HttpDeamonStarted:
-			HttpDeamonThread.stopRemoteDeamon()
+		if config.plugins.dreamplex.remoteAgent.value and globalvars.HttpDeamonStarted:
+			globalvars.HttpDeamonThread.stopRemoteDeamon()
 
 #===========================================================================
 #
@@ -97,22 +95,19 @@ def Autostart(reason, session=None, **kwargs):
 
 def startRemoteDeamon():
 	from .DPH_RemoteListener import HttpDeamon
-	global HttpDeamonThread
-	global HttpDeamonStarted
 
-	HttpDeamonThread = HttpDeamon()
+	globalvars.HttpDeamonThread = HttpDeamon()
 
 	if getOeVersion() != "oe22":
-		HttpDeamonThread.PlayerDataPump.recv_msg.get().append(gotThreadMsg)
+		globalvars.HttpDeamonThread.PlayerDataPump.recv_msg.get().append(gotThreadMsg)
 	else:
-		global HttpDeamonThreadConn
-		HttpDeamonThreadConn = HttpDeamonThread.PlayerDataPump.recv_msg.connect(gotThreadMsg)
+		globalvars.HttpDeamonThreadConn = globalvars.HttpDeamonThread.PlayerDataPump.recv_msg.connect(gotThreadMsg)
 
-	HttpDeamonThread.prepareDeamon() # we just prepare. we are starting only on networkStart with HttpDeamonThread.setSession
-	HttpDeamonStarted = HttpDeamonThread.getDeamonState()[1]
+	globalvars.HttpDeamonThread.prepareDeamon() # we just prepare. we are starting only on networkStart with HttpDeamonThread.setSession
+	globalvars.HttpDeamonStarted = globalvars.HttpDeamonThread.getDeamonState()[1]
 
-	if HttpDeamonStarted:
-		HttpDeamonThread.setSession(global_session)
+	if globalvars.HttpDeamonStarted:
+		globalvars.HttpDeamonThread.setSession(globalvars.global_session)
 
 #===========================================================================
 #
@@ -120,7 +115,7 @@ def startRemoteDeamon():
 
 
 def getHttpDeamonInformation():
-	return HttpDeamonThread.getDeamonState()
+	return globalvars.HttpDeamonThread.getDeamonState()
 
 
 #===========================================================================
@@ -131,7 +126,7 @@ def getHttpDeamonInformation():
 
 
 def gotThreadMsg(msg):
-	msg = HttpDeamonThread.PlayerData.pop()
+	msg = globalvars.HttpDeamonThread.PlayerData.pop()
 
 	data = msg[0]
 	print("data ==>")
@@ -155,32 +150,32 @@ def gotThreadMsg(msg):
 			globalvars.lastKey = data["currentKey"]
 
 		elif command == "pause":
-			if isinstance(global_session.current_dialog, DP_Player):
-				global_session.current_dialog.pauseService()
+			if isinstance(globalvars.global_session.current_dialog, DP_Player):
+				globalvars.global_session.current_dialog.pauseService()
 
 		elif command == "play":
-			if isinstance(global_session.current_dialog, DP_Player):
-				global_session.current_dialog.unPauseService()
+			if isinstance(globalvars.global_session.current_dialog, DP_Player):
+				globalvars.global_session.current_dialog.unPauseService()
 
 		elif command == "skipNext":
-			global_session.current_dialog.playNextEntry()
+			globalvars.global_session.current_dialog.playNextEntry()
 
 		elif command == "skipPrevious":
-			global_session.current_dialog.playPreviousEntry()
+			globalvars.global_session.current_dialog.playPreviousEntry()
 
 		elif command == "stepForward":
-			global_session.current_dialog.seekFwd()
+			globalvars.global_session.current_dialog.seekFwd()
 
 		elif command == "stepBack":
-			global_session.current_dialog.seekBack()
+			globalvars.global_session.current_dialog.seekBack()
 
 		elif command == "seekTo":
 			offset = int(data["offset"]) * 90000
-			global_session.current_dialog.doSeek(offset)
+			globalvars.global_session.current_dialog.doSeek(offset)
 
 		elif command == "setVolume":
-			if isinstance(global_session.current_dialog, DP_Player):
-				global_session.current_dialog.setVolume(int(data["volume"]))
+			if isinstance(globalvars.global_session.current_dialog, DP_Player):
+				globalvars.global_session.current_dialog.setVolume(int(data["volume"]))
 
 		elif command == "stop":
 			globalvars.lastKey = None
@@ -194,20 +189,20 @@ def gotThreadMsg(msg):
 			uuid = data["uuid"]
 			commandID = data["commandID"]
 
-			HttpDeamonThread.addSubscriber(protocol, host, port, uuid, commandID)
+			globalvars.HttpDeamonThread.addSubscriber(protocol, host, port, uuid, commandID)
 			startNotifier()
 
 		elif command == "removeSubscriber":
 			print("remove subscriber")
 			uuid = data["uuid"]
 
-			HttpDeamonThread.removeSubscriber(uuid)
+			globalvars.HttpDeamonThread.removeSubscriber(uuid)
 			updateNotifier()
 
 		elif command == "updateCommandId":
 			uuid = data["uuid"]
 			commandID = data["commandID"]
-			HttpDeamonThread.updateCommandID(uuid, commandID)
+			globalvars.HttpDeamonThread.updateCommandID(uuid, commandID)
 
 		elif command == "idle":
 			pass
@@ -236,11 +231,11 @@ def startPlayback(data, stopPlaybackFirst=False):
 		stopPlayback()
 
 	# save liveTvData
-	saveLiveTv(global_session.nav.getCurrentlyPlayingServiceReference())
+	saveLiveTv(globalvars.global_session.nav.getCurrentlyPlayingServiceReference())
 
-	if not isinstance(global_session.current_dialog, DP_Player):
+	if not isinstance(globalvars.global_session.current_dialog, DP_Player):
 		# now we start the player
-		global_session.open(DP_Player, listViewList, currentIndex, libraryName, autoPlayMode, resumeMode, playbackMode, forceResume=forceResume, subtitleData=subtitleData, startedByRemotePlayer=True)
+		globalvars.global_session.open(DP_Player, listViewList, currentIndex, libraryName, autoPlayMode, resumeMode, playbackMode, forceResume=forceResume, subtitleData=subtitleData, startedByRemotePlayer=True)
 
 #===========================================================================
 #
@@ -249,9 +244,9 @@ def startPlayback(data, stopPlaybackFirst=False):
 
 def stopPlayback(restartLiveTv=False):
 
-	if isinstance(global_session.current_dialog, DP_Player):
-		global_session.current_dialog.leavePlayerConfirmed(True)
-		global_session.current_dialog.close((True,))
+	if isinstance(globalvars.global_session.current_dialog, DP_Player):
+		globalvars.global_session.current_dialog.leavePlayerConfirmed(True)
+		globalvars.global_session.current_dialog.close((True,))
 
 	if restartLiveTv:
 		restartLiveTvNow()
@@ -262,7 +257,7 @@ def stopPlayback(restartLiveTv=False):
 
 
 def restartLiveTvNow():
-	global_session.nav.playService(getLiveTv())
+	globalvars.global_session.nav.playService(getLiveTv())
 
 #===========================================================================
 #
@@ -270,17 +265,14 @@ def restartLiveTvNow():
 
 
 def startNotifier():
-	global notifyWatcher
 
-	notifyWatcher = eTimer()
-
+	globalvars.notifyWatcher = eTimer()
 	if getOeVersion() != "oe22":
-		notifyWatcher.callback.append(notifySubscribers)
+		globalvars.notifyWatcher.callback.append(notifySubscribers)
 	else:
-		global notifyWatcherConn
-		notifyWatcherConn = notifyWatcher.timeout.connect(notifySubscribers)
+		globalvars.notifyWatcherConn = globalvars.notifyWatcher.timeout.connect(notifySubscribers)
 
-	notifyWatcher.start(1000, False)
+	globalvars.notifyWatcher.start(1000, False)
 
 #===========================================================================
 #
@@ -288,14 +280,13 @@ def startNotifier():
 
 
 def updateNotifier():
-	if notifyWatcher is not None:
+	if globalvars.notifyWatcher is not None:
 		players = getPlayer()
 		if not players:
 			if getOeVersion() != "oe22":
-				notifyWatcher.stop()
+				globalvars.notifyWatcher.stop()
 			else:
-				global notifyWatcherConn
-				notifyWatcherConn = None
+				globalvars.notifyWatcherConn = None
 
 #===========================================================================
 #
@@ -304,10 +295,10 @@ def updateNotifier():
 
 def notifySubscribers():
 	players = getPlayer()
-	print("subscribers: " + str(HttpDeamonThread.getSubscribersList()))
+	print("subscribers: " + str(globalvars.HttpDeamonThread.getSubscribersList()))
 
 	if players:
-		HttpDeamonThread.notifySubscribers(players)
+		globalvars.HttpDeamonThread.notifySubscribers(players)
 
 #===========================================================================
 #
@@ -319,7 +310,7 @@ def getPlayer():
 
 	try:
 		ret = {}
-		ret = global_session.current_dialog.getPlayer()
+		ret = globalvars.global_session.current_dialog.getPlayer()
 	except:
 		pass
 
@@ -333,8 +324,7 @@ def getPlayer():
 def sessionStart(reason, **kwargs):
 
 	if "session" in kwargs:
-		global global_session
-		global_session = kwargs["session"]
+		globalvars.global_session = kwargs["session"]
 
 		if config.plugins.dreamplex.remoteAgent.value:
 			startRemoteDeamon()
