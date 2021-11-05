@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 """
 DreamPlex Plugin by DonDavici, 2012
+and jbleyel 2021
 
-https://github.com/DonDavici/DreamPlex
+Original -> https://github.com/oe-alliance/DreamPlex
+Fork -> https://github.com/oe-alliance/DreamPlex
 
 Some of the code is from other plugins:
 all credits to the coders :-)
@@ -30,7 +32,7 @@ from Components.Renderer.Renderer import Renderer
 from Components.ServiceEventTracker import ServiceEventTracker, InfoBarBase
 from Components.config import config
 
-from .__common__ import printl2 as printl, getBoxInformation, getOeVersion
+from .__common__ import printl2 as printl, getBoxInformation
 
 #===============================================================================
 #
@@ -64,30 +66,12 @@ class Showiframe(object):
 		printl("", self, "S")
 
 		# we append here to have ctype.so also for sh4 boxes
-		libsFolder = config.plugins.dreamplex.pluginfolderpath.value + "libs"
-		libname = ""
+		libsFolder = "/usr/libs" # config.plugins.dreamplex.pluginfolderpath.value + "libs"
+		libname = "libshowiframe.so.0"
+		sys.path.append(libsFolder)
 
-		if self.boxInformation[2] == "sh4":
-			sys.path.append(libsFolder)
-
-			try:
-				self.ctypes = __import__("_ctypes")
-				printl("self.ctypes import worked", self, "D")
-				libname = "libshowiframe.so.0.0.sh4"
-
-			except Exception as ex:
-				printl("self.ctypes import failed", self, "E")
-				printl("Exception(" + str(type(ex)) + "): " + str(ex), self, "E")
-				self.ctypes = None
-
-		else:
-			import _ctypes
-			self.ctypes = _ctypes
-			if self.boxInformation[3] == "oe16":
-				libname = "libshowiframe.so.0.0.oe16"
-
-			elif self.boxInformation[3] == "oe20":
-				libname = "libshowiframe.so.0.0.oe20"
+		import _ctypes
+		self.ctypes = _ctypes
 
 		printl("libname: " + str(libname), self, "D")
 		self.finishShowSinglePic = None
@@ -194,11 +178,7 @@ class StillPicture(Renderer, InfoBarBase):
 		self.showiframe = Showiframe()
 		self.session = session
 		self.poll_timer = eTimer()
-
-		if getOeVersion() != "oe22":
-			self.poll_timer.callback.append(self.poll)
-		else:
-			self.poll_timerConn = self.poll_timer.timeout.connect(self.poll)
+		self.poll_timer.callback.append(self.poll)
 
 		printl("", self, "C")
 

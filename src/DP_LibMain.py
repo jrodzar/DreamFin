@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 """
 DreamPlex Plugin by DonDavici, 2012
+and jbleyel 2021
 
-https://github.com/DonDavici/DreamPlex
+Original -> https://github.com/oe-alliance/DreamPlex
+Fork -> https://github.com/oe-alliance/DreamPlex
 
 Some of the code is from other plugins:
 all credits to the coders :-)
@@ -23,6 +25,8 @@ You should have received a copy of the GNU General Public License
 # IMPORT
 #===============================================================================
 import os
+
+from six import PY2
 try:
 	import cPickle as pickle
 except:
@@ -37,6 +41,7 @@ from .DP_View import DP_View
 from .DPH_Singleton import Singleton
 
 from .__common__ import printl2 as printl
+from . import defaultPluginFolderPath
 
 #===============================================================================
 #
@@ -80,8 +85,23 @@ class DP_LibMain(Screen):
 		printl("", self, "S")
 
 		viewParams = self._views[self.currentViewIndex][2]
-		m = __import__(self._views[self.currentViewIndex][1], globals(), locals(), [])
-		self.session.openWithCallback(self.onViewClosed, m.getViewClass(), self._libraryName, self.loadLibrary, viewParams)
+		if PY2:
+			m = __import__(self._views[self.currentViewIndex][1], globals(), locals(), [])
+			self.session.openWithCallback(self.onViewClosed, m.getViewClass(), self._libraryName, self.loadLibrary, viewParams)
+		else:
+			modulename = self._views[self.currentViewIndex][1]
+			if modulename == 'DP_ViewMovies':
+				from .DP_ViewMovies import DPS_ViewMovies
+				self.session.openWithCallback(self.onViewClosed, DPS_ViewMovies, self._libraryName, self.loadLibrary, viewParams)
+			elif modulename == 'DP_ViewShows':
+				from .DP_ViewShows import DPS_ViewShows
+				self.session.openWithCallback(self.onViewClosed, DPS_ViewShows, self._libraryName, self.loadLibrary, viewParams)
+			elif modulename == 'DP_ViewMusic':
+				from .DP_ViewMusic import DPS_ViewMusic
+				self.session.openWithCallback(self.onViewClosed, DPS_ViewMusic, self._libraryName, self.loadLibrary, viewParams)
+			elif modulename == 'DP_ViewMixed':
+				from .DP_ViewMixed import DPS_ViewMixed
+				self.session.openWithCallback(self.onViewClosed, DPS_ViewMixed, self._libraryName, self.loadLibrary, viewParams)
 
 		printl("", self, "C")
 
@@ -140,7 +160,7 @@ class DP_LibMain(Screen):
 
 		url = entryData["contentUrl"]
 
-		if entryData.has_key("source"):
+		if "source" in entryData:
 			try:
 				source = entryData["source"]
 				uuid = entryData["uuid"]
@@ -153,7 +173,7 @@ class DP_LibMain(Screen):
 
 		# in this case we do not use cache because there is no uuid and updated on information on this level
 		# maybe we find a way later and implement it than
-		if entryData.has_key("nextViewMode"):
+		if "nextViewMode" in entryData:
 			nextViewMode = entryData["nextViewMode"]
 			currentViewMode = entryData["currentViewMode"]
 			source = "plex"

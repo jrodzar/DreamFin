@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 """
 DreamPlex Plugin by DonDavici, 2012
+and jbleyel 2021
 
-https://github.com/DonDavici/DreamPlex
+Original -> https://github.com/oe-alliance/DreamPlex
+Fork -> https://github.com/oe-alliance/DreamPlex
 
 Some of the code is from other plugins:
 all credits to the coders :-)
@@ -86,11 +88,6 @@ config.plugins.dreamplex.showDetailsInListDetailType = ConfigSelection(default="
 config.plugins.dreamplex.boxName = ConfigText(default="DreamPlex", visible_width=50, fixed_size=False)
 config.plugins.dreamplex.lcd4linux = ConfigYesNo()
 config.plugins.dreamplex.exitFunction = ConfigSelection(default="0", choices=[("0", "Nothing"), ("1", "stop playback, return to library"), ("2", "search library while playing")])
-
-#if source != "ipk":
-#	config.plugins.dreamplex.showUpdateFunction = ConfigYesNo()
-#else:
-#	config.plugins.dreamplex.showUpdateFunction = ConfigYesNo(default=True)
 
 config.plugins.dreamplex.checkForUpdateOnStartup = ConfigYesNo()
 config.plugins.dreamplex.updateType = ConfigSelection(default="1", choices=[("1", "Stable"), ("2", "Beta")])

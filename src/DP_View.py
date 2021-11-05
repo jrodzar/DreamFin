@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 """
 DreamPlex Plugin by DonDavici, 2012
+and jbleyel 2021
 
-https://github.com/DonDavici/DreamPlex
+Original -> https://github.com/oe-alliance/DreamPlex
+Fork -> https://github.com/oe-alliance/DreamPlex
 
 Some of the code is from other plugins:
 all credits to the coders :-)
@@ -45,6 +47,8 @@ from Tools.Directories import fileExists
 from enigma import eServiceReference
 from enigma import ePicLoad
 
+from six import PY2
+
 try:
 	from urllib.parse import quote_plus
 except:
@@ -61,9 +65,9 @@ from .DPH_Singleton import Singleton
 from .DPH_ScreenHelper import DPH_ScreenHelper, DPH_MultiColorFunctions, DPH_Screen, DPH_Filter
 from .DP_ViewFactory import getNoneDirectoryElements, getDefaultDirectoryElementsList, getGuiElements
 
-from .__common__ import printl2 as printl, loadPicture, durationToTime, getLiveTv, encodeThat, getOeVersion, checkXmlFile, getXmlContent, getSkinResolution
+from .__common__ import printl2 as printl, loadPicture, durationToTime, getLiveTv, encodeThat, checkXmlFile, getXmlContent, getSkinResolution
 from .__plugin__ import Plugin
-from .__init__ import _ # _ is translation
+from .__init__ import _, defaultSkinsFolderPath # _ is translation
 
 #===========================================================================
 #
@@ -1894,9 +1898,11 @@ class DP_View(DPH_Screen, DPH_ScreenHelper, DPH_MultiColorFunctions, DPH_Filter)
 
 		self["title"].setText("Directory")
 		self["tag"].setText("Name:")
-		self["shortDescription"].setText(self.details.get("title", " ").encode('utf-8'))
+		title = self.details.get("title", " ")
+		title = title.encode('utf-8') if PY2 else title
+		self["shortDescription"].setText(title)
 
-		self.whatPoster = "/usr/lib/enigma2/python/Plugins/Extensions/DreamPlex/skins/" + config.plugins.dreamplex.skin.value + "/all/folder-fs8.png"
+		self.whatPoster = defaultSkinsFolderPath + "/" + config.plugins.dreamplex.skin.value + "/all/folder-fs8.png"
 		self["poster"].show()
 
 		printl("", self, "C")
@@ -2073,13 +2079,7 @@ class DP_View(DPH_Screen, DPH_ScreenHelper, DPH_MultiColorFunctions, DPH_Filter)
 		printl("showing backdrop with timeout ...", self, "D")
 		# we use this to give enough time to jump through the list before we start encoding pics and reading all the data that have to be switched = SPEEDUP :-)
 		self.refreshTimer = eTimer()
-
-		#if getOeVersion() != "oe22":
-			#self.refreshTimer.callback.append(self.showBackdrop)
-		#else:
-
-		self.refreshTimerConn = self.refreshTimer.timeout.connect(self.showBackdrop)
-
+		self.refreshTimer.callback.append(self.showBackdrop)
 		self.refreshTimer.start(500, True)
 
 		printl("", self, "C")
@@ -2167,7 +2167,8 @@ class DP_View(DPH_Screen, DPH_ScreenHelper, DPH_MultiColorFunctions, DPH_Filter)
 		functionList = []
 
 		for item in self.subtitlesList:
-			languageText = item.get('language').encode("utf-8", "")
+			languageText = item.get('language')
+			languageText = languageText.encode("utf-8", "") if PY2 else languageText
 			myFormat = item.get("myFormat", None)
 			if myFormat:
 				formatText = " (" + myFormat + ")"
@@ -2222,10 +2223,10 @@ class DP_View(DPH_Screen, DPH_ScreenHelper, DPH_MultiColorFunctions, DPH_Filter)
 		for item in audioList:
 
 			selected = item.get('selected', "")
+			name = item.get('language')
+			name = name.encode("utf-8", "") if PY2 else name
 			if selected == "1":
-				name = item.get('language').encode("utf-8", "") + " [Currently Enabled]"
-			else:
-				name = item.get('language').encode("utf-8", "")
+				name = name + " [Currently Enabled]"
 
 			stream_id = item.get('id', "")
 			languageCode = item.get('languageCode', "")
@@ -2386,10 +2387,8 @@ class DP_View(DPH_Screen, DPH_ScreenHelper, DPH_MultiColorFunctions, DPH_Filter)
 
 		if forceShow:
 			if self.whatPoster is not None:
-				if getOeVersion() != "oe22":
-					self.EXpicloadPoster.startDecode(self.whatPoster, 0, 0, False)
-				else:
-					self.EXpicloadPoster.startDecode(self.whatPoster, False)
+
+				self.EXpicloadPoster.startDecode(self.whatPoster, 0, 0, False)
 
 				ptr = self.EXpicloadPoster.getData()
 
@@ -2400,10 +2399,8 @@ class DP_View(DPH_Screen, DPH_ScreenHelper, DPH_MultiColorFunctions, DPH_Filter)
 			if fileExists(self.whatPoster):
 
 				if self.whatPoster is not None:
-					if getOeVersion() != "oe22":
-						self.EXpicloadPoster.startDecode(self.whatPoster, 0, 0, False)
-					else:
-						self.EXpicloadPoster.startDecode(self.whatPoster, False)
+
+					self.EXpicloadPoster.startDecode(self.whatPoster, 0, 0, False)
 
 					ptr = self.EXpicloadPoster.getData()
 
@@ -2426,10 +2423,8 @@ class DP_View(DPH_Screen, DPH_ScreenHelper, DPH_MultiColorFunctions, DPH_Filter)
 
 		if forceShow:
 			if self.whatBackdrop is not None:
-				if getOeVersion() != "oe22":
-					self.EXpicloadBackdrop.startDecode(self.whatBackdrop, 0, 0, False)
-				else:
-					self.EXpicloadBackdrop.startDecode(self.whatBackdrop, False)
+
+				self.EXpicloadBackdrop.startDecode(self.whatBackdrop, 0, 0, False)
 
 				ptr = self.EXpicloadBackdrop.getData()
 
@@ -2440,10 +2435,8 @@ class DP_View(DPH_Screen, DPH_ScreenHelper, DPH_MultiColorFunctions, DPH_Filter)
 			if fileExists(self.whatBackdrop):
 
 				if self.whatBackdrop is not None:
-					if getOeVersion() != "oe22":
-						self.EXpicloadBackdrop.startDecode(self.whatBackdrop, 0, 0, False)
-					else:
-						self.EXpicloadBackdrop.startDecode(self.whatBackdrop, False)
+
+					self.EXpicloadBackdrop.startDecode(self.whatBackdrop, 0, 0, False)
 
 					ptr = self.EXpicloadBackdrop.getData()
 
@@ -2493,7 +2486,8 @@ class DP_View(DPH_Screen, DPH_ScreenHelper, DPH_MultiColorFunctions, DPH_Filter)
 				printl("starting download", self, "D")
 				authHeader = self.plexInstance.get_hTokenForServer(self.details["server"])
 				printl("header: " + str(authHeader), self, "D")
-				downloadPage(str(download_url), self.whatPoster, headers=authHeader).addCallback(lambda _: self.showPoster(forceShow=True))
+				download_url = str(download_url) if PY2 else str(download_url).encode("UTF-8")
+				downloadPage(download_url, self.whatPoster, headers=authHeader).addCallback(lambda _: self.showPoster(forceShow=True))
 			else:
 				self.noPicData()
 		else:
@@ -2519,6 +2513,7 @@ class DP_View(DPH_Screen, DPH_ScreenHelper, DPH_MultiColorFunctions, DPH_Filter)
 				printl("starting download", self, "D")
 				authHeader = self.plexInstance.get_hTokenForServer(self.details["server"])
 				printl("header: " + str(authHeader), self, "D")
+				download_url = str(download_url) if PY2 else str(download_url).encode("UTF-8")
 				downloadPage(download_url, self.whatBackdrop, headers=authHeader).addCallback(lambda _: self.showBackdrop(forceShow=True))
 			else:
 				self.noPicData()

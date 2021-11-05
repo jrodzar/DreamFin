@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 """
 DreamPlex Plugin by DonDavici, 2012
+and jbleyel 2021
 
-https://github.com/DonDavici/DreamPlex
+Original -> https://github.com/oe-alliance/DreamPlex
+Fork -> https://github.com/oe-alliance/DreamPlex
 
 Some of the code is from other plugins:
 all credits to the coders :-)

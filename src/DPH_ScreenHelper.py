@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 """
 DreamPlex Plugin by DonDavici, 2012
+and jbleyel 2021
 
-https://github.com/DonDavici/DreamPlex
+Original -> https://github.com/oe-alliance/DreamPlex
+Fork -> https://github.com/oe-alliance/DreamPlex
 
 Some of the code is from other plugins:
 all credits to the coders :-)
@@ -34,6 +36,7 @@ from Components.config import NumericalTextInput
 from Screens.Screen import Screen
 
 from skin import parseColor
+from six import PY2
 
 from .DPH_Singleton import Singleton
 from .DP_ViewFactory import translateValues
@@ -469,7 +472,7 @@ class DPH_Filter(NumericalTextInput):
 
 		key = self.getKey(number)
 		if key is not None:
-			keyvalue = key.encode("utf-8")
+			keyvalue = key.encode("utf-8") if PY2 else key
 			if len(keyvalue) == 1:
 				self.onNumberKeyLastChar = keyvalue[0].upper()
 				self.onNumberKeyPopup(self.onNumberKeyLastChar, True)

@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 """
 DreamPlex Plugin by DonDavici, 2012
+and jbleyel 2021
 
-https://github.com/DonDavici/DreamPlex
+Original -> https://github.com/oe-alliance/DreamPlex
+Fork -> https://github.com/oe-alliance/DreamPlex
 
 Some of the code is from other plugins:
 all credits to the coders :-)
@@ -124,9 +126,6 @@ class DPS_Settings(Screen, ConfigListScreen, HelpableScreen, DPH_PlexScreen):
 		self.cfglist.append(getConfigListEntry(_("> Use Picture Cache"), config.plugins.dreamplex.usePicCache, _("Use this only if you do have enough space on your hdd drive or flash.")))
 		self.cfglist.append(getConfigListEntry(_("> Show Player Poster on external LCD"), config.plugins.dreamplex.lcd4linux, _("e.g. lcd4linux")))
 
-		if config.plugins.dreamplex.showUpdateFunction.value:
-			self.cfglist.append(getConfigListEntry(_("> Check for updates on startup"), config.plugins.dreamplex.checkForUpdateOnStartup, _("If activated on each start we will check if there is a new version depending on your update type.")))
-			self.cfglist.append(getConfigListEntry(_("> Updatetype"), config.plugins.dreamplex.updateType, _("Use Beta only if you really want to help with testing")))
 		# USERINTERFACE SETTINGS
 		self.cfglist.append(getConfigListEntry(_("Userinterface Settings ") + separator, config.plugins.dreamplex.about, _(" ")))
 		self.cfglist.append(getConfigListEntry(_("> Summerize Servers"), config.plugins.dreamplex.summerizeServers, _("Summerize servers in an additional menu step. (myPlex only)")))

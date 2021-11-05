@@ -4,6 +4,8 @@ PlexGDM.py - Version 0.2
 
 __author__ = 'DHJ (hippojay) <plex@h-jay.com>'
 
+(c)jbleyel 2021 -> python3 compat fixes
+
 This class implements the Plex GDM (G'Day Mate) protocol to discover
 local Plex Media Servers.  Also allow client registration into all local
 media servers.
@@ -47,6 +49,7 @@ import socket
 import struct
 import threading
 import time
+from six import PY2
 try:
 	from urllib.request import urlopen
 except:
@@ -258,7 +261,11 @@ class PlexGdm(object):
 		try:
 			# Send data to the multicast group
 			printl("Sending discovery messages: %s" % str(self.discover_message), self, "D")
-			sock.sendto(self.discover_message, self.discover_group)
+			discover_message = self.discover_message if PY2 else self.discover_message.encode()
+			print("discover_group")
+			print(self.discover_group)
+#			discover_group = self.discover_group if PY2 else self.discover_group.encode()
+			sock.sendto(discover_message, self.discover_group)
 
 			# Look for responses from all recipients
 			while True:
@@ -266,6 +273,8 @@ class PlexGdm(object):
 					data, server = sock.recvfrom(1024)
 					printl("Received data from %s" % str(server), self, "D")
 					printl("Data received is:\n %s" % str(data), self, "D")
+					server = server if PY2 else server.decode()
+					data = data if PY2 else data.decode()
 					returnData.append({'from': server,
 					                   'data': data})
 				except socket.timeout:

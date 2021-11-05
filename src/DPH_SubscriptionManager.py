@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 """
 DreamPlex Plugin by DonDavici, 2012
+and jbleyel 2021
 
-https://github.com/DonDavici/DreamPlex
+Original -> https://github.com/oe-alliance/DreamPlex
+Fork -> https://github.com/oe-alliance/DreamPlex
 
 Based on XBMCLocalProxy 0.1 Copyright 2011 Torben Gerkensmeyer
 Based on PleXBMC Remote Helper 0.2 Copyright 2013 Hippojay

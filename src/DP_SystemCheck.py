@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 """
 DreamPlex Plugin by DonDavici, 2012
+and jbleyel 2021
 
-https://github.com/DonDavici/DreamPlex
+Original -> https://github.com/oe-alliance/DreamPlex
+Fork -> https://github.com/oe-alliance/DreamPlex
 
 Some of the code is from other plugins:
 all credits to the coders :-)
@@ -39,9 +41,9 @@ from Screens.MessageBox import MessageBox
 from Screens.Screen import Screen
 from Screens.Console import Console as SConsole
 
-from .__common__ import printl2 as printl, testInetConnectivity, getUserAgentHeader, getOeVersion, revokeCacheFiles
+from .__common__ import printl2 as printl, revokeCacheFiles
 
-from .__init__ import getVersion, _ # _ is translation
+from .__init__ import _ # _ is translation
 
 #===============================================================================
 #
@@ -92,9 +94,6 @@ class DPS_SystemCheck(Screen):
 		vlist.append((_("Check mjpegtools intallation data."), "mjpegtools"))
 		vlist.append((_("Check curl installation data."), "curl"))
 
-#		if config.plugins.dreamplex.showUpdateFunction.value:
-#			vlist.append((_("Check for update."), "check_Update"))
-
 		vlist.append((_("Revoke cache files manually"), "revoke_cache"))
 
 		self["header"] = Label()
@@ -127,9 +126,7 @@ class DPS_SystemCheck(Screen):
 		# set package name for object
 		content = selection[1]
 
-		if content == "check_Update":
-			self.checkForUpdate()
-		elif content == "revoke_cache":
+		if content == "revoke_cache":
 			revokeCacheFiles()
 			self.session.openWithCallback(self.close, MessageBox, _("Cache files successfully deleted."), MessageBox.TYPE_INFO)
 		else:
@@ -137,52 +134,6 @@ class DPS_SystemCheck(Screen):
 
 			# first we check the state
 			self.checkInstallationState()
-
-		printl("", self, "C")
-
-	#===========================================================================
-	#
-	#===========================================================================
-	def checkForUpdate(self, silent=False):
-		printl("", self, "S")
-		self.package = "python-pyopenssl"
-
-		if testInetConnectivity() and self.checkInstallationState(True):
-			printl("Starting request", self, "D")
-
-			#conn = httplib.HTTPSConnection("api.github.com",timeout=10, port=443)
-			#conn.request(url="/repos/DonDavici/DreamPlex/tags", method="GET", headers=getUserAgentHeader())
-			#data = conn.getresponse()
-			#self.response = data.read()
-
-			#printl("response: " + str(self.response), self, "D")
-			starter = 19
-			#closer = self.response.find('",', 0, 50)
-			#printl("closer: " + str(closer), self, "D")
-			latestVersion = "2.1.3"
-			#latestVersion = self.response[starter:closer] # is a bit dirty but better than forcing users to install simplejson
-			printl("latestVersion: " + str(latestVersion), self, "D")
-
-			installedVersion = getVersion()
-			printl("InstalledVersion: " + str(installedVersion), self, "D")
-
-			isBeta = self.checkIfBetaVersion(latestVersion)
-			printl("isBeta: " + str(isBeta), self, "D")
-
-			if config.plugins.dreamplex.updateType.value == "1" and isBeta == True: # Stable
-				latestVersion = self.searchLatestStable()
-
-			if latestVersion > installedVersion:
-				self.latestVersion = latestVersion
-				self.session.openWithCallback(self.startUpdate, MessageBox, _("Your current Version is " + str(installedVersion) + "\nUpdate to revision " + str(latestVersion) + " found!\n\nDo you want to update now?"), MessageBox.TYPE_YESNO)
-
-			else:
-				if not silent:
-					self.session.openWithCallback(self.close, MessageBox, _("No update available"), MessageBox.TYPE_INFO)
-
-		else:
-			if not silent:
-				self.session.openWithCallback(self.close, MessageBox, _("No internet connection available or openssl is not installed!"), MessageBox.TYPE_INFO)
 
 		printl("", self, "C")
 
@@ -234,55 +185,12 @@ class DPS_SystemCheck(Screen):
 		return latestStabel
 
 	#===========================================================================
-	#
-	#===========================================================================
-	def startUpdate(self, answer):
-		printl("", self, "S")
-
-		if answer is True:
-			self.updateToLatestVersion()
-		else:
-			self.close()
-
-		printl("", self, "C")
-
-	#===========================================================================
-	#
-	#===========================================================================
-	def updateToLatestVersion(self):
-		printl("", self, "S")
-
-		if config.plugins.dreamplex.updateType.value == "1":
-			updateType = "Stable"
-		else:
-			updateType = "Beta"
-
-		if getOeVersion() != "oe22":
-			remoteUrl = "http://sourceforge.net/projects/dreamplex/files/" + str(updateType) + "/ipk/enigma2-plugin-extensions-dreamplex_" + str(self.latestVersion) + "_all.ipk/download"
-			cmd = "curl -o /tmp/temp.ipk -L -k " + str(remoteUrl) + " && opkg install --force-overwrite --force-depends /tmp/temp.ipk; rm /tmp/temp.ipk"
-			#bintray runing => cmd = "curl -o /tmp/temp.ipk -L -k https://bintray.com/artifact/download/dondavici/Dreambox/enigma2-plugin-extensions-dreamplex_" + str(self.latestVersion) + "_all.ipk && opkg install --force-overwrite --force-depends /tmp/temp.ipk; rm /tmp/temp.ipk"
-
-		else:
-			remoteUrl = "http://sourceforge.net/projects/dreamplex/files/" + str(updateType) + "/deb/enigma2-plugin-extensions-dreamplex_" + str(self.latestVersion) + "_all.deb/download"
-			cmd = "curl -o /tmp/temp.deb -L -k " + str(remoteUrl) + " && dpkg -i /tmp/temp.deb; apt-get update && apt-get -f install; rm /tmp/temp.deb"
-			#bintray runing => cmd = "curl -o /tmp/temp.deb -L -k https://bintray.com/artifact/download/dondavici/Dreambox/enigma2-plugin-extensions-dreamplex_" + str(self.latestVersion) + "_all.deb && dpkg -i /tmp/temp.deb; rm /tmp/temp.deb"
-
-		printl("cmd: " + str(cmd), self, "D")
-
-		self.session.open(SConsole, "Excecuting command:", [cmd], self.finishupdate)
-
-		printl("", self, "C")
-
-	#===========================================================================
 	# override is used to get bool as answer and not the plugin information
 	#===========================================================================
 	def checkInstallationState(self, override=False):
 		printl("", self, "S")
 
-		if getOeVersion() != "oe22":
-			command = "opkg status " + str(self.package)
-		else:
-			command = "dpkg -s " + str(self.package)
+		command = "opkg status " + str(self.package)
 
 		state = self.executeStateCheck(command, override)
 
@@ -325,17 +233,7 @@ class DPS_SystemCheck(Screen):
 		if confirm:
 			# User said 'Yes'
 
-			#if self.archVersion == "mipsel":
 			command = "opkg update; opkg install " + str(self.package)
-
-			#elif self.archVersion == "mips32el":
-			#	if getOeVersion() != "oe22":
-			#		command = "opkg update; opkg install " + str(self.package)
-			#	else:
-			#		command = "apt-get update && apt-get install " + str(self.package) + " --force-yes -y"
-
-			#else:
-			#	printl("something went wrong finding out the oe-version", self, "W")
 
 			self.executeInstallationCommand(command)
 		else:

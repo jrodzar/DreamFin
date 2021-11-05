@@ -1,4 +1,26 @@
 # -*- coding: utf-8 -*-
+"""
+DreamPlex Plugin by DonDavici, 2012
+and jbleyel 2021
+
+Original -> https://github.com/oe-alliance/DreamPlex
+Fork -> https://github.com/oe-alliance/DreamPlex
+
+Some of the code is from other plugins:
+all credits to the coders :-)
+
+DreamPlex Plugin is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 2 of the License, or
+(at your option) any later version.
+
+DreamPlex Plugin is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+"""
 #===============================================================================
 # IMPORT
 #===============================================================================
@@ -16,11 +38,13 @@ from .DP_Player import DP_Player
 from enigma import eTimer
 
 from .__init__ import prepareEnvironment, startEnvironment, _ # _ is translation
-from .__common__ import getUUID, saveLiveTv, getLiveTv, getOeVersion, getBoxResolution
+from .__common__ import getUUID, saveLiveTv, getLiveTv, getBoxResolution
 
 #===============================================================================
 # GLOBALS
 #===============================================================================
+
+
 class GlobalVars:
 	def __init__(self):
 		self.lastKey = None
@@ -30,6 +54,7 @@ class GlobalVars:
 		self.HttpDeamonStarted = False
 		self.notifyWatcher = None
 		self.notifyWatcherConn = None
+
 
 globalvars = GlobalVars()
 
@@ -98,10 +123,7 @@ def startRemoteDeamon():
 
 	globalvars.HttpDeamonThread = HttpDeamon()
 
-	if getOeVersion() != "oe22":
-		globalvars.HttpDeamonThread.PlayerDataPump.recv_msg.get().append(gotThreadMsg)
-	else:
-		globalvars.HttpDeamonThreadConn = globalvars.HttpDeamonThread.PlayerDataPump.recv_msg.connect(gotThreadMsg)
+	globalvars.HttpDeamonThread.PlayerDataPump.recv_msg.get().append(gotThreadMsg)
 
 	globalvars.HttpDeamonThread.prepareDeamon() # we just prepare. we are starting only on networkStart with HttpDeamonThread.setSession
 	globalvars.HttpDeamonStarted = globalvars.HttpDeamonThread.getDeamonState()[1]
@@ -267,11 +289,7 @@ def restartLiveTvNow():
 def startNotifier():
 
 	globalvars.notifyWatcher = eTimer()
-	if getOeVersion() != "oe22":
-		globalvars.notifyWatcher.callback.append(notifySubscribers)
-	else:
-		globalvars.notifyWatcherConn = globalvars.notifyWatcher.timeout.connect(notifySubscribers)
-
+	globalvars.notifyWatcher.callback.append(notifySubscribers)
 	globalvars.notifyWatcher.start(1000, False)
 
 #===========================================================================
@@ -283,10 +301,7 @@ def updateNotifier():
 	if globalvars.notifyWatcher is not None:
 		players = getPlayer()
 		if not players:
-			if getOeVersion() != "oe22":
-				globalvars.notifyWatcher.stop()
-			else:
-				globalvars.notifyWatcherConn = None
+			globalvars.notifyWatcher.stop()
 
 #===========================================================================
 #

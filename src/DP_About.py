@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 """
 DreamPlex Plugin by DonDavici, 2012
+and jbleyel 2021
 
-https://github.com/DonDavici/DreamPlex
+Original -> https://github.com/oe-alliance/DreamPlex
+Fork -> https://github.com/oe-alliance/DreamPlex
 
 Some of the code is from other plugins:
 all credits to the coders :-)
@@ -95,13 +97,14 @@ class DPS_About(Screen):
 		content += "Information\n\n"
 		content += "DreamPlex - a plex client for Enigma2 \n"
 		content += "Version: \t" + getVersion() + "\n\n"
-		content += "Author: \t DonDavici\n"
+		content += "Author: \t DonDavici and jbleyel\n"
 		content += "\n"
 		content += "Skin: \t" + getSkinAuthors() + "\n"
 		content += "\n"
 		content += "Contributors: \t wezhunter\n"
 		content += "\t andyblac \n"
 		content += "\t rossi2000 \n"
+		content += "\t jbleyel \n"
 		content += "\n\nIf you like my work you can buy me a beer :-) \n\ndondavici@gmail.com"
 
 		if config.plugins.dreamplex.remoteAgent.value:
@@ -117,14 +120,9 @@ class DPS_About(Screen):
 		printl("", self, "S")
 
 		content = "Visit the DreamPlex Wiki!"
-		content += "\n\n   https://github.com/DonDavici/DreamPlex/wiki"
-		content += "\n\n\nGet support in one of the following forums!"
-		content += "\n\n   http://www.i-have-a-dreambox.com"
-		content += "\n\n   http://www.vuplus-support.org/wbb3"
+		content += "\n\n https://github.com/DonDavici/DreamPlex/wiki"
 		content += "\n\n\nFind the git repository here!"
-		content += "\n\n   https://github.com/DonDavici/DreamPlex"
-		content += "\n\n\nDownload Dreamplex here!"
-		content += "\n\n   https://bintray.com/dondavici/Dreambox"
+		content += "\n\n   https://github.com/oe-alliance/DreamPlex"
 
 		printl("", self, "C")
 		return content

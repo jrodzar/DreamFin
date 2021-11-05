@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 """
 DreamPlex Plugin by DonDavici, 2012
+and jbleyel 2021
 
-https://github.com/DonDavici/DreamPlex
+Original -> https://github.com/oe-alliance/DreamPlex
+Fork -> https://github.com/oe-alliance/DreamPlex
 
 Some of the code is from other plugins:
 all credits to the coders :-)
@@ -29,6 +31,7 @@ import shutil
 import math
 import uuid
 import glob
+from six import PY2
 
 from enigma import addFont, loadPNG, loadJPG, getDesktop
 from skin import loadSkin
@@ -57,7 +60,7 @@ except ImportError:
 #===============================================================================
 # CONSTANTS
 #===============================================================================
-version = "2.1.6"
+version = "2.2.0"
 boxResoltion = None
 skinAuthors = ""
 skinResolution = "HD"
@@ -70,7 +73,6 @@ g_boxData = None
 screens = []
 liveTv = None
 g_uuid = None
-g_oeVersion = None
 g_archType = None
 STARTING_MESSAGE = ">>>>>>>>>>"
 CLOSING_MESSAGE = "<<<<<<<<<<"
@@ -712,11 +714,8 @@ def setBoxInformation():
 	# set arch for later processing
 	getBoxArch()
 
-	# set oe version
-	getOeVersion()
-
 	global g_boxData
-	g_boxData = (manu, model, g_archType, g_oeVersion)
+	g_boxData = (manu, model, g_archType)
 
 	printl2("", "__common__::_setBoxtype", "C")
 
@@ -778,48 +777,6 @@ def setBoxArch():
 	g_archType = archType
 
 	printl2("", "__common__::setBoxArch", "C")
-
-#===============================================================================
-#
-#===============================================================================
-
-
-def getOeVersion():
-	printl2("", "__common__::getOeVersion", "S")
-
-	if g_oeVersion is None:
-		setOeVersion()
-
-	printl2("", "__common__::getOeVersion", "C")
-	return g_oeVersion
-
-#===============================================================================
-#
-#===============================================================================
-
-
-def setOeVersion():
-	printl2("", "__common__::getBoxArch", "S")
-
-	oeVersion = "unknown"
-
-	if (2, 6, 8) > sys.version_info > (2, 6, 6):
-		oeVersion = "oe16"
-
-	if sys.version_info > (2, 7, 0):
-		oeVersion = "oe20"
-
-		# check for new oe2.2
-		try:
-			from enigma import eMediaDatabase
-			oeVersion = "oe22"
-		except:
-			pass
-
-	global g_oeVersion
-	g_oeVersion = oeVersion
-
-	printl2("", "__common__::getBoxArch", "C")
 
 #===============================================================================
 #
@@ -1195,10 +1152,12 @@ def getUserAgentHeader(asDict=True):
 
 def encodeThat(stringToEncode):
 	#printl2("", "__common__::encodeThat", "S")
-	try:
-		encodedString = stringToEncode.encode('utf-8', "ignore")
-	except:
-		encodedString = stringToEncode
+	if PY2:
+		try:
+			encodedString = stringToEncode.encode('utf-8', "ignore")
+		except:
+			encodedString = stringToEncode
+	encodedString = stringToEncode
 
 	#printl2("", "__common__::encodeThat", "C")
 	return encodedString

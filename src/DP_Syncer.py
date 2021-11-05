@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 """
 DreamPlex Plugin by DonDavici, 2012
+and jbleyel 2021
 
-https://github.com/DonDavici/DreamPlex
+Original -> https://github.com/oe-alliance/DreamPlex
+Fork -> https://github.com/oe-alliance/DreamPlex
 
 Some of the code is from other plugins:
 all credits to the coders :-)
@@ -28,6 +30,7 @@ from enigma import eTimer, ePythonMessagePump, eConsoleAppContainer
 from threading import Thread
 from threading import Lock
 from time import sleep
+import traceback
 
 from Screens.MessageBox import MessageBox
 from Tools import Notifications
@@ -53,7 +56,7 @@ from .DP_ViewFactory import getViews, getGuiElements
 from .DPH_Singleton import Singleton
 from .DPH_ScreenHelper import DPH_ScreenHelper, DPH_PlexScreen
 
-from .__common__ import printl2 as printl, isValidSize, encodeThat, getSkinResolution, getOeVersion
+from .__common__ import printl2 as printl, isValidSize, encodeThat, getSkinResolution
 from .__init__ import _ # _ is translation
 
 #===========================================================================
@@ -409,12 +412,9 @@ class MediaSyncerInfo(object):
 
 		if not self.running:
 			self.backgroundMediaSyncer = BackgroundMediaSyncer()
-			if getOeVersion() != "oe22" and getOeVersion() != "oe25":
-				self.backgroundMediaSyncer.MessagePump.recv_msg.connect(self.gotThreadMsg)
-				self.backgroundMediaSyncer.ProgressPump.recv_msg.connect(self.gotThreadProgressMsg)
-			else:
-				self.backgroundMediaSyncerConn = self.backgroundMediaSyncer.MessagePump.recv_msg.connect(self.gotThreadMsg)
-				self.backgroundMediaSyncerConn = self.backgroundMediaSyncer.ProgressPump.recv_msg.connect(self.gotThreadProgressMsg)
+
+			self.backgroundMediaSyncer.MessagePump.recv_msg.get().append(self.gotThreadMsg)
+			self.backgroundMediaSyncer.ProgressPump.recv_msg.get().append(self.gotThreadProgressMsg)
 
 			self.backgroundMediaSyncer.setMode(self.mode)
 
@@ -440,10 +440,7 @@ class MediaSyncerInfo(object):
 
 		if msg[0] == THREAD_FINISHED:
 			# clean up
-			if getOeVersion() != "oe22":
-				self.backgroundMediaSyncer.MessagePump.recv_msg.get().remove(self.gotThreadMsg)
-			else:
-				self.backgroundMediaSyncerConn = None
+			self.backgroundMediaSyncer.MessagePump.recv_msg.get().remove(self.gotThreadMsg)
 
 			self.callback = None
 			#self.backgroundMediaSyncer = None # this throws a green screen. dont know why
@@ -1013,7 +1010,7 @@ class BackgroundMediaSyncer(Thread):
 	#
 	#===========================================================================
 	def cylceThroughLibrary(self, dryRun=True):
-		printl("", self, "S")
+		printl("cylceThroughLibrary", self, "S")
 
 		for section in self.sectionList:
 			# interupt if needed

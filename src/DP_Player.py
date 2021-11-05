@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 """
 DreamPlex Plugin by DonDavici, 2012
+and jbleyel 2021
 
-https://github.com/DonDavici/DreamPlex
+Original -> https://github.com/oe-alliance/DreamPlex
+Fork -> https://github.com/oe-alliance/DreamPlex
 
 Some of the code is from other plugins:
 all credits to the coders :-)
@@ -62,7 +64,7 @@ from .DPH_Singleton import Singleton
 from .DP_Summary import DreamplexPlayerSummary
 from .DPH_ScreenHelper import DPH_ScreenHelper
 
-from .__common__ import printl2 as printl, convertSize, encodeThat, getOeVersion
+from .__common__ import printl2 as printl, convertSize, encodeThat
 from .__init__ import _ # _ is translation
 
 
@@ -233,7 +235,7 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 		self.EXpicloadPoster = ePicLoad()
 
 		# it will stop up/down/movielist buttons opening standard movielist whilst playing movie in plex
-		if self.has_key('MovieListActions'):
+		if "MovieListActions" in self:
 			self["MovieListActions"].setEnabled(False)
 
 		self.__event_tracker = ServiceEventTracker(screen=self, eventmap={
@@ -265,7 +267,7 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 	def __evUpdatedInfo(self):
 		if self.resume and self.resumeStamp is not None and self.resumeStamp > 0.0:
 			self.seekwatcherThread = eTimer()
-			self.seekwatcherThread_conn = self.seekwatcherThread.timeout.connect(self.seekWatcher)
+			self.seekwatcherThread.callback.append(self.seekWatcher)
 			self.seekwatcherThread.start(900, False)
 			return
 
@@ -502,10 +504,7 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 		if self.whatPoster is None:
 			self.buildPosterData()
 
-		#if getOeVersion() != "oe22":
-		#	self.EXpicloadPoster.startDecode(self.whatPoster,0,0,False)
-		#else:
-			self.EXpicloadPoster.startDecode(self.whatPoster, False)
+		self.EXpicloadPoster.startDecode(self.whatPoster, 0, 0, False)
 
 		self.ptr = self.EXpicloadPoster.getData()
 
@@ -640,6 +639,7 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 		self.resume = resume
 		#if resume == True and self.resumeStamp is not None and self.resumeStamp > 0.0:
 		#	self.seekwatcherThread = eTimer()
+		#	self.seekwatcherThread.callback.append(self.seekWatcher)
 		#	self.seekwatcherThread_conn = self.seekwatcherThread.timeout.connect(self.seekWatcher)
 		#	self.seekwatcherThread.start(990,False)
 
@@ -672,11 +672,7 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 		printl("", self, "S")
 
 		self.subtitleWatcher = eTimer()
-
-		if getOeVersion() != "oe22":
-			self.subtitleWatcher.callback.append(self.subtitleChecker)
-		else:
-			self.subtitleWatcherConn = self.subtitleWatcher.timeout.connect(self.subtitleChecker)
+		self.subtitleWatcher.callback.append(self.subtitleChecker)
 
 		printl("", self, "C")
 
@@ -701,7 +697,7 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 					selected = ""
 
 					if x[4] != "und":
-						if LanguageCodes.has_key(x[4]):
+						if x[4] in LanguageCodes:
 							myLanguage = LanguageCodes[x[4]][0]
 						else:
 							myLanguage = x[4]
@@ -722,7 +718,7 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 
 					myLanguageFromPlex = self.subtitleData["languageCode"]
 
-					if LanguageCodes.has_key(myLanguageFromPlex):
+					if myLanguageFromPlex in LanguageCodes:
 						myLanguageFromPlex = LanguageCodes[myLanguageFromPlex][0]
 
 					printl("myLanguage: " + str(myLanguage) + " / myLanguageFromPlex: " + str(myLanguageFromPlex), self, "D")
@@ -785,11 +781,7 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 		printl("", self, "S")
 
 		self.timelineWatcher = eTimer()
-
-		#if getOeVersion() != "oe22":
-			#self.timelineWatcher.callback.append(self.updateTimeline)
-		#else:
-		self.timelineWatcherConn = self.timelineWatcher.timeout.connect(self.updateTimeline)
+		self.timelineWatcher.callback.append(self.updateTimeline)
 
 		if self.multiUserServer:
 			printl("we are a multiuser server", self, "D")
@@ -805,12 +797,7 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 
 		if self.playbackType == "1" and self.universalTranscoder:
 			self.transcoderHeartbeat = eTimer()
-
-			if getOeVersion() != "oe22":
-				self.transcoderHeartbeat.callback.append(self.keepTranscoderAlive)
-			else:
-				self.transcoderHeartbeatConn = self.transcoderHeartbeat.timeout.connect(self.keepTranscoderAlive)
-
+			self.transcoderHeartbeat.callback.append(self.keepTranscoderAlive)
 			self.transcoderHeartbeat.start(10000, False)
 
 		if self.timelineWatcher is not None:
@@ -1153,10 +1140,7 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 
 		# we destroy here all variables to be sure that they are away
 		if self.timelineWatcher is not None:
-			if getOeVersion() != "oe22":
-				self.timelineWatcher.stop()
-			else:
-				self.timelineWatcherConn = None
+			self.timelineWatcher.stop()
 
 		# we stop playback here
 		self.session.nav.stopService()

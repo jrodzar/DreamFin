@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 """
 DreamPlex Plugin by DonDavici, 2012
+and jbleyel 2021
 
-https://github.com/DonDavici/DreamPlex
+Original -> https://github.com/oe-alliance/DreamPlex
+Fork -> https://github.com/oe-alliance/DreamPlex
 
 special thx to hippojay for his great work in plexbmc
 which was the the base for this lib :-)
@@ -27,6 +29,8 @@ import socket
 import sys
 import base64
 import hmac
+import traceback
+from six import PY2
 # import uuid
 try:
 	import cPickle as pickle
@@ -57,7 +61,7 @@ from Screens.Screen import Screen
 
 from .__plugin__ import getPlugin, Plugin
 from .__common__ import printl2 as printl, getXmlContent, getPlexHeader, encodeThat, getUUID, revokeCacheFiles
-from .__init__ import _ # _ is translation
+from . import _, defaultPluginFolderPath # _ is translation
 
 #===============================================================================
 # import cProfile
@@ -114,7 +118,7 @@ class PlexLibrary(Screen):
 	g_skipmetadata = "false" # best understanding when looking getMoviesfromsection
 	g_skipmediaflags = "false" # best understanding when looking getMoviesfromsection
 	g_skipimages = "false"
-	g_loc = "/usr/lib/enigma2/python/Plugins/Extensions/DreamPlex" # homeverzeichnis
+	g_loc = defaultPluginFolderPath[:-1] # homeverzeichnis
 	g_myplex_username = ""
 	g_myplex_password = ""
 	serverConfig_myplexToken = ""
@@ -281,7 +285,7 @@ class PlexLibrary(Screen):
 	#
 	#============================================================================
 	def getAllSections(self, myFilter=None, serverFilterActive=False):
-		printl("", self, "S")
+		printl("getAllSections", self, "S")
 		printl("myFilter: " + str(myFilter), self, "D")
 
 		fullList = []
@@ -383,7 +387,9 @@ class PlexLibrary(Screen):
 							if "serverName" in entryData:
 								detail = " \n(" + str(entryData['serverName']) + ")"
 
-					entryName = _(entryData.get('title').encode('utf-8')) + detail
+					title = entryData.get('title')
+					title = title.encode('utf-8') if PY2 else title
+					entryName = _(title) + detail
 
 					if entryData.get('type') == 'show':
 						printl("_MODE_TVSHOWS detected", self, "D")
@@ -393,7 +399,7 @@ class PlexLibrary(Screen):
 						if self.g_useFilterSections:
 							fullList.append((entryName, Plugin.MENU_FILTER, "showEntry", entryData))
 						else:
-							fullList.append((_(entryData.get('title').encode('utf-8')), getPlugin("tvshows", Plugin.MENU_TVSHOWS), "showEntry", entryData))
+							fullList.append((_(title), getPlugin("tvshows", Plugin.MENU_TVSHOWS), "showEntry", entryData))
 
 					elif entryData.get('type') == 'movie':
 						printl("_MODE_MOVIES detected", self, "D")
@@ -403,7 +409,7 @@ class PlexLibrary(Screen):
 						if self.g_useFilterSections:
 							fullList.append((entryName, Plugin.MENU_FILTER, "movieEntry", entryData))
 						else:
-							fullList.append((_(entryData.get('title').encode('utf-8')), getPlugin("movies", Plugin.MENU_MOVIES), "movieEntry", entryData))
+							fullList.append((_(title), getPlugin("movies", Plugin.MENU_MOVIES), "movieEntry", entryData))
 
 					elif entryData.get('type') == 'artist':
 						printl("_MODE_ARTISTS detected", self, "D")
@@ -462,11 +468,11 @@ class PlexLibrary(Screen):
 		printl("incomingEntryData: " + str(incomingEntryData), self, "D")
 
 		# we need this for cache mechanism
-		if incomingEntryData.has_key("uuid"):
+		if "uuid" in incomingEntryData:
 			printl("we have a uuid ...", self, "D")
 			self.currentUuid = incomingEntryData["uuid"]
 
-		if incomingEntryData.has_key("type"):
+		if "type" in incomingEntryData:
 			printl("we have a type ...", self, "D")
 			self.type = incomingEntryData["type"]
 
@@ -489,17 +495,20 @@ class PlexLibrary(Screen):
 				entryData["hasPromptTag"] = entryData.get("prompt", False)
 				entryData["type"] = incomingEntryData["type"]
 
+				title = entryData.get('title')
+				title = title.encode('utf-8') if PY2 else title
+
 				if entryData["hasSecondaryTag"]: #means that the next answer is a filter
 					entryData["contentUrl"] = incomingEntryData["contentUrl"] + "/" + entryData["key"]
 
-					fullList.append((_(entryData.get('title').encode('utf-8')), Plugin.MENU_FILTER, "showFilter", entryData))
+					fullList.append((_(title), Plugin.MENU_FILTER, "showFilter", entryData))
 
 				else:
 					entryData["contentUrl"] = incomingEntryData["contentUrl"] + "/" + entryData["key"]
 
 					if config.plugins.dreamplex.useCache.value:
 						# we set this here now to have this information later
-						if self.g_sectionCache.has_key(self.currentUuid):
+						if self.currentUuid in self.g_sectionCache:
 							entryData["source"] = self.g_sectionCache[self.currentUuid]["source"]
 						else:
 							entryData["source"] = "plex"
@@ -508,13 +517,13 @@ class PlexLibrary(Screen):
 						entryData["type"] = self.type
 
 					if incomingEntryData["type"] == 'show' or incomingEntryData["type"] == 'episode':
-						fullList.append((_(entryData.get('title').encode('utf-8')), getPlugin("tvshows", Plugin.MENU_TVSHOWS), "showEntry", entryData))
+						fullList.append((_(title), getPlugin("tvshows", Plugin.MENU_TVSHOWS), "showEntry", entryData))
 
 					elif incomingEntryData["type"] == 'movie':
-						fullList.append((_(entryData.get('title').encode('utf-8')), getPlugin("movies", Plugin.MENU_MOVIES), "movieEntry", entryData))
+						fullList.append((_(title), getPlugin("movies", Plugin.MENU_MOVIES), "movieEntry", entryData))
 
 					elif incomingEntryData["type"] == 'artist':
-						fullList.append((_(entryData.get('title').encode('utf-8')), getPlugin("music", Plugin.MENU_MUSIC), "musicEntry", entryData))
+						fullList.append((_(title), getPlugin("music", Plugin.MENU_MUSIC), "musicEntry", entryData))
 
 					# elif incomingEntryData["type"] == 'photo':
 					# 	printl( "_MODE_PHOTOS detected", self, "D")
@@ -1366,7 +1375,7 @@ class PlexLibrary(Screen):
 
 			authHeaderPartTwo = getPlexHeader(self.g_sessionID)
 
-			self.authHeader = dict(authHeaderPartOne.items() + authHeaderPartTwo.items())
+			self.authHeader = dict(list(authHeaderPartOne.items()) + list(authHeaderPartTwo.items()))
 
 			#printl("header: " + str(self.authHeader), self, "D")
 			conn.request(myType, urlPath, headers=self.authHeader)
@@ -1413,6 +1422,7 @@ class PlexLibrary(Screen):
 			return False
 
 		except Exception as ex:
+			traceback.print_exc()
 			printl("error: " + str(ex), self, "D")
 
 	#========================================================================
@@ -1627,7 +1637,7 @@ class PlexLibrary(Screen):
 
 		tree = self.getStreamDataById(server, myId)
 
-		fromParts = tree.getiterator('Part')
+		fromParts = tree.getiterator('Part') if PY2 else tree.iter('Part')
 		partitem = None
 		#Get the Parts info for media type and source selection
 		for part in fromParts:
@@ -1636,7 +1646,7 @@ class PlexLibrary(Screen):
 			except:
 				pass
 
-		tags = tree.getiterator('Stream')
+		tags = tree.getiterator('Stream') if PY2 else tree.iter('Stream')
 
 		printl("Part Item: " + str(partitem), self, "I")
 
@@ -1683,7 +1693,7 @@ class PlexLibrary(Screen):
 
 		tree = self.getStreamDataById(server, myId)
 
-		fromParts = tree.getiterator('Part')
+		fromParts = tree.getiterator('Part') if PY2 else tree.iter('Part')
 		partitem = None
 		#Get the Parts info for media type and source selection
 		for part in fromParts:
@@ -1692,7 +1702,7 @@ class PlexLibrary(Screen):
 			except:
 				pass
 
-		tags = tree.getiterator('Stream')
+		tags = tree.getiterator('Stream') if PY2 else tree.iter('Stream')
 
 		subtitle = {'id': 0,
 		                'language': "None",
@@ -1760,7 +1770,7 @@ class PlexLibrary(Screen):
 
 		tree = self.getStreamDataById(server, myId)
 
-		fromParts = tree.getiterator('Part')
+		fromParts = tree.getiterator('Part') if PY2 else tree.iter('Part')
 		partitem = None
 		#Get the Parts info for media type and source selection
 		for part in fromParts:
@@ -1769,7 +1779,7 @@ class PlexLibrary(Screen):
 			except:
 				pass
 
-		tags = tree.getiterator('Stream')
+		tags = tree.getiterator('Stream') if PY2 else tree.iter('Stream')
 
 		for bits in tags:
 			stream = dict(bits.items())
@@ -1898,7 +1908,7 @@ class PlexLibrary(Screen):
 						if self.g_streamControl == "1" or self.g_streamControl == "2":
 
 							contents = "all"
-							fromStream = part.getiterator('Stream')
+							fromStream = part.getiterator('Stream') if PY2 else part.iter('Stream')
 							printl("fromStream: " + str(fromStream), self, "D")
 							#streamType: The type of media stream/track it is (1 = video, 2 = audio, 3 = subtitle)
 
@@ -2045,7 +2055,7 @@ class PlexLibrary(Screen):
 						if self.g_streamControl == "1" or self.g_streamControl == "2":
 
 							contents = "all"
-							fromStream = part.getiterator('Stream')
+							fromStream = part.getiterator('Stream') if PY2 else part.iter('Stream')
 							printl("fromStream: " + str(fromStream), self, "D")
 							#streamType: The type of media stream/track it is (1 = video, 2 = audio, 3 = subtitle)
 
@@ -2386,7 +2396,9 @@ class PlexLibrary(Screen):
 
 		for child in entry:
 			if child.tag == tagName:
-				tempList.append(child.get('tag').encode("utf-8"))
+				t = child.get('tag')
+				t = t.encode("utf-8") if PY2 else t
+				tempList.append(t)
 
 		#printl("", self, "C")
 		return tempList
@@ -2884,7 +2896,9 @@ class PlexLibrary(Screen):
 		# build url for content
 		nextUrl = 'http://%s%s' % (entryData['server'], entryData['key'])
 
-		content = entryData.get('title', 'no Title').encode('utf-8'), entryData, contextMenu, viewState, nextUrl
+		title = entryData.get('title', 'no Title')
+		title = title.encode('utf-8') if PY2 else title
+		content = title, entryData, contextMenu, viewState, nextUrl
 
 		printl("", self, "C")
 		return content
