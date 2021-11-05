@@ -39,7 +39,7 @@ from Screens.MessageBox import MessageBox
 from Screens.Screen import Screen
 from Screens.Console import Console as SConsole
 
-from .__common__ import printl2 as printl, testInetConnectivity, getUserAgentHeader, getBoxArch, getOeVersion, revokeCacheFiles
+from .__common__ import printl2 as printl, testInetConnectivity, getUserAgentHeader, getOeVersion, revokeCacheFiles
 
 from .__init__ import getVersion, _ # _ is translation
 
@@ -68,27 +68,32 @@ class DPS_SystemCheck(Screen):
 
 		vlist = []
 
-		self.archVersion = getBoxArch()
+#		self.archVersion = getBoxArch()
 
-		if self.archVersion == "mipsel":
-			vlist.append((_("Check for gst-plugin-fragmented"), "gst-plugin-fragmented"))
+#		if self.archVersion == "mipsel":
+#			vlist.append((_("Check for gst-plugin-fragmented"), "gst-plugin-fragmented"))
 
-		elif self.archVersion == "mips32el":
-			vlist.append((_("Check for gst-plugins-bad-fragmented"), "gst-plugins-bad-fragmented"))
+#		elif self.archVersion == "mips32el":
+		vlist.append((_("Check for gst-plugins-bad-fragmented"), "gst-plugins-bad-fragmented"))
 
+#		else:
+#			printl("unknown oe version", self, "W")
+#			vlist.append((_("Check for gst-plugin-fragmented if you are using OE16."), "gst-plugin-fragmented"))
+#			vlist.append((_("Check for gst-plugins-bad-fragmented if you are using OE20."), "gst-plugins-bad-fragmented"))
+
+		if sys.version_info[0] == 2:
+			vlist.append((_("Check openSSL installation data."), "python-pyopenssl"))
+			vlist.append((_("Check python imaging installation data."), "python-imaging"))
+			vlist.append((_("Check python textutils installation data."), "python-textutils"))
 		else:
-			printl("unknown oe version", self, "W")
-			vlist.append((_("Check for gst-plugin-fragmented if you are using OE16."), "gst-plugin-fragmented"))
-			vlist.append((_("Check for gst-plugins-bad-fragmented if you are using OE20."), "gst-plugins-bad-fragmented"))
-
-		vlist.append((_("Check openSSL installation data."), "python-pyopenssl"))
+			vlist.append((_("Check openSSL installation data."), "python3-pyopenssl"))
+			vlist.append((_("Check python imaging installation data."), "python3-pillow"))
+			vlist.append((_("Check python textutils installation data."), "python3-textutils"))
 		vlist.append((_("Check mjpegtools intallation data."), "mjpegtools"))
-		vlist.append((_("Check python imaging installation data."), "python-imaging"))
-		vlist.append((_("Check python textutils installation data."), "python-textutils"))
 		vlist.append((_("Check curl installation data."), "curl"))
 
-		if config.plugins.dreamplex.showUpdateFunction.value:
-			vlist.append((_("Check for update."), "check_Update"))
+#		if config.plugins.dreamplex.showUpdateFunction.value:
+#			vlist.append((_("Check for update."), "check_Update"))
 
 		vlist.append((_("Revoke cache files manually"), "revoke_cache"))
 
@@ -320,17 +325,17 @@ class DPS_SystemCheck(Screen):
 		if confirm:
 			# User said 'Yes'
 
-			if self.archVersion == "mipsel":
-				command = "opkg update; opkg install " + str(self.package)
+			#if self.archVersion == "mipsel":
+			command = "opkg update; opkg install " + str(self.package)
 
-			elif self.archVersion == "mips32el":
-				if getOeVersion() != "oe22":
-					command = "opkg update; opkg install " + str(self.package)
-				else:
-					command = "apt-get update && apt-get install " + str(self.package) + " --force-yes -y"
+			#elif self.archVersion == "mips32el":
+			#	if getOeVersion() != "oe22":
+			#		command = "opkg update; opkg install " + str(self.package)
+			#	else:
+			#		command = "apt-get update && apt-get install " + str(self.package) + " --force-yes -y"
 
-			else:
-				printl("something went wrong finding out the oe-version", self, "W")
+			#else:
+			#	printl("something went wrong finding out the oe-version", self, "W")
 
 			self.executeInstallationCommand(command)
 		else:
