@@ -537,9 +537,9 @@ class DPS_ServerConfig(ConfigListScreen, Screen, DPH_PlexScreen):
 	def addMyPlexSettings(self):
 		printl("", self, "S")
 
-		self.cfglist.append(getConfigListEntry(_(" >> plex.tv URL"), self.current.myplexUrl, _("You need openSSL installed for this feature! Please check in System ...")))
-		self.cfglist.append(getConfigListEntry(_(" >> plex.tv Username"), self.current.myplexUsername, _("You need openSSL installed for this feature! Please check in System ...")))
-		self.cfglist.append(getConfigListEntry(_(" >> plex.tv Password"), self.current.myplexPassword, _("You need openSSL installed for this feature! Please check in System ...")))
+		self.cfglist.append(getConfigListEntry(_(" >> plex.tv URL"), self.current.myplexUrl, ''))
+		self.cfglist.append(getConfigListEntry(_(" >> plex.tv Username"), self.current.myplexUsername, ''))
+		self.cfglist.append(getConfigListEntry(_(" >> plex.tv Password"), self.current.myplexPassword, ''))
 
 		self.cfglist.append(getConfigListEntry(_(" >> plex.tv Home Users"), self.current.myplexHomeUsers, _("Use Home Users?")))
 		if self.current.myplexHomeUsers.value:
@@ -708,7 +708,9 @@ class DPS_ServerConfig(ConfigListScreen, Screen, DPH_PlexScreen):
 
 		if self.useMappings:
 			serverID = self.currentId
-			self.session.open(DPS_Mappings, serverID)
+			self.plexInstance = Singleton().getPlexInstance(PlexLibrary(self.session, self.current))
+			serverpaths = self.plexInstance.getServerSectionPaths()
+			self.session.open(DPS_Mappings, serverID, serverpaths)
 
 		elif self.current.localAuth.value:
 			# now that we know the server we establish global plexInstance

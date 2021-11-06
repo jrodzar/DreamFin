@@ -32,6 +32,7 @@ from Components.config import config
 from Components.Pixmap import Pixmap
 from Components.Label import Label
 
+from Screens.ChoiceBox import ChoiceBox
 from Screens.MessageBox import MessageBox
 from Screens.Screen import Screen
 from Screens.VirtualKeyBoard import VirtualKeyBoard
@@ -68,7 +69,7 @@ class DPS_Mappings(Screen):
 	remotePath = None
 	localPath = None
 
-	def __init__(self, session, serverID):
+	def __init__(self, session, serverID, serverpaths):
 		printl("", self, "S")
 
 		Screen.__init__(self, session)
@@ -81,6 +82,8 @@ class DPS_Mappings(Screen):
 		}, -1)
 
 		self.guiElements = getGuiElements()
+		self.serverpaths = serverpaths
+		self.choice = None
 
 		self.location = config.plugins.dreamplex.configfolderpath.value + "mountMappings"
 
@@ -149,6 +152,27 @@ class DPS_Mappings(Screen):
 	def greenKey(self):
 		printl("", self, "S")
 
+		self.choice = None
+		indexCount = 0
+		functionList = []
+		for serverpaths in self.serverpaths:
+			functionList.append((serverpaths, serverpaths, indexCount, ))
+			indexCount += 1
+
+		self.session.openWithCallback(self.setSelectedRemotePath, ChoiceBox, title=_("Select plex folder"), list=functionList)
+#		self.session.openWithCallback(self.setLocalPathCallback, DPS_PathSelector, "/", "mapping")
+
+		printl("", self, "C")
+
+	#===================================================================
+	#
+	#===================================================================
+
+	def setSelectedRemotePath(self, choice=None):
+		printl("", self, "S")
+
+		if choice:
+			self.choice = choice[1]
 		self.session.openWithCallback(self.setLocalPathCallback, DPS_PathSelector, "/", "mapping")
 
 		printl("", self, "C")
@@ -160,11 +184,15 @@ class DPS_Mappings(Screen):
 	def setLocalPathCallback(self, callback=None, myType=None):
 		printl("", self, "S")
 		printl("myType: " + str(myType), self, "S")
+		printl("choice: " + str(self.choice), self, "S")
 
 		if callback is not None and len(callback):
 			printl("localPath: " + str(callback), self, "D")
 			self.localPath = str(callback)
-			self.session.openWithCallback(self.setRemotePathCallback, VirtualKeyBoard, title=(_("Enter your remote path segment here:")), text="C:\Videos or /volume1/videos or \\\\SERVER\\Videos\\")
+			if self.choice:
+				self.setRemotePathCallback(self.choice)
+			else:
+				self.session.openWithCallback(self.setRemotePathCallback, VirtualKeyBoard, title=(_("Enter your remote path segment here:")), text="C:\Videos or /volume1/videos or \\\\SERVER\\Videos\\")
 		else:
 			self.session.open(MessageBox, _("Adding new mapping was not completed"), MessageBox.TYPE_INFO)
 			self.close()
@@ -260,8 +288,8 @@ class DPS_MappingsEntryList(MenuList):
 					res.append((eListboxPythonMultiContent.TYPE_TEXT, 5, 0, 200, 20, 1, RT_HALIGN_LEFT | RT_VALIGN_CENTER, str(self.lastMappingId)))
 					res.append((eListboxPythonMultiContent.TYPE_TEXT, 50, 0, 300, 20, 1, RT_HALIGN_LEFT | RT_VALIGN_CENTER, str(localPathPart)))
 					res.append((eListboxPythonMultiContent.TYPE_TEXT, 355, 0, 300, 20, 1, RT_HALIGN_LEFT | RT_VALIGN_CENTER, str(remotePathPart)))
-
 					self.list.append(res)
+
 
 		self.l.setList(self.list)
 		self.moveToIndex(0)

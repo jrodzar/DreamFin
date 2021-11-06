@@ -71,12 +71,6 @@ class DPS_SystemCheck(Screen):
 		vlist = []
 
 		vlist.append((_("Check for gst-plugins-bad-fragmented"), "gst-plugins-bad-fragmented"))
-
-		if sys.version_info[0] == 2:
-			vlist.append((_("Check openSSL installation data."), "python-pyopenssl"))
-		else:
-			vlist.append((_("Check openSSL installation data."), "python3-pyopenssl"))
-
 		vlist.append((_("Revoke cache files manually"), "revoke_cache"))
 
 		self["header"] = Label()

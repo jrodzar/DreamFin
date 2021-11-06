@@ -769,7 +769,7 @@ def writeXmlContent(content, location):
 
 	indented = indentXml(content)
 	xmlString = etree.tostring(indented)
-	fobj = open(location, "w")
+	fobj = open(location, "wb")
 	fobj.write(xmlString)
 	fobj.close()
 	printl2("xmlString: " + str(xmlString), "__common__::getXmlContent", "C")

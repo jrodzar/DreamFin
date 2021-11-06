@@ -24,6 +24,7 @@ You should have received a copy of the GNU General Public License
 #===============================================================================
 # IMPORT
 #===============================================================================
+import os
 import ssl
 import socket
 import sys
@@ -280,6 +281,74 @@ class PlexLibrary(Screen):
 		printl("mainMenuList: " + str(fullList), self, "D")
 		printl("", self, "C")
 		return fullList
+
+	def getServerSectionPaths(self):
+		sectionpaths = []
+
+		if self.serverConfig_connectionType == "2":
+			return []
+
+		# sections tree
+		tree = self.getAllSectionsXmlTree()
+		if not tree:
+			printl("getAllSectionsXmlTree: none", self, "D")
+			return []
+
+		entries = tree.findall('Directory')
+		for entry in entries:
+			# get paths
+			spaths = entry.findall('Location')
+			for spath in spaths:
+				spathitems = dict(spath.items())
+				if "path" in spathitems:
+					pathvalue = spathitems['path']
+					if pathvalue:
+						if pathvalue[-1] != '/':
+							pathvalue = pathvalue + '/'
+						if pathvalue not in sectionpaths:
+							sectionpaths.append(pathvalue)
+
+		printl("getServerSectionPaths_All: " + str(sectionpaths), None, "D")
+
+		_sectionpathsA = []
+		_sectionpathsB = []
+
+		for sectionpath in sectionpaths:
+			_sectionpath = sectionpath[:-1]
+			head, tail = os.path.split(_sectionpath)
+			_sectionpathsA.append(head)
+
+		_sectionpathsA_dict = {i:_sectionpathsA.count(i) for i in _sectionpathsA}
+		for s,c in _sectionpathsA_dict.items():
+			if c > 1:
+				_sectionpathsB.append(s)
+
+		_sectionpathsA = []
+		_sectionpathsC = []
+
+		for sectionpath in sectionpaths:
+			found = False
+			for sectionpathb in _sectionpathsB:
+				if sectionpathb in sectionpath:
+					found = True
+					if sectionpathb not in _sectionpathsC:
+						_sectionpathsC.append(sectionpathb)
+			
+			if not found:
+				_sectionpathsA.append(sectionpath)
+
+		sectionpaths = _sectionpathsC + _sectionpathsA
+		_sectionpathsA = []
+		for sectionpath in sectionpaths:
+			if sectionpath[-1] != '/':
+				sectionpath = sectionpath + '/'
+			_sectionpathsA.append(sectionpath)
+
+		sectionpaths = sorted(_sectionpathsA)
+
+		printl("getServerSectionPaths_Filter: " + str(sectionpaths), None, "D")
+		return sectionpaths
+
 
 	#============================================================================
 	#
@@ -1083,7 +1152,7 @@ class PlexLibrary(Screen):
 		mainMenuList = []
 		mainMenuList.append((_("Press exit to return"), "", "messageEntry"))
 		mainMenuList.append((_("If you are using plex.tv"), "", "messageEntry"))
-		mainMenuList.append((_("please check if python-pyopenssl is installed."), "", "messageEntry"))
+#		mainMenuList.append((_("please check if python-pyopenssl is installed."), "", "messageEntry"))
 		mainMenuList.append((_("You can use Systemcheck in the menu."), "", "messageEntry"))
 
 		printl("", self, "C")
