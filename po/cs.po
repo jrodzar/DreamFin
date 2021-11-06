@@ -168,8 +168,8 @@ msgid "Press exit to return"
 msgstr "Stsikni Exit pro návrat"
 
 #: e:\Development\GitHub\DreamPlex\src/DP_PlexLibrary.py:344
-msgid "If you are using myPlex"
-msgstr "Pokud používáte myPlex"
+msgid "If you are using plex.tv"
+msgstr "Pokud používáte plex.tv"
 
 #: e:\Development\GitHub\DreamPlex\src/DP_PlexLibrary.py:345
 msgid "please check if curl is installed."
@@ -182,11 +182,11 @@ msgstr "Můžete využít Ověření systému v menu."
 #: e:\Development\GitHub\DreamPlex\src/DP_PlexLibrary.py:510
 #, python-format
 msgid ""
-"MyPlex Token error:\n"
+"plex.tv Token error:\n"
 "Check Username and Password.\n"
 "%s"
 msgstr ""
-"MyPlex Token error:\n"
+"plex.tv Token error:\n"
 "Ověřte uživatelské jméno a heslo.\n"
 "%s"
 
@@ -348,8 +348,8 @@ msgid "> Use fastScroll as default"
 msgstr "> Použít Rychlé Rolování jako default"
 
 #: e:\Development\GitHub\DreamPlex\src/DP_Settings.py:138
-msgid "> Show additional data for myPlex sections"
-msgstr "> Zobrazit dodatečné informace pro myPlex sekce"
+msgid "> Show additional data for plex.tv sections"
+msgstr "> Zobrazit dodatečné informace pro plex.tv sekce"
 
 #: e:\Development\GitHub\DreamPlex\src/DP_Settings.py:140
 msgid "> Detail type for additional data"
@@ -480,8 +480,8 @@ msgid " >> DNS"
 msgstr " >> DNS"
 
 #: e:\Development\GitHub\DreamPlex\src/DP_Settings.py:568
-msgid " >> myPLEX URL"
-msgstr " >> myPLEX URL"
+msgid " >> plex.tv URL"
+msgstr " >> plex.tv URL"
 
 #: e:\Development\GitHub\DreamPlex\src/DP_Settings.py:568
 #: e:\Development\GitHub\DreamPlex\src/DP_Settings.py:569
@@ -492,16 +492,16 @@ msgstr ""
 "Potřebuješ mít nainstalován curl pro tuhle funkci! Prosím ověř v Systému ..."
 
 #: e:\Development\GitHub\DreamPlex\src/DP_Settings.py:569
-msgid " >> myPLEX Username"
-msgstr " >> myPLEX Uživatelské jméno"
+msgid " >> plex.tv Username"
+msgstr " >> plex.tv Uživatelské jméno"
 
 #: e:\Development\GitHub\DreamPlex\src/DP_Settings.py:570
-msgid " >> myPLEX Password"
-msgstr " >> myPLEX Heslo"
+msgid " >> plex.tv Password"
+msgstr " >> plex.tv Heslo"
 
 #: e:\Development\GitHub\DreamPlex\src/DP_Settings.py:571
-msgid " >> myPLEX renew myPlex token"
-msgstr " >> myPLEX obnovení tokenu pro myPlex"
+msgid " >> plex.tv renew plex.tv token"
+msgstr " >> plex.tv obnovení tokenu pro plex.tv"
 
 #: e:\Development\GitHub\DreamPlex\src/DP_Settings.py:574
 msgid "Playback Settings"
@@ -558,12 +558,12 @@ msgid "Mappings"
 msgstr "Mapování:"
 
 #: e:\Development\GitHub\DreamPlex\src/DP_Settings.py:646
-msgid "check myPlex Token"
-msgstr "ověřit myPlex Token"
+msgid "check plex.tv Token"
+msgstr "ověřit plex.tv Token"
 
 #: e:\Development\GitHub\DreamPlex\src/DP_Settings.py:714
-msgid "myPlex Token:"
-msgstr "myPlex Token:"
+msgid "plex.tv Token:"
+msgstr "plex.tv Token:"
 
 #: e:\Development\GitHub\DreamPlex\src/DP_Settings.py:714
 msgid "for the user:"
@@ -947,8 +947,8 @@ msgid "DNS"
 msgstr "DNS"
 
 #: e:\Development\GitHub\DreamPlex\src/__init__.py:170
-msgid "MYPLEX"
-msgstr "MYPLEX"
+msgid "plex.tv"
+msgstr "plex.tv"
 
 #: e:\Development\GitHub\DreamPlex\src/__init__.py:174
 msgid "Streamed"

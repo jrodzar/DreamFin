@@ -143,7 +143,7 @@
 
 		<!-- column header -->
 		<eLabel backgroundColor="#3c000000" font="OpenSans; 18" halign="left" position="40,120" size="120,35" text="Name" transparent="1" valign="bottom" zPosition="1"/>
-		<eLabel backgroundColor="#3c000000" font="OpenSans; 18" halign="left" position="470,120" size="120,35" text="IP / myPlex" transparent="1" valign="bottom" zPosition="1"/>
+		<eLabel backgroundColor="#3c000000" font="OpenSans; 18" halign="left" position="470,120" size="120,35" text="IP / plex.tv" transparent="1" valign="bottom" zPosition="1"/>
 		<eLabel backgroundColor="#3c000000" font="OpenSans; 18" halign="left" position="900,120" size="120,35" text="Port/EMail" transparent="1" valign="bottom" zPosition="1"/>
 		<eLabel backgroundColor="#3c000000" font="OpenSans; 18" halign="left" position="1330,120" size="120,35" text="Online" transparent="1" valign="bottom" zPosition="1"/>
 

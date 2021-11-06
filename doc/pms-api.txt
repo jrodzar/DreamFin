@@ -187,7 +187,7 @@ videoResolution=1920x1080&maxVideoBitrate=12000&videoQuality=90
 1920x1080, 20mbps
 videoResolution=1920x1080&maxVideoBitrate=20000&videoQuality=100
 
-Here are the headers that can be sent to myPlex:
+Here are the headers that can be sent to plex.tv:
 
 X-Plex-Platform (Platform name, eg iOS, MacOSX, Android, LG, etc)
 X-Plex-Platform-Version (Operating system version, eg 4.3.1, 10.6.7, 3.2)

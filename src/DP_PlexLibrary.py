@@ -89,7 +89,7 @@ seed()
 #
 #===============================================================================
 DEFAULT_PORT = "32400"
-MYPLEX_SERVER = "my.plexapp.com"
+PLEXTV_SERVER = "www.plex.tv"
 
 #===============================================================================
 # PlexLibrary
@@ -150,7 +150,7 @@ class PlexLibrary(Screen):
 	g_serverVersion = None
 	g_myplex_accessTokenDict = {}
 	g_sectionCache = None
-	g_multiUser = False # this is only true if we use myPlex Connection and we have a plexPlass Account active on the server
+	g_multiUser = False # this is only true if we use plex.tv Connection and we have a plexPlass Account active on the server
 	seenPic = "seen-fs8.png"
 	unseenPic = "unseen-fs8.png"
 	startedPic = "started-fs8.png"
@@ -199,7 +199,7 @@ class PlexLibrary(Screen):
 		printl("using this connectionType: " + self.serverConfig_connectionType, self, "I")
 
 		# CONNECTIONS TYPES
-		if self.serverConfig_connectionType == "2": # MYPLEX
+		if self.serverConfig_connectionType == "2": # plex.tv
 			self.setMyPlexData()
 
 		elif self.serverConfig_connectionType == "0": # IP
@@ -355,10 +355,10 @@ class PlexLibrary(Screen):
 					entryData["source"] = source
 
 					# add specific data to entryData if needed
-					if self.serverConfig_connectionType == "2": # MYPLEX
+					if self.serverConfig_connectionType == "2": # plex.tv
 						entryData["address"] = entryData['address'] + ":" + entryData['port']
 
-						# we have to do this because via myPlex there could be diffrent servers with other tokens
+						# we have to do this because via plex.tv there could be diffrent servers with other tokens
 						if str(entryData.get('address')) not in self.g_myplex_accessToken:
 							printl("section address" + str(entryData.get('address')), self, "D")
 							#self.g_myplex_accessTokenDict[str(entryData.get('address'))] = str(entryData.get('accessToken', None))
@@ -375,7 +375,7 @@ class PlexLibrary(Screen):
 					#entryData["serverName"] = self.serverConfig_Name.encode()
 					entryData["contentUrl"] = self.getContentUrl(entryData['address'], entryData['path']) # former t_url
 
-					# if this is a myPlex connection we look if we should provide more information for better overview since myplex combines all servers and shares
+					# if this is a plex.tv connection we look if we should provide more information for better overview since plex.tv combines all servers and shares
 					detail = ""
 					if config.plugins.dreamplex.showDetailsInList.value and self.serverConfig_connectionType == "2":
 						if config.plugins.dreamplex.showDetailsInListDetailType.value == "1":
@@ -963,10 +963,10 @@ class PlexLibrary(Screen):
 		else:
 			self.serverConfig_myplexToken = self.g_serverConfig.myplexToken.value
 
-		printl("myplexUrl: " + str(self.g_myplex_url), self, "D")
-		printl("myplex_username: " + str(self.g_myplex_username), self, "D", True, 10)
-		printl("myplex_password: " + str(self.g_myplex_password), self, "D", True, 6)
-		printl("myplex_token: " + str(self.serverConfig_myplexToken), self, "D", True, 6)
+		printl("plex.tvUrl: " + str(self.g_myplex_url), self, "D")
+		printl("plex.tv_username: " + str(self.g_myplex_username), self, "D", True, 10)
+		printl("plex.tv_password: " + str(self.g_myplex_password), self, "D", True, 6)
+		printl("plex.tv_token: " + str(self.serverConfig_myplexToken), self, "D", True, 6)
 
 		printl("", self, "C")
 
@@ -980,8 +980,8 @@ class PlexLibrary(Screen):
 
 		accessToken = None
 
-		if self.serverConfig_connectionType == "2": # MYPLEX
-			printl("Adding myplex as server location", self, "D")
+		if self.serverConfig_connectionType == "2": # plex.tv
+			printl("Adding plex.tv as server location", self, "D")
 
 			if resolvedMyPlexAddress is not None: # this is the case if we come from remote player
 				response = self.getSharedServerForPlexUser()
@@ -1015,15 +1015,15 @@ class PlexLibrary(Screen):
 				raise Exception
 
 			# we have to set self.g_myplex_accessTokenDict here
-			# because none will trigger empty tokens that are needed when we do not use myPlex
+			# because none will trigger empty tokens that are needed when we do not use plex.tv
 			self.g_myplex_accessTokenDict = {}
 
-			# just in case we use myPlex also in local Lan we have to set the token data
+			# just in case we use plex.tv also in local Lan we have to set the token data
 			accessToken = None
 
 			if self.serverConfig_localAuth:
 				if self.serverConfig_myplexLocalToken:
-					# this is the token we get from myPlex if we are connected with a user that is not thw owner and should be limited to its sections as well
+					# this is the token we get from plex.tv if we are connected with a user that is not thw owner and should be limited to its sections as well
 					#self.g_myplex_accessTokenDict[str(self.g_currentServer)] = self.serverConfig_myplexLocalToken
 					accessToken = self.serverConfig_myplexLocalToken
 				else:
@@ -1082,7 +1082,7 @@ class PlexLibrary(Screen):
 
 		mainMenuList = []
 		mainMenuList.append((_("Press exit to return"), "", "messageEntry"))
-		mainMenuList.append((_("If you are using myPlex"), "", "messageEntry"))
+		mainMenuList.append((_("If you are using plex.tv"), "", "messageEntry"))
 		mainMenuList.append((_("please check if python-pyopenssl is installed."), "", "messageEntry"))
 		mainMenuList.append((_("You can use Systemcheck in the menu."), "", "messageEntry"))
 
@@ -1170,10 +1170,10 @@ class PlexLibrary(Screen):
 		printl("", self, "S")
 
 		# get xml as tree
-		if self.serverConfig_connectionType == "2": # MYPLEX
+		if self.serverConfig_connectionType == "2": # plex.tv
 
 			if self.serverConfig_myplexToken == "ERROR":
-				self.lastError = _("MyPlex Token error:\nCheck Username and Password.\n%s") % self.serverConfig_myplexToken
+				self.lastError = _("plex.tv Token error:\nCheck Username and Password.\n%s") % self.serverConfig_myplexToken
 				return False
 			else:
 				tree = self.getXmlTreeFromPlex('/pms/system/library/sections')
@@ -1285,16 +1285,16 @@ class PlexLibrary(Screen):
 	#============================================================================
 	def getNewMyPlexToken(self):
 		"""
-		Get a new myplex token from myplex API
+		Get a new plex.tv Token from plex.tv API
 		@input: nothing
-		@return: myplex token
+		@return: plex.tv token
 		"""
 		printl("", self, "S")
 
 		printl("Getting new token", self, "I")
 
 		if (self.g_myplex_username or self.g_myplex_password) == "":
-			printl("Missing myplex details in config...", self, "D")
+			printl("Missing plex.tv details in config...", self, "D")
 
 			printl("", self, "C")
 			return False
@@ -1305,7 +1305,7 @@ class PlexLibrary(Screen):
 		myplex_header['Authorization'] = "Basic %s" % base64string
 		myplex_header['X-Plex-Username'] = self.g_myplex_username
 
-		conn = HTTPSConnection(MYPLEX_SERVER, timeout=20, port=443, context=ssl._create_unverified_context())
+		conn = HTTPSConnection(PLEXTV_SERVER, timeout=20, port=443, context=ssl._create_unverified_context())
 		conn.request(url="/users/sign_in.xml", method="POST", headers=myplex_header)
 		data = conn.getresponse()
 		response = data.read()
@@ -2310,18 +2310,18 @@ class PlexLibrary(Screen):
 	def getXmlTreeFromPlex(self, url, requestType="GET"):
 		"""
 		Connect to the my.plexapp.com service and get an XML pages
-		A seperate function is required as interfacing into myplex
+		A seperate function is required as interfacing into plex.tv
 		is slightly different than getting a standard URL
 		@input: url to get, whether we need a new token, whether to display on screen err
 		@return: an xml page as string or false
 		"""
 		printl("", self, "S")
-		printl("url = " + MYPLEX_SERVER + url, self, "D")
+		printl("url = " + PLEXTV_SERVER + url, self, "D")
 		#
 		myplex_header = getPlexHeader(self.g_sessionID)
 		myplex_header['X-Plex-Token'] = str(self.serverConfig_myplexToken)
 
-		conn = HTTPSConnection(MYPLEX_SERVER, timeout=30, port=443, context=ssl._create_unverified_context())
+		conn = HTTPSConnection(PLEXTV_SERVER, timeout=30, port=443, context=ssl._create_unverified_context())
 		conn.request(url=url, method=requestType, headers=myplex_header)
 		data = conn.getresponse()
 		response = data.read()
@@ -2777,7 +2777,7 @@ class PlexLibrary(Screen):
 		printl("", self, "S")
 		server = self.getServerFromURL(url)
 
-		#Check for myplex user, which we need to alter to a master server
+		#Check for plex.tv user, which we need to alter to a master server
 		if 'plexapp.com' in url:
 			server = self.g_currentServer
 

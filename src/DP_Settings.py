@@ -128,7 +128,7 @@ class DPS_Settings(Screen, ConfigListScreen, HelpableScreen, DPH_PlexScreen):
 
 		# USERINTERFACE SETTINGS
 		self.cfglist.append(getConfigListEntry(_("Userinterface Settings ") + separator, config.plugins.dreamplex.about, _(" ")))
-		self.cfglist.append(getConfigListEntry(_("> Summerize Servers"), config.plugins.dreamplex.summerizeServers, _("Summerize servers in an additional menu step. (myPlex only)")))
+		self.cfglist.append(getConfigListEntry(_("> Summerize Servers"), config.plugins.dreamplex.summerizeServers, _("Summerize servers in an additional menu step. (plex.tv only)")))
 		self.cfglist.append(getConfigListEntry(_("> Summerize Sections"), config.plugins.dreamplex.summerizeSections, _("Summerize sections in an additional menu step.")))
 		self.cfglist.append(getConfigListEntry(_("> Show Filter for Section"), config.plugins.dreamplex.showFilter, _("Show additional filter in an additional menu step e.g. OnDeck")))
 		self.cfglist.append(getConfigListEntry(_("> Show Seen/Unseen count in TvShows"), config.plugins.dreamplex.showUnSeenCounts, _("Calculate and show them for tv shows.")))
@@ -159,7 +159,7 @@ class DPS_Settings(Screen, ConfigListScreen, HelpableScreen, DPH_PlexScreen):
 			if not config.plugins.dreamplex.stopLiveTvOnStartup.value:
 				self.cfglist.append(getConfigListEntry(_("> Show liveTv in Views instead of backdrops"), config.plugins.dreamplex.liveTvInViews, _("Show live tv while you are navigating through your libs.")))
 
-		self.cfglist.append(getConfigListEntry(_("> Show additional data for myPlex sections"), config.plugins.dreamplex.showDetailsInList, _("If server summerize is off you can here add additional information for better overview.")))
+		self.cfglist.append(getConfigListEntry(_("> Show additional data for plex.tv sections"), config.plugins.dreamplex.showDetailsInList, _("If server summerize is off you can here add additional information for better overview.")))
 		if config.plugins.dreamplex.showDetailsInList.value:
 			self.cfglist.append(getConfigListEntry(_("> Detail type for additional data"), config.plugins.dreamplex.showDetailsInListDetailType, _("Specifiy the type of additional data.")))
 

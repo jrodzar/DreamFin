@@ -212,7 +212,7 @@ class DPS_ServerMenu(DPH_Screen, DPH_HorizontalMenu, DPH_ScreenHelper, DPH_Filte
 
 		functionList = []
 
-		# add myPlex User as first one
+		# add plex.tv User as first one
 		functionList.append((self.g_serverConfig.myplexTokenUsername.value, self.g_serverConfig.myplexPin.value, self.g_serverConfig.myplexToken.value, False, self.g_serverConfig.myplexId.value))
 
 		# now add all home users

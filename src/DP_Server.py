@@ -110,9 +110,9 @@ class DPS_Server(Screen, DPH_PlexScreen):
 		self["header"].setText(_("Server List:"))
 
 		if self.skinResolution == "FHD": # FHD is used for FULL HD Boxes with new framebuffer
-			self["columnHeader"].setText(_("Name                                         IP/myPlex                                             Port/Email                                        Active"))
+			self["columnHeader"].setText(_("Name                                         IP/plex.tv                                            Port/Email                                        Active"))
 		else:
-			self["columnHeader"].setText(_("Name                                         IP/myPlex                                  Port/Email                                  Active"))
+			self["columnHeader"].setText(_("Name                                         IP/plex.tv                                 Port/Email                                  Active"))
 
 		self["btn_redText"].setText(_("Delete"))
 		self["btn_greenText"].setText(_("Add"))
@@ -453,7 +453,7 @@ class DPS_ServerConfig(ConfigListScreen, Screen, DPH_PlexScreen):
 			if self.current.localAuth.value:
 				self.addMyPlexSettings()
 
-		elif self.current.connectionType.value == "2": # MYPLEX
+		elif self.current.connectionType.value == "2": # plex.tv
 			self.addMyPlexSettings()
 
 		##
@@ -537,19 +537,19 @@ class DPS_ServerConfig(ConfigListScreen, Screen, DPH_PlexScreen):
 	def addMyPlexSettings(self):
 		printl("", self, "S")
 
-		self.cfglist.append(getConfigListEntry(_(" >> myPLEX URL"), self.current.myplexUrl, _("You need openSSL installed for this feature! Please check in System ...")))
-		self.cfglist.append(getConfigListEntry(_(" >> myPLEX Username"), self.current.myplexUsername, _("You need openSSL installed for this feature! Please check in System ...")))
-		self.cfglist.append(getConfigListEntry(_(" >> myPLEX Password"), self.current.myplexPassword, _("You need openSSL installed for this feature! Please check in System ...")))
+		self.cfglist.append(getConfigListEntry(_(" >> plex.tv URL"), self.current.myplexUrl, _("You need openSSL installed for this feature! Please check in System ...")))
+		self.cfglist.append(getConfigListEntry(_(" >> plex.tv Username"), self.current.myplexUsername, _("You need openSSL installed for this feature! Please check in System ...")))
+		self.cfglist.append(getConfigListEntry(_(" >> plex.tv Password"), self.current.myplexPassword, _("You need openSSL installed for this feature! Please check in System ...")))
 
-		self.cfglist.append(getConfigListEntry(_(" >> myPLEX Home Users"), self.current.myplexHomeUsers, _("Use Home Users?")))
+		self.cfglist.append(getConfigListEntry(_(" >> plex.tv Home Users"), self.current.myplexHomeUsers, _("Use Home Users?")))
 		if self.current.myplexHomeUsers.value:
 			self.cfglist.append(getConfigListEntry(_(" >> Use Settings Protection"), self.current.protectSettings, _("Ask for pin?")))
 			if self.current.protectSettings.value:
 				self.cfglist.append(getConfigListEntry(_(" >> Settings Pincode"), self.current.settingsPin, _("Pincode for changing settings")))
 
-			self.cfglist.append(getConfigListEntry(_(" >> myPLEX Pin Protection"), self.current.myplexPinProtect, _("Use Pinprotection for switch back to myPlex user?")))
+			self.cfglist.append(getConfigListEntry(_(" >> plex.tv Pin Protection"), self.current.myplexPinProtect, _("Use Pinprotection for switch back to plex.tv user?")))
 			if self.current.myplexPinProtect.value:
-				self.cfglist.append(getConfigListEntry(_(" >> myPLEX Pincode"), self.current.myplexPin, _("Pincode for switching back from any home user.")))
+				self.cfglist.append(getConfigListEntry(_(" >> plex.tv Pincode"), self.current.myplexPin, _("Pincode for switching back from any home user.")))
 
 		printl("", self, "C")
 
@@ -594,7 +594,7 @@ class DPS_ServerConfig(ConfigListScreen, Screen, DPH_PlexScreen):
 				self["btn_redText"].hide()
 				self["btn_red"].hide()
 
-			self["btn_blueText"].setText(_("(re)create myPlex Token"))
+			self["btn_blueText"].setText(_("(re)create plex.tv Token"))
 
 			self["btn_blueText"].show()
 			self["btn_blue"].show()
@@ -739,7 +739,7 @@ class DPS_ServerConfig(ConfigListScreen, Screen, DPH_PlexScreen):
 		token = self.plexInstance.getNewMyPlexToken()
 
 		if token:
-			self.session.openWithCallback(self.saveNow, MessageBox, (_("myPlex Token:") + "\n%s \n" + _("for the user:") + "\n%s \n" + _("with the id:") + "\n%s") % (token, self.current.myplexTokenUsername.value, self.current.myplexId.value), MessageBox.TYPE_INFO)
+			self.session.openWithCallback(self.saveNow, MessageBox, (_("plex.tv Token:") + "\n%s \n" + _("for the user:") + "\n%s \n" + _("with the id:") + "\n%s") % (token, self.current.myplexTokenUsername.value, self.current.myplexId.value), MessageBox.TYPE_INFO)
 		else:
 			response = self.plexInstance.getLastResponse()
 			self.session.openWithCallback(self.saveNow, MessageBox, (_("Error:") + "\n%s \n" + _("for the user:") + "\n%s") % (response, self.current.myplexTokenUsername.value), MessageBox.TYPE_INFO)
@@ -757,6 +757,6 @@ class DPS_ServerConfig(ConfigListScreen, Screen, DPH_PlexScreen):
 			plexInstance = Singleton().getPlexInstance(PlexLibrary(self.session, self.current))
 			self.session.open(DPS_Users, serverID, plexInstance)
 
-		#self.session.open(MessageBox,(_("myPlex Token:") + "\n%s \n" + _("myPlex Localtoken:") + "\n%s \n"+ _("for the user:") + "\n%s") % (self.current.myplexToken.value, self.current.myplexLocalToken.value, self.current.myplexTokenUsername.value), MessageBox.TYPE_INFO)
+		#self.session.open(MessageBox,(_("plex.tv Token:") + "\n%s \n" + _("plex.tv Localtoken:") + "\n%s \n"+ _("for the user:") + "\n%s") % (self.current.myplexToken.value, self.current.myplexLocalToken.value, self.current.myplexTokenUsername.value), MessageBox.TYPE_INFO)
 
 		printl("", self, "C")

@@ -111,8 +111,8 @@ msgid "DNS"
 msgstr "DNS"
 
 #: /hdd/workspaces/DreamPlex/src/__init__.py:172
-msgid "MYPLEX"
-msgstr "MYPLEX"
+msgid "plex.tv"
+msgstr "plex.tv"
 
 #: /hdd/workspaces/DreamPlex/src/__init__.py:176
 msgid "Streamed"
@@ -275,8 +275,8 @@ msgid "Press exit to return"
 msgstr "Pulse exit para salir"
 
 #: /hdd/workspaces/DreamPlex/src/DP_PlexLibrary.py:1012
-msgid "If you are using myPlex"
-msgstr "Si usted esta usando myPlex"
+msgid "If you are using plex.tv"
+msgstr "Si usted esta usando plex.tv"
 
 #: /hdd/workspaces/DreamPlex/src/DP_PlexLibrary.py:1013
 msgid "please check if python-pyopenssl is installed."
@@ -289,11 +289,11 @@ msgstr "Puede usar Systemcheck en el menu"
 #: /hdd/workspaces/DreamPlex/src/DP_PlexLibrary.py:1103
 #, python-format
 msgid ""
-"MyPlex Token error:\n"
+"plex.tv Token error:\n"
 "Check Username and Password.\n"
 "%s"
 msgstr ""
-"Error de Token myPlex:\n"
+"Error de Token plex.tv:\n"
 "Verifique usuario y contraseña.\n"
 "%s"
 
@@ -1218,8 +1218,8 @@ msgid "> Show liveTv in Views instead of backdrops"
 msgstr "> Mostar TV en Driecto en vistas en lugar de fondos"
 
 #: /hdd/workspaces/DreamPlex/src/DP_Settings.py:152
-msgid "> Show additional data for myPlex sections"
-msgstr "> Mostrar datos adicionales para las secciones myPlex"
+msgid "> Show additional data for plex.tv sections"
+msgstr "> Mostrar datos adicionales para las secciones plex.tv"
 
 #: /hdd/workspaces/DreamPlex/src/DP_Settings.py:154
 msgid "> Detail type for additional data"
@@ -1299,21 +1299,21 @@ msgstr "Lista de Servidores:"
 #: /hdd/workspaces/DreamPlex/src/DP_Server.py:106
 msgid ""
 "Name                                         IP/"
-"myPlex                                             Port/"
+"plex.tv                                            Port/"
 "Email                                        Active"
 msgstr ""
 "Nombre                                       IP/"
-"myPlex                                             Puerto/"
+"plex.tv                                            Puerto/"
 "Email                                      Activo"
 
 #: /hdd/workspaces/DreamPlex/src/DP_Server.py:108
 msgid ""
 "Name                                         IP/"
-"myPlex                                  Port/"
+"plex.tv                                 Port/"
 "Email                                  Active"
 msgstr ""
 "Nombre                                      IP/"
-"myPlex                                  Puerto/"
+"plex.tv                                 Puerto/"
 "Email                                Activo"
 
 #: /hdd/workspaces/DreamPlex/src/DP_Server.py:110
@@ -1461,8 +1461,8 @@ msgid " >> IP"
 msgstr " >> IP"
 
 #: /hdd/workspaces/DreamPlex/src/DP_Server.py:485
-msgid " >> myPLEX URL"
-msgstr ">> myPlex URL"
+msgid " >> plex.tv URL"
+msgstr ">> plex.tv URL"
 
 #: /hdd/workspaces/DreamPlex/src/DP_Server.py:485
 #: /hdd/workspaces/DreamPlex/src/DP_Server.py:486
@@ -1473,12 +1473,12 @@ msgstr ""
 "Sistema ..."
 
 #: /hdd/workspaces/DreamPlex/src/DP_Server.py:486
-msgid " >> myPLEX Username"
-msgstr " >> Usuario myPLEX"
+msgid " >> plex.tv Username"
+msgstr " >> Usuario plex.tv"
 
 #: /hdd/workspaces/DreamPlex/src/DP_Server.py:487
-msgid " >> myPLEX Password"
-msgstr " >> Contraseña myPLEX"
+msgid " >> plex.tv Password"
+msgstr " >> Contraseña plex.tv"
 
 #: /hdd/workspaces/DreamPlex/src/DP_Server.py:512
 msgid "Mappings"
@@ -1489,12 +1489,12 @@ msgid "get local auth Token"
 msgstr "Obtener un Token local"
 
 #: /hdd/workspaces/DreamPlex/src/DP_Server.py:524
-msgid "check myPlex Token"
-msgstr "Verficar Token myPlex"
+msgid "check plex.tv Token"
+msgstr "Verficar Token plex.tv"
 
 #: /hdd/workspaces/DreamPlex/src/DP_Server.py:525
-msgid "(re)create myPlex Token"
-msgstr "(re)crear un Token myPlex"
+msgid "(re)create plex.tv Token"
+msgstr "(re)crear un Token plex.tv"
 
 #: /hdd/workspaces/DreamPlex/src/DP_Server.py:639
 msgid "Local Token:"
@@ -1510,17 +1510,17 @@ msgstr "para el usuario:"
 
 #: /hdd/workspaces/DreamPlex/src/DP_Server.py:658
 #: /hdd/workspaces/DreamPlex/src/DP_Server.py:671
-msgid "myPlex Token:"
-msgstr "myPlex Token:"
+msgid "plex.tv Token:"
+msgstr "plex.tv Token:"
 
 #: /hdd/workspaces/DreamPlex/src/DP_Server.py:671
-msgid "myPlex Localtoken:"
-msgstr "myPlex Token Local:"
+msgid "plex.tv Localtoken:"
+msgstr "plex.tv Token Local:"
 
 #~ msgid ""
 #~ "For currentlyRunning feature just activate.\n"
 #~ "For section management you have to connect your server successfully to "
-#~ "myPlex once.\n"
+#~ "plex.tv once.\n"
 #~ "After that just disable your Portforwarding policy."
 #~ msgstr ""
 #~ "Für currentlyRunning einfach aktivieren.\n"
@@ -1535,8 +1535,8 @@ msgstr "myPlex Token Local:"
 #~ msgid "Toggle state to on/off"
 #~ msgstr "Statuswechsel on/off"
 
-#~ msgid " >> myPLEX renew myPlex token"
-#~ msgstr " >> myPlex Token erneuern"
+#~ msgid " >> plex.tv renew plex.tv token"
+#~ msgstr " >> plex.tv Token erneuern"
 
 #~ msgid ""
 #~ "Process aborted.\n"

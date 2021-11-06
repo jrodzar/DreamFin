@@ -1209,7 +1209,7 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 				urlPath += "&state=stopped&time=" + str(currentTime * 1000) + "&duration=" + str(totalTime * 1000)
 				self.plexInstance.doRequest(urlPath)
 
-			#Legacy PMS Server server support before MultiUser version v0.9.8.0 and if we are not connected via myPlex
+			#Legacy PMS Server server support before MultiUser version v0.9.8.0 and if we are not connected via plex.tv
 			else:
 				if currentTime < 30:
 					printl("Less that 30 seconds, will not set resume", self, "I")

@@ -222,28 +222,28 @@ msgid " >> Wait for server delay (max 180 seconds) only for WoL"
 msgstr " >> Attendre sur le serveur  (max. 180 secondes) uniquement pour WoL"
 
 #: ../src/DP_Server.py:538
-msgid " >> myPLEX Home Users"
-msgstr " >> myPLEX Utilisateurs domestiques"
+msgid " >> plex.tv Home Users"
+msgstr " >> plex.tv Utilisateurs domestiques"
 
 #: ../src/DP_Server.py:536
-msgid " >> myPLEX Password"
-msgstr " >> myPLEX mot de passe"
+msgid " >> plex.tv Password"
+msgstr " >> plex.tv mot de passe"
 
 #: ../src/DP_Server.py:544
-msgid " >> myPLEX Pin Protection"
-msgstr " >> myPlex Protection PIN"
+msgid " >> plex.tv Pin Protection"
+msgstr " >> plex.tv Protection PIN"
 
 #: ../src/DP_Server.py:546
-msgid " >> myPLEX Pincode"
-msgstr " >> myPLEX code PIN"
+msgid " >> plex.tv Pincode"
+msgstr " >> plex.tv code PIN"
 
 #: ../src/DP_Server.py:534
-msgid " >> myPLEX URL"
-msgstr " >> myPlex URL"
+msgid " >> plex.tv URL"
+msgstr " >> plex.tv URL"
 
 #: ../src/DP_Server.py:535
-msgid " >> myPLEX Username"
-msgstr " >> myPLEX Nom d'utilisateur"
+msgid " >> plex.tv Username"
+msgstr " >> plex.tv Nom d'utilisateur"
 
 #: ../src/DP_Player.py:448
 msgid ""
@@ -256,8 +256,8 @@ msgstr ""
 "Voulez-vous reprendre la lecture?"
 
 #: ../src/DP_Server.py:591
-msgid "(re)create myPlex Token"
-msgstr "(re)créer myPlex Token"
+msgid "(re)create plex.tv Token"
+msgstr "(re)créer plex.tv Token"
 
 #: ../src/DP_Server.py:428
 msgid "-"
@@ -472,8 +472,8 @@ msgid "> Show Seen/Unseen count in TvShows"
 msgstr "> Afficher le nombre Vu / Non vu dans les séries"
 
 #: ../src/DP_Settings.py:161
-msgid "> Show additional data for myPlex sections"
-msgstr "> Afficher les données supplémentaires pour la section myPlex"
+msgid "> Show additional data for plex.tv sections"
+msgstr "> Afficher les données supplémentaires pour la section plex.tv"
 
 #: ../src/DP_Settings.py:159
 msgid "> Show liveTv in Views instead of backdrops"
@@ -898,8 +898,8 @@ msgid "If server summerize is off you can here add additional information for be
 msgstr "Si le résumé du serveur est désactivé, vous pouvez ici ajouter des informations supplémentaires pour une meilleure vue d'ensemble."
 
 #: ../src/DP_PlexLibrary.py:1059
-msgid "If you are using myPlex"
-msgstr "Si vous utilisez myPlex"
+msgid "If you are using plex.tv"
+msgstr "Si vous utilisez plex.tv"
 
 #: ../src/DP_Settings.py:119
 msgid "If you change the skin you have to restart at least the GUI!"
@@ -934,8 +934,8 @@ msgid "Location:"
 msgstr "Position:"
 
 #: ../src/__init__.py:175
-msgid "MYPLEX"
-msgstr "MYPLEX"
+msgid "plex.tv"
+msgstr "plex.tv"
 
 #: ../src/DP_MainMenu.py:120 ../src/DP_MainMenu.py:304
 msgid "Main Menu"
@@ -986,21 +986,21 @@ msgstr "Musique"
 #: ../src/DP_PlexLibrary.py:1150
 #, python-format
 msgid ""
-"MyPlex Token error:\n"
+"plex.tv Token error:\n"
 "Check Username and Password.\n"
 "%s"
 msgstr ""
-"Erreur de Token MyPlex:\n"
+"Erreur de Token plex.tv:\n"
 "Vérifiez votre nom d'utilisateur et votre mot de passe.\n"
 "%s"
 
 #: ../src/DP_Server.py:109
-msgid "Name                                         IP/myPlex                                             Port/Email                                        Active"
-msgstr "Nom                                           IP/myPlex                                            Port/Email                                         Actif"
+msgid "Name                                         IP/plex.tv                                            Port/Email                                        Active"
+msgstr "Nom                                           IP/plex.tv                                           Port/Email                                         Actif"
 
 #: ../src/DP_Server.py:111
-msgid "Name                                         IP/myPlex                                  Port/Email                                  Active"
-msgstr "Nom                                         IP/myPlex                                   Port/Email                                   Actif"
+msgid "Name                                         IP/plex.tv                                 Port/Email                                  Active"
+msgstr "Nom                                         IP/plex.tv                                  Port/Email                                   Actif"
 
 #: ../src/DP_PlexLibrary.py:429
 msgid "New"
@@ -1345,8 +1345,8 @@ msgid "Summerize sections in an additional menu step."
 msgstr "Les sections résumées dans une étape supplémentaire de menu."
 
 #: ../src/DP_Settings.py:130
-msgid "Summerize servers in an additional menu step. (myPlex only)"
-msgstr "Résumez les serveurs dans une étape de menu supplémentaire. (myPlex seulement)"
+msgid "Summerize servers in an additional menu step. (plex.tv only)"
+msgstr "Résumez les serveurs dans une étape de menu supplémentaire. (plex.tv seulement)"
 
 #: ../src/DP_ServerMenu.py:139
 msgid "Switch User"
@@ -1466,8 +1466,8 @@ msgid "Use Home Users?"
 msgstr "Utiliser les utilisateurs domestiques?"
 
 #: ../src/DP_Server.py:544
-msgid "Use Pinprotection for switch back to myPlex user?"
-msgstr "Utilisez Pinprotection pour revenir à myPlex utilisateur?"
+msgid "Use Pinprotection for switch back to plex.tv user?"
+msgstr "Utilisez Pinprotection pour revenir à plex.tv utilisateur?"
 
 #: ../src/DP_Settings.py:137
 msgid "Use this if you have m1v videos as backdrops"
@@ -1589,8 +1589,8 @@ msgid "get local auth Token"
 msgstr "obtenir un jeton d'authentification local"
 
 #: ../src/DP_Server.py:736
-msgid "myPlex Token:"
-msgstr "vérifier myPlex Token:"
+msgid "plex.tv Token:"
+msgstr "vérifier plex.tv Token:"
 
 #: ../src/DPH_MovingLabel.py:120
 msgid "no Data"
