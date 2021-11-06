@@ -9,7 +9,7 @@
 		<widget source="global.CurrentTime" render="Label" position="1500,10" size="390,30" zPosition="4" font="OpenSans; 20" halign="right" foregroundColor="#5C5C5C" backgroundColor="#0f0f0f" transparent="1">
 			<convert type="ClockToText">Date</convert>
 		</widget>
-	<screen/>
+	</screen>
 
 	<!--DPS_MainMenu -->
 	<screen name="DPS_MainMenu" position="0,0" size="1920,1080" title=" " backgroundColor="#ffffffff" flags="wfNoBorder">
