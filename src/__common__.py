@@ -37,6 +37,8 @@ from enigma import addFont, loadPNG, loadJPG, getDesktop
 from skin import loadSkin
 from Components.config import config
 from Components.AVSwitch import AVSwitch
+from Components.SystemInfo import BoxInfo
+from boxbranding import getMachineBuild
 
 from .DPH_Singleton import Singleton
 
@@ -73,7 +75,6 @@ g_boxData = None
 screens = []
 liveTv = None
 g_uuid = None
-g_archType = None
 STARTING_MESSAGE = ">>>>>>>>>>"
 CLOSING_MESSAGE = "<<<<<<<<<<"
 #===============================================================================
@@ -599,123 +600,13 @@ def getUUID():
 def setBoxInformation():
 	printl2("", "__common__::_setBoxtype", "C")
 
-	success = False
-	try:
-		filePointer = open("/proc/stb/info/vumodel")
-		success = True
-	except:
-		try:
-			filePointer = open("/proc/stb/info/model")
-			success = True
-		except:
-			try:
-				filePointer = open("/hdd/model")
-				success = True
-			except:
-				pass
-
-	manu = "unknown"
-	model = "unkown"
-
-	if success:
-		box = filePointer.readline().strip()
-		filePointer.close()
-
-		if box == "ufs910":
-			manu = "Kathrein"
-			model = "UFS-910"
-		elif box == "ufs912":
-			manu = "Kathrein"
-			model = "UFS-912"
-		elif box == "ufs922":
-			manu = "Kathrein"
-			model = "UFS-922"
-		elif box == "solo":
-			manu = "VU+"
-			model = "Solo"
-		elif box == "duo":
-			manu = "VU+"
-			model = "Duo"
-		elif box == "solo2":
-			manu = "VU+"
-			model = "Solo2"
-		elif box == "duo2":
-			manu = "VU+"
-			model = "Duo2"
-		elif box == "uno":
-			manu = "VU+"
-			model = "Uno"
-		elif box == "ultimo":
-			manu = "VU+"
-			model = "Ultimo"
-		elif box == "tf7700hdpvr":
-			manu = "Topfield"
-			model = "HDPVR-7700"
-		elif box == "dm800":
-			manu = "Dreambox"
-			model = "800"
-		elif box == "dm800se":
-			manu = "Dreambox"
-			model = "800se"
-		elif box == "dm7080":
-			manu = "Dreambox"
-			model = "7080"
-		elif box == "dm8000":
-			manu = "Dreambox"
-			model = "8000"
-		elif box == "dm500hd":
-			manu = "Dreambox"
-			model = "500hd"
-		elif box == "dm7025":
-			manu = "Dreambox"
-			model = "7025"
-		elif box == "dm7020hd":
-			manu = "Dreambox"
-			model = "7020hd"
-		elif box == "elite":
-			manu = "Azbox"
-			model = "Elite"
-		elif box == "premium":
-			manu = "Azbox"
-			model = "Premium"
-		elif box == "premium+":
-			manu = "Azbox"
-			model = "Premium+"
-		elif box == "cuberevo-mini":
-			manu = "Cubarevo"
-			model = "Mini"
-		elif box == "hdbox":
-			manu = "Fortis"
-			model = "HdBox"
-		elif box == "gbquad":
-			manu = "Gigablue"
-			model = "Quad"
-		elif box == "gbquadplus":
-			manu = "Gigablue"
-			model = "QuadPlus"
-		elif box == "gb800seplus":
-			manu = "Gigablue"
-			model = "800SEPlus"
-		elif box == "gb800ueplus":
-			manu = "Gigablue"
-			model = "800UEPlus"
-		elif box == "et8000":
-			manu = "Xtrend"
-			model = "8000"
-		elif box == "et10000":
-			manu = "Xtrend"
-			model = "10000"
-		elif box == "maram9":
-			manu = "Odin"
-			model = "M9"
-		else:
-			printl2("Unknown box: " + str(box), "__common__::_setBoxtype", "D")
-
-	# set arch for later processing
-	getBoxArch()
+	model = getMachineBuild()
+	manu = BoxInfo.getItem("displaybrand","unknown")
+	oe = BoxInfo.getItem("oe","unknown")
+	arch = BoxInfo.getItem("architecture","unknown")
 
 	global g_boxData
-	g_boxData = (manu, model, g_archType)
+	g_boxData = (manu, model, arch, oe)
 
 	printl2("", "__common__::_setBoxtype", "C")
 
@@ -742,41 +633,6 @@ def getSkinFolder():
 
 	printl2("", "__common__::getSkinFolder", "C")
 	return skinFolder
-
-#===========================================================================
-#
-#===========================================================================
-
-
-def getBoxArch():
-	printl2("", "__common__::setBoxArch", "S")
-
-	if g_archType is None:
-		setBoxArch()
-
-	printl2("", "__common__::setBoxArch", "C")
-	return g_archType
-
-#===========================================================================
-#
-#===========================================================================
-
-
-def setBoxArch():
-	printl2("", "__common__::setBoxArch", "S")
-
-	archType = "unknown"
-
-	if (2, 6, 8) > sys.version_info > (2, 6, 6):
-		archType = "mipsel"
-
-	elif (2, 7, 4) > sys.version_info > (2, 7, 0):
-		archType = "mips32el"
-
-	global g_archType
-	g_archType = archType
-
-	printl2("", "__common__::setBoxArch", "C")
 
 #===============================================================================
 #
