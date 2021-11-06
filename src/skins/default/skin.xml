@@ -1,4 +1,16 @@
 <skin>
+
+	<!--clockpanel -->
+	<screen name="clockpanel">
+		<!-- clock -->
+		<widget source="global.CurrentTime" render="Label" position="920,13" size="169,30" zPosition="4" font="OpenSans; 18" halign="left" foregroundColor="#5C5C5C" backgroundColor="#0f0f0f" transparent="1" valign="top">
+			<convert type="ClockToText">Format:%H:%M</convert>
+		</widget>
+		<widget source="global.CurrentTime" render="Label" position="830,13" size="390,30" zPosition="4" font="OpenSans; 18" halign="right" foregroundColor="#5C5C5C" backgroundColor="#0f0f0f" transparent="1">
+			<convert type="ClockToText">Date</convert>
+		</widget>
+	<screen/>
+
 	<!--DPS_MainMenu -->
 	<screen name="DPS_MainMenu" position="0,0" size="1280,720" title=" " backgroundColor="#ffffffff" flags="wfNoBorder">
 		<!-- background -->
@@ -51,12 +63,7 @@
 		<widget name="miniTv" position="25,86" size="555,321" zPosition="10" backgroundColor="#ff111111"/>
 
 		<!-- clock -->
-		<widget source="global.CurrentTime" render="Label" position="920,13" size="169,30" zPosition="4" font="OpenSans; 18" halign="left" foregroundColor="#e69405" backgroundColor="#0f0f0f" transparent="1" valign="top">
-			<convert type="ClockToText">Format:%H:%M</convert>
-		</widget>
-		<widget source="global.CurrentTime" render="Label" position="830,13" size="390,30" zPosition="4" font="OpenSans; 18" halign="right" foregroundColor="#5C5C5C" backgroundColor="#0f0f0f" transparent="1">
-			<convert type="ClockToText">Date</convert>
-		</widget>
+		<panel name="clockpanel" />
 	</screen>
 
 	<!-- DPS_About -->
@@ -74,12 +81,7 @@
 		<widget name="rightText" zPosition="3" position="700,110" size="450,500" transparent="1" font="OpenSans;18" backgroundColor="#222222" foregroundColor="#ffffff"/>
 
 		<!-- clock -->
-		<widget source="global.CurrentTime" render="Label" position="920,13" size="169,30" zPosition="4" font="OpenSans; 18" halign="left" foregroundColor="#e69405" backgroundColor="#0f0f0f" transparent="1" valign="top">
-			<convert type="ClockToText">Format:%H:%M</convert>
-		</widget>
-		<widget source="global.CurrentTime" render="Label" position="830,13" size="390,30" zPosition="4" font="OpenSans; 18" halign="right" foregroundColor="#5C5C5C" backgroundColor="#0f0f0f" transparent="1">
-			<convert type="ClockToText">Date</convert>
-		</widget>
+		<panel name="clockpanel" />
 	</screen>
 
 	<!-- DPS_Settings -->
@@ -91,12 +93,7 @@
 		<widget source="Title" text="System Settings" render="Label" transparent="1" zPosition="4" valign="center" position="10,12" size="190,30" font="OpenSans; 18" foregroundColor="#5C5C5C" backgroundColor="#0f0f0f" halign="left"/>
 
 		<!-- clock -->
-		<widget source="global.CurrentTime" render="Label" position="920,13" size="169,30" zPosition="4" font="OpenSans; 18" halign="left" foregroundColor="#e69405" backgroundColor="#0f0f0f" transparent="1" valign="top">
-			<convert type="ClockToText">Format:%H:%M</convert>
-		</widget>
-		<widget source="global.CurrentTime" render="Label" position="830,13" size="390,30" zPosition="4" font="OpenSans; 18" halign="right" foregroundColor="#5C5C5C" backgroundColor="#0f0f0f" transparent="1">
-			<convert type="ClockToText">Date</convert>
-		</widget>
+		<panel name="clockpanel" />
 
 		<!-- settings -->
 		<widget name="config" zPosition="3" position="40,80" size="1220,450" transparent="1" itemHeight="30" scrollbarMode="showOnDemand" foregroundColor="#5C5C5C" backgroundColor="#212121" foregroundColorSelected="#ffffff" selectionPixmap="/usr/lib/enigma2/python/Plugins/Extensions/DreamPlex/skins/default/images/focus_settings-fs8.png" backgroundPixmap="/usr/lib/enigma2/python/Plugins/Extensions/DreamPlex/skins/default/images/sel_bg-fs8.png"/>
@@ -118,12 +115,7 @@
 		<eLabel text="Systemcheck" transparent="1" zPosition="4" valign="center" position="21,12" size="190,30" font="OpenSans; 18" foregroundColor="#5C5C5C" backgroundColor="#0f0f0f" halign="left"/>
 
 		<!-- clock -->
-		<widget source="global.CurrentTime" render="Label" position="920,13" size="169,30" zPosition="4" font="OpenSans; 18" halign="left" foregroundColor="#e69405" backgroundColor="#0f0f0f" transparent="1" valign="top">
-			<convert type="ClockToText">Format:%H:%M</convert>
-		</widget>
-		<widget source="global.CurrentTime" render="Label" position="830,13" size="390,30" zPosition="4" font="OpenSans; 18" halign="right" foregroundColor="#5C5C5C" backgroundColor="#0f0f0f" transparent="1">
-			<convert type="ClockToText">Date</convert>
-		</widget>
+		<panel name="clockpanel" />
 
 		<!-- header -->
 		<widget name="header" zPosition="3" position="40,80" size="1220,20" transparent="1" backgroundColor="#212121" font="OpenSans;18"/>
@@ -162,12 +154,7 @@
 		</widget>
 
 		<!-- clock -->
-		<widget source="global.CurrentTime" render="Label" position="920,13" size="169,30" zPosition="4" font="OpenSans; 18" halign="left" foregroundColor="#e69405" backgroundColor="#0f0f0f" transparent="1" valign="top">
-			<convert type="ClockToText">Format:%H:%M</convert>
-		</widget>
-		<widget source="global.CurrentTime" render="Label" position="830,13" size="390,30" zPosition="4" font="OpenSans; 18" halign="right" foregroundColor="#5C5C5C" backgroundColor="#0f0f0f" transparent="1">
-			<convert type="ClockToText">Date</convert>
-		</widget>
+		<panel name="clockpanel" />
 
 		<!-- functions -->
 		<widget name="btn_red"  zPosition="6" position="100,687" size="12,17" alphatest="blend"/>
@@ -192,12 +179,7 @@
 		<widget source="Title" text="Server Config" render="Label" transparent="1" zPosition="4" valign="center" position="21,12" size="190,30" font="OpenSans; 18" foregroundColor="#5C5C5C" backgroundColor="#0f0f0f" halign="left"/>
 
 		<!-- clock -->
-		<widget source="global.CurrentTime" render="Label" position="920,13" size="169,30" zPosition="4" font="OpenSans; 18" halign="left" foregroundColor="#e69405" backgroundColor="#0f0f0f" transparent="1" valign="top">
-			<convert type="ClockToText">Format:%H:%M</convert>
-		</widget>
-		<widget source="global.CurrentTime" render="Label" position="830,13" size="390,30" zPosition="4" font="OpenSans; 18" halign="right" foregroundColor="#5C5C5C" backgroundColor="#0f0f0f" transparent="1">
-			<convert type="ClockToText">Date</convert>
-		</widget>
+		<panel name="clockpanel" />
 
 		<!-- settings -->
 		<widget name="config" zPosition="3" position="40,80" size="1220,450" transparent="1" itemHeight="33" scrollbarMode="showOnDemand" foregroundColor="#5C5C5C" backgroundColor="#212121" foregroundColorSelected="#ffffff" selectionPixmap="/usr/lib/enigma2/python/Plugins/Extensions/DreamPlex/skins/default/images/focus_settings-fs8.png" backgroundPixmap="/usr/lib/enigma2/python/Plugins/Extensions/DreamPlex/skins/default/images/sel_bg-fs8.png"/>
@@ -232,12 +214,7 @@
 		<widget name="content" zPosition="3" position="125,100" size="1025,600" transparent="1" itemHeight="35" scrollbarMode="showOnDemand" foregroundColor="#5C5C5C" backgroundColor="#212121" foregroundColorSelected="#ffffff" selectionPixmap="/usr/lib/enigma2/python/Plugins/Extensions/DreamPlex/skins/default/images/focus_settings-fs8.png" backgroundPixmap="/usr/lib/enigma2/python/Plugins/Extensions/DreamPlex/skins/default/images/sel_bg-fs8.png"/>
 
 		<!-- clock -->
-		<widget source="global.CurrentTime" render="Label" position="920,13" size="169,30" zPosition="4" font="OpenSans; 18" halign="left" foregroundColor="#e69405" backgroundColor="#0f0f0f" transparent="1" valign="top">
-			<convert type="ClockToText">Format:%H:%M</convert>
-		</widget>
-		<widget source="global.CurrentTime" render="Label" position="830,13" size="390,30" zPosition="4" font="OpenSans; 18" halign="right" foregroundColor="#5C5C5C" backgroundColor="#0f0f0f" transparent="1">
-			<convert type="ClockToText">Date</convert>
-		</widget>
+		<panel name="clockpanel" />
 
 		<!-- functions -->
 		<widget name="btn_red" zPosition="6" position="100,687" size="12,17" alphatest="blend"/>
@@ -256,12 +233,7 @@
 		<widget source="Title" text="" render="Label" transparent="1" zPosition="4" valign="center" position="25,12" size="190,30" font="OpenSans; 18" foregroundColor="#5C5C5C" backgroundColor="#0f0f0f" halign="left"/>
 
 		<!-- clock -->
-		<widget source="global.CurrentTime" render="Label" position="920,13" size="169,30" zPosition="4" font="OpenSans; 18" halign="left" foregroundColor="#e69405" backgroundColor="#0f0f0f" transparent="1" valign="top">
-			<convert type="ClockToText">Format:%H:%M</convert>
-		</widget>
-		<widget source="global.CurrentTime" render="Label" position="830,13" size="390,30" zPosition="4" font="OpenSans; 18" halign="right" foregroundColor="#5C5C5C" backgroundColor="#0f0f0f" transparent="1">
-			<convert type="ClockToText">Date</convert>
-		</widget>
+		<panel name="clockpanel" />
 
 		<!-- content -->
 		<widget name="targetText" zPosition="10" position="40,95" transparent="1" size="580,30" font="OpenSans; 18" backgroundColor="#212121" halign="left"/>
@@ -288,12 +260,7 @@
 		<widget name="content" zPosition="3" position="125,100" size="1025,600" transparent="1" itemHeight="35" scrollbarMode="showOnDemand" foregroundColor="#5C5C5C" backgroundColor="#212121" foregroundColorSelected="#ffffff" selectionPixmap="/usr/lib/enigma2/python/Plugins/Extensions/DreamPlex/skins/default/images/focus_settings-fs8.png" backgroundPixmap="/usr/lib/enigma2/python/Plugins/Extensions/DreamPlex/skins/default/images/sel_bg-fs8.png"/>
 
 		<!-- clock -->
-		<widget source="global.CurrentTime" render="Label" position="920,13" size="169,30" zPosition="4" font="OpenSans; 18" halign="left" foregroundColor="#e69405" backgroundColor="#0f0f0f" transparent="1" valign="top">
-			<convert type="ClockToText">Format:%H:%M</convert>
-		</widget>
-		<widget source="global.CurrentTime" render="Label" position="830,13" size="390,30" zPosition="4" font="OpenSans; 18" halign="right" foregroundColor="#5C5C5C" backgroundColor="#0f0f0f" transparent="1">
-			<convert type="ClockToText">Date</convert>
-		</widget>
+		<panel name="clockpanel" />
 
 		<!-- functions -->
 		<widget name="btn_red" zPosition="6" position="100,687" size="12,17" alphatest="blend"/>
@@ -315,12 +282,7 @@
 		<widget source="Title" text="Server Syncer" render="Label" transparent="1" zPosition="4" valign="center" position="15,12" size="190,30" font="OpenSans; 18" foregroundColor="#5C5C5C" backgroundColor="#0f0f0f" halign="left"/>
 
 		<!-- clock -->
-		<widget source="global.CurrentTime" render="Label" position="920,13" size="169,30" zPosition="4" font="OpenSans; 18" halign="left" foregroundColor="#e69405" backgroundColor="#0f0f0f" transparent="1" valign="top">
-			<convert type="ClockToText">Format:%H:%M</convert>
-		</widget>
-		<widget source="global.CurrentTime" render="Label" position="830,13" size="390,30" zPosition="4" font="OpenSans; 18" halign="right" foregroundColor="#5C5C5C" backgroundColor="#0f0f0f" transparent="1">
-			<convert type="ClockToText">Date</convert>
-		</widget>
+		<panel name="clockpanel" />
 
 		<!-- settings -->
 		<widget name="output" zPosition="99" position="630,80" size="670,450" font="OpenSans; 18" backgroundColor="#212121" foregroundColor="#ffffff" transparent="1" />
@@ -392,12 +354,7 @@
 		<widget name="number_key_popup" zPosition="51" halign="left" valign="center" position="501,310" size="75,80" font="OpenSans;70" foregroundColor="#FF8C00" transparent="1"/>
 
 		<!-- clock -->
-		<widget source="global.CurrentTime" render="Label" position="920,13" size="169,30" zPosition="4" font="OpenSans; 18" halign="left" foregroundColor="#e69405" backgroundColor="#0f0f0f" transparent="1" valign="top">
-			<convert type="ClockToText">Format:%H:%M</convert>
-		</widget>
-		<widget source="global.CurrentTime" render="Label" position="830,13" size="390,30" zPosition="4" font="OpenSans; 18" halign="right" foregroundColor="#5C5C5C" backgroundColor="#0f0f0f" transparent="1">
-			<convert type="ClockToText">Date</convert>
-		</widget>
+		<panel name="clockpanel" />
 
 		<!-- mini-tv -->
 		<ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/DreamPlex/skins/default/images/frame-fs8.png" position="0,0" zPosition="11" size="1280,720" alphatest="blend" transparent="1"/>
@@ -426,12 +383,7 @@
 		<widget name="miniTv" position="25,86" size="555,321" zPosition="10" backgroundColor="#ff111111"/>
 
 		<!-- clock -->
-		<widget source="global.CurrentTime" render="Label" position="920,13" size="169,30" zPosition="4" font="OpenSans; 18" halign="left" foregroundColor="#e69405" backgroundColor="#0f0f0f" transparent="1" valign="top">
-			<convert type="ClockToText">Format:%H:%M</convert>
-		</widget>
-		<widget source="global.CurrentTime" render="Label" position="830,13" size="390,30" zPosition="4" font="OpenSans; 18" halign="right" foregroundColor="#5C5C5C" backgroundColor="#0f0f0f" transparent="1">
-			<convert type="ClockToText">Date</convert>
-		</widget>
+		<panel name="clockpanel" />
 	</screen>
 	
 	<!-- DPS_ViewList -->
@@ -444,12 +396,7 @@
 		<widget source="Title" text="" render="Label" transparent="1" zPosition="4" position="15,14" size="190,30" font="OpenSans; 18" foregroundColor="#5C5C5C" backgroundColor="#0f0f0f" halign="left"/>
 
 		<!-- clock -->
-		<widget source="global.CurrentTime" render="Label" position="920,13" size="169,30" zPosition="4" font="OpenSans; 18" halign="left" foregroundColor="#e69405" backgroundColor="#0f0f0f" transparent="1" valign="top">
-			<convert type="ClockToText">Format:%H:%M</convert>
-		</widget>
-		<widget source="global.CurrentTime" render="Label" position="830,13" size="390,30" zPosition="4" font="OpenSans; 18" halign="right" foregroundColor="#5C5C5C" backgroundColor="#0f0f0f" transparent="1">
-			<convert type="ClockToText">Date</convert>
-		</widget>
+		<panel name="clockpanel" />
 
 		<!-- information -->
 		<widget name="totalLabel" transparent="1" zPosition="-88" halign="left" position="35,13" size="60,30" font="OpenSans;18" foregroundColor="#FF8C00" backgroundColor="#000000"/>
@@ -587,12 +534,7 @@
 		<widget source="Title" text="" render="Label" transparent="1" zPosition="4" position="15,14" size="190,30" font="OpenSans; 18" foregroundColor="#5C5C5C" backgroundColor="#0f0f0f" halign="left"/>
 
 		<!-- clock -->
-		<widget source="global.CurrentTime" render="Label" position="920,13" size="169,30" zPosition="4" font="OpenSans; 18" halign="left" foregroundColor="#e69405" backgroundColor="#0f0f0f" transparent="1" valign="top">
-			<convert type="ClockToText">Format:%H:%M</convert>
-		</widget>
-		<widget source="global.CurrentTime" render="Label" position="830,13" size="390,30" zPosition="4" font="OpenSans; 18" halign="right" foregroundColor="#5C5C5C" backgroundColor="#0f0f0f" transparent="1">
-			<convert type="ClockToText">Date</convert>
-		</widget>
+		<panel name="clockpanel" />
 
 		<!-- information -->
 
@@ -723,12 +665,7 @@
 		<eLabel position="0,0" zPosition="-2" size="1283,40" backgroundColor="#40000000" transparent="0" />
 
 		<!-- clock -->
-		<widget source="global.CurrentTime" render="Label" position="920,13" size="169,30" zPosition="4" font="OpenSans; 18" halign="left" foregroundColor="#e69405" backgroundColor="#0f0f0f" transparent="1" valign="top">
-			<convert type="ClockToText">Format:%H:%M</convert>
-		</widget>
-		<widget source="global.CurrentTime" render="Label" position="830,13" size="390,30" zPosition="4" font="OpenSans; 18" halign="right" foregroundColor="#5C5C5C" backgroundColor="#0f0f0f" transparent="1">
-			<convert type="ClockToText">Date</convert>
-		</widget>
+		<panel name="clockpanel" />
 
 		<widget name="poster" transparent="1" zPosition="49" position="0,450" size="195,268" alphatest="blend"/>
 
@@ -768,12 +705,7 @@
 		<eLabel position="0,0" zPosition="-2" size="1283,40" backgroundColor="#40000000" transparent="0" />
 
 		<!-- clock -->
-		<widget source="global.CurrentTime" render="Label" position="920,13" size="169,30" zPosition="4" font="OpenSans; 18" halign="left" foregroundColor="#e69405" backgroundColor="#0f0f0f" transparent="1" valign="top">
-			<convert type="ClockToText">Format:%H:%M</convert>
-		</widget>
-		<widget source="global.CurrentTime" render="Label" position="830,13" size="390,30" zPosition="4" font="OpenSans; 18" halign="right" foregroundColor="#5C5C5C" backgroundColor="#0f0f0f" transparent="1">
-			<convert type="ClockToText">Date</convert>
-		</widget>
+		<panel name="clockpanel" />
 
 		<widget name="poster" transparent="1" zPosition="49" position="0,450" size="195,268" alphatest="blend"/>
 		<widget source="mediaTitle" render="Label" zPosition="4" position="210,443" size="1070,42" font="OpenSans; 30" halign="left" valign="top" noWrap="1" foregroundColor="#FF8C00" backgroundColor="#40000000" transparent="1" />
