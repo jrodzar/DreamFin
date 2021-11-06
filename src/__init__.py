@@ -201,7 +201,7 @@ def initServerEntryConfig():
 	printl("playbackType: " + str(config.plugins.dreamplex.Entries[i].playbackType.value), "__init__::initServerEntryConfig", "D")
 
 	# plex.tv
-	config.plugins.dreamplex.Entries[i].myplexUrl = ConfigText(default="www.plex.tv", visible_width=50, fixed_size=False)
+	config.plugins.dreamplex.Entries[i].myplexUrl = ConfigText(default="plex.tv", visible_width=50, fixed_size=False)
 	config.plugins.dreamplex.Entries[i].myplexUsername = ConfigText(visible_width=50, fixed_size=False)
 	config.plugins.dreamplex.Entries[i].myplexId = ConfigInteger(default=0, limits=(1, 999999999999))
 	config.plugins.dreamplex.Entries[i].myplexPassword = ConfigText(visible_width=50, fixed_size=False)

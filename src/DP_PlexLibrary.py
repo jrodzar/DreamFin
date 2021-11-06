@@ -89,7 +89,7 @@ seed()
 #
 #===============================================================================
 DEFAULT_PORT = "32400"
-PLEXTV_SERVER = "www.plex.tv"
+PLEXTV_SERVER = "plex.tv"
 
 #===============================================================================
 # PlexLibrary
@@ -1299,7 +1299,12 @@ class PlexLibrary(Screen):
 			printl("", self, "C")
 			return False
 
-		base64string = base64.encodestring('%s:%s' % (self.g_myplex_username, self.g_myplex_password)).replace('\n', '')
+		up = '%s:%s' % (self.g_myplex_username, self.g_myplex_password)
+		if PY2:
+			base64string = base64.encodestring(up).replace('\n', '')
+		else:
+			up = up.encode('utf-8')
+			base64string = base64.encodebytes(up).replace(b'\n', b'').decode()
 
 		myplex_header = getPlexHeader(self.g_sessionID)
 		myplex_header['Authorization'] = "Basic %s" % base64string
@@ -1309,6 +1314,8 @@ class PlexLibrary(Screen):
 		conn.request(url="/users/sign_in.xml", method="POST", headers=myplex_header)
 		data = conn.getresponse()
 		response = data.read()
+		if not PY2:
+			response = response.decode("UTF-8")
 
 		try:
 			xmlResult = etree.fromstring(response)
@@ -2325,6 +2332,8 @@ class PlexLibrary(Screen):
 		conn.request(url=url, method=requestType, headers=myplex_header)
 		data = conn.getresponse()
 		response = data.read()
+		if not PY2:
+			response = response.decode("UTF-8")
 		printl("response: " + response, self, "D")
 
 		try:

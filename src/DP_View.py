@@ -2487,6 +2487,8 @@ class DP_View(DPH_Screen, DPH_ScreenHelper, DPH_MultiColorFunctions, DPH_Filter)
 				authHeader = self.plexInstance.get_hTokenForServer(self.details["server"])
 				printl("header: " + str(authHeader), self, "D")
 				download_url = str(download_url) if PY2 else str(download_url).encode("UTF-8")
+				if not PY2 and 'X-Plex-Token' in authHeader:
+					authHeader = {b'X-Plex-Token' : authHeader["X-Plex-Token"].encode("UTF-8")}
 				downloadPage(download_url, self.whatPoster, headers=authHeader).addCallback(lambda _: self.showPoster(forceShow=True))
 			else:
 				self.noPicData()
@@ -2514,6 +2516,8 @@ class DP_View(DPH_Screen, DPH_ScreenHelper, DPH_MultiColorFunctions, DPH_Filter)
 				authHeader = self.plexInstance.get_hTokenForServer(self.details["server"])
 				printl("header: " + str(authHeader), self, "D")
 				download_url = str(download_url) if PY2 else str(download_url).encode("UTF-8")
+				if not PY2 and 'X-Plex-Token' in authHeader:
+					authHeader = {b'X-Plex-Token' : authHeader["X-Plex-Token"].encode("UTF-8")}
 				downloadPage(download_url, self.whatBackdrop, headers=authHeader).addCallback(lambda _: self.showBackdrop(forceShow=True))
 			else:
 				self.noPicData()
