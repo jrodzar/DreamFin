@@ -70,29 +70,12 @@ class DPS_SystemCheck(Screen):
 
 		vlist = []
 
-#		self.archVersion = getBoxArch()
-
-#		if self.archVersion == "mipsel":
-#			vlist.append((_("Check for gst-plugin-fragmented"), "gst-plugin-fragmented"))
-
-#		elif self.archVersion == "mips32el":
 		vlist.append((_("Check for gst-plugins-bad-fragmented"), "gst-plugins-bad-fragmented"))
-
-#		else:
-#			printl("unknown oe version", self, "W")
-#			vlist.append((_("Check for gst-plugin-fragmented if you are using OE16."), "gst-plugin-fragmented"))
-#			vlist.append((_("Check for gst-plugins-bad-fragmented if you are using OE20."), "gst-plugins-bad-fragmented"))
 
 		if sys.version_info[0] == 2:
 			vlist.append((_("Check openSSL installation data."), "python-pyopenssl"))
-			vlist.append((_("Check python imaging installation data."), "python-imaging"))
-			vlist.append((_("Check python textutils installation data."), "python-textutils"))
 		else:
 			vlist.append((_("Check openSSL installation data."), "python3-pyopenssl"))
-			vlist.append((_("Check python imaging installation data."), "python3-pillow"))
-			vlist.append((_("Check python textutils installation data."), "python3-textutils"))
-		vlist.append((_("Check mjpegtools intallation data."), "mjpegtools"))
-		vlist.append((_("Check curl installation data."), "curl"))
 
 		vlist.append((_("Revoke cache files manually"), "revoke_cache"))
 
