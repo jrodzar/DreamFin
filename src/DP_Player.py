@@ -58,10 +58,10 @@ from Screens.InfoBarGenerics import InfoBarShowHide, \
 	InfoBarSeek, InfoBarAudioSelection, \
 	InfoBarServiceNotifications, InfoBarSimpleEventView, \
 	InfoBarExtensions, InfoBarNotifications, \
-	InfoBarSubtitleSupport, InfoBarServiceErrorPopupSupport, InfoBarCueSheetSupport
+	InfoBarSubtitleSupport, InfoBarServiceErrorPopupSupport, InfoBarCueSheetSupport, InfoBarMoviePlayerSummary
 
 from .DPH_Singleton import Singleton
-from .DP_Summary import DreamplexPlayerSummary
+#from .DP_Summary import DreamplexPlayerSummary
 from .DPH_ScreenHelper import DPH_ScreenHelper
 
 from .__common__ import printl2 as printl, convertSize, encodeThat
@@ -187,6 +187,7 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 		self.sessionData = sessionData
 		self.subtitleData = subtitleData
 		self.startedByRemotePlayer = startedByRemotePlayer
+		self.onChangedEntry = []
 
 		# we add this for vix images due to their long press button support
 		self.LongButtonPressed = False
@@ -208,7 +209,7 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 
 		self["actions"] = ActionMap(["DPS_Player"],
 		{
-		"ok": self.ok,
+		#"ok": self.ok,
 		"cancel": self.hide,
 		"exitFunction": self.exitFunction,
 		"keyTv": self.leavePlayer,
@@ -300,7 +301,8 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 		printl("", self, "S")
 
 		printl("", self, "C")
-		return DreamplexPlayerSummary
+		# return DreamplexPlayerSummary
+		return InfoBarMoviePlayerSummary
 
 	#==============================================================================
 	#
@@ -893,13 +895,13 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 	#===========================================================================
 	#
 	#===========================================================================
-	def ok(self):
+	def toggleShow(self):
 		#printl("", self, "S")
 
 		if self.playbackType != "2":
 			self.bufferInfo()
 
-		self.toggleShow()
+		super(DP_Player, self).toggleShow()
 
 		#printl("", self, "C")
 
@@ -1191,8 +1193,8 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 		printl("", self, "S")
 
 		try:
-			currentTime = self.getPlayPosition()[1] / 90000
-			totalTime = self.getPlayLength()[1] / 90000
+			currentTime = int(self.getPlayPosition()[1] / 90000)
+			totalTime = int(self.getPlayLength()[1] / 90000)
 			printl("progress data available, ...", self, "D")
 
 			if not EOF and currentTime is not None and currentTime > 0 and totalTime is not None and totalTime > 0:
@@ -1296,8 +1298,8 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 		printl("", self, "S")
 
 		try:
-			currentTime = self.getPlayPosition()[1] / 90000
-			totalTime = self.getPlayLength()[1] / 90000
+			currentTime = int(self.getPlayPosition()[1] / 90000)
+			totalTime = int(self.getPlayLength()[1] / 90000)
 			progress = int((float(currentTime) / float(totalTime)) * 100)
 		except:
 			return

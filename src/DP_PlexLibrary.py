@@ -1545,23 +1545,24 @@ class PlexLibrary(Screen):
 				self.serverID = str(self.g_serverConfig.id.value)
 				printl("serverID: " + str(self.serverID), self, "D")
 
-				for entry in tree.findall("server"):
-					printl("servername: " + str(entry.get('id')), self, "D")
-					if str(entry.get('id')) == str(self.serverID):
+				if tree:
+					for entry in tree.findall("server"):
+						printl("servername: " + str(entry.get('id')), self, "D")
+						if str(entry.get('id')) == str(self.serverID):
 
-						for mapping in entry.findall('mapping'):
-							self.lastMappingId = mapping.attrib.get("id")
-							remotePathPart = mapping.attrib.get("remotePathPart")
-							localPathPart = mapping.attrib.get("localPathPart")
-							printl("self.lastMappingId: " + str(self.lastMappingId), self, "D")
-							printl("remotePathPart: " + str(remotePathPart), self, "D")
-							printl("localPathPart: " + str(localPathPart), self, "D")
+							for mapping in entry.findall('mapping'):
+								self.lastMappingId = mapping.attrib.get("id")
+								remotePathPart = mapping.attrib.get("remotePathPart")
+								localPathPart = mapping.attrib.get("localPathPart")
+								printl("self.lastMappingId: " + str(self.lastMappingId), self, "D")
+								printl("remotePathPart: " + str(remotePathPart), self, "D")
+								printl("localPathPart: " + str(localPathPart), self, "D")
 
-							locationCheck = self.checkFileLocation(remotePathPart, localPathPart)
+								locationCheck = self.checkFileLocation(remotePathPart, localPathPart)
 
-							# if we find the media within the provided location we leave
-							if locationCheck:
-								return locationCheck
+								# if we find the media within the provided location we leave
+								if locationCheck:
+									return locationCheck
 
 				printl("Sorry I didn't find the file on the provided locations", self, "I")
 
