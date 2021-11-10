@@ -1782,7 +1782,7 @@ class DP_View(DPH_Screen, DPH_ScreenHelper, DPH_MultiColorFunctions, DPH_Filter)
 
 		self.seen = False
 		if "viewCount" in self.selection[1]:
-			if self.selection[1]["viewCount"] > 0:
+			if int(self.selection[1]["viewCount"]) > 0:
 				self.seen = True
 
 		if self.currentFunctionLevel == "1":
