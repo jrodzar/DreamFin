@@ -273,7 +273,6 @@ class PlexGdm(object):
 					data, server = sock.recvfrom(1024)
 					printl("Received data from %s" % str(server), self, "D")
 					printl("Data received is:\n %s" % str(data), self, "D")
-					server = server if PY2 else server.decode()
 					data = data if PY2 else data.decode()
 					returnData.append({'from': server,
 					                   'data': data})
