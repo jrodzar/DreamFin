@@ -1,14 +1,42 @@
 <skin>
 
+
+	<colors>
+		<color name="ButtonText" value="#ACACAC" />
+		<color name="ListColor" value="#ACACAC" />
+		<color name="TitleColor" value="#8C8C8C" />
+	</colors>
+
 	<!--clockpanel -->
 	<screen name="clockpanel">
 		<!-- clock -->
-		<widget source="global.CurrentTime" render="Label" position="920,13" size="169,30" zPosition="4" font="OpenSans; 18" halign="left" foregroundColor="#5C5C5C" backgroundColor="#0f0f0f" transparent="1" valign="top">
+		<widget source="global.CurrentTime" render="Label" position="920,13" size="169,30" zPosition="4" font="OpenSans; 18" halign="left" foregroundColor="TitleColor" backgroundColor="#0f0f0f" transparent="1" valign="top">
 			<convert type="ClockToText">Format:%H:%M</convert>
 		</widget>
-		<widget source="global.CurrentTime" render="Label" position="830,13" size="390,30" zPosition="4" font="OpenSans; 18" halign="right" foregroundColor="#5C5C5C" backgroundColor="#0f0f0f" transparent="1">
+		<widget source="global.CurrentTime" render="Label" position="830,13" size="390,30" zPosition="4" font="OpenSans; 18" halign="right" foregroundColor="TitleColor" backgroundColor="#0f0f0f" transparent="1">
 			<convert type="ClockToText">Date</convert>
 		</widget>
+	</screen>
+
+	<!-- Buttons -->
+	<screen name="TemplateButtonRed" flags="wfNoBorder">
+		<widget name="btn_red"  zPosition="6" position="100,687" size="12,17" alphatest="blend"/>
+		<widget name="btn_redText" position="120,677" zPosition="9" size="231,37" font="OpenSans;14" halign="left" valign="center" foregroundColor="ButtonText" backgroundColor="#000000" transparent="1"/>
+	</screen>
+
+	<screen name="TemplateButtonGreen" flags="wfNoBorder">
+		<widget name="btn_green" zPosition="6" position="380,687" size="12,17" alphatest="blend"/>
+		<widget name="btn_greenText" position="400,677" zPosition="9" size="231,37" font="OpenSans;14" halign="left" valign="center" foregroundColor="ButtonText" backgroundColor="#000000" transparent="1"/>
+	</screen>
+
+	<screen name="TemplateButtonYellow" flags="wfNoBorder">
+		<widget name="btn_yellow"  zPosition="6" position="640,687" size="12,17" alphatest="blend"/>
+		<widget name="btn_yellowText" position="660,677" zPosition="9" size="231,37" font="OpenSans;14" halign="left" valign="center" foregroundColor="ButtonText" backgroundColor="#000000" transparent="1"/>
+	</screen>
+
+	<screen name="TemplateButtonBlue" flags="wfNoBorder">
+		<widget name="btn_blue"  zPosition="6" position="890,687" size="12,17" alphatest="blend"/>
+		<widget name="btn_blueText" position="910,677" zPosition="9" size="231,37" font="OpenSans;14" halign="left" valign="center" foregroundColor="ButtonText" backgroundColor="#000000" transparent="1"/>
 	</screen>
 
 	<!--DPS_MainMenu -->
@@ -17,7 +45,7 @@
 		<ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/DreamPlex/skins/default/images/background-fs8.png" position="0,0" zPosition="-2" size="1280,720" transparent="1"/>
 
 		<!-- title -->
-		<widget source="Title" render="Label" transparent="1" zPosition="4" valign="center" position="28,13" size="190,30" font="OpenSans; 18" foregroundColor="#5C5C5C" backgroundColor="#000000" halign="left"/>
+		<widget source="Title" render="Label" transparent="1" zPosition="4" valign="center" position="28,13" size="190,30" font="OpenSans; 18" foregroundColor="TitleColor" backgroundColor="#000000" halign="left"/>
 
 		<!-- menu -->
 		<widget source="menu" render="Listbox" position="10,232" size="1,1" zPosition="0">
@@ -72,7 +100,7 @@
 		<ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/DreamPlex/skins/default/images/background2-fs8.png" position="0,0" zPosition="1" size="1280,720" transparent="0"/>
 
 		<!-- title -->
-		<widget source="Title" render="Label" transparent="1" zPosition="4" valign="center" position="50,13" size="190,30" font="OpenSans; 18" foregroundColor="#5C5C5C" backgroundColor="#0f0f0f" halign="left"/>
+		<widget source="Title" render="Label" transparent="1" zPosition="4" valign="center" position="50,13" size="190,30" font="OpenSans; 18" foregroundColor="TitleColor" backgroundColor="#0f0f0f" halign="left"/>
 
 		<!-- left content -->
 		<widget name="leftText" zPosition="3" position="125,110" size="450,500" transparent="1" font="OpenSans;18" backgroundColor="#222222" foregroundColor="#ffffff"/>
@@ -90,20 +118,23 @@
 		<ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/DreamPlex/skins/default/images/background2-fs8.png" position="0,0" zPosition="1" size="1280,720" transparent="0"/>
 
 		<!-- title -->
-		<widget source="Title" text="System Settings" render="Label" transparent="1" zPosition="4" valign="center" position="10,12" size="190,30" font="OpenSans; 18" foregroundColor="#5C5C5C" backgroundColor="#0f0f0f" halign="left"/>
+		<widget source="Title" text="System Settings" render="Label" transparent="1" zPosition="4" valign="center" position="10,12" size="190,30" font="OpenSans; 18" foregroundColor="TitleColor" backgroundColor="#0f0f0f" halign="left"/>
 
 		<!-- clock -->
 		<panel name="clockpanel" />
 
 		<!-- settings -->
-		<widget name="config" zPosition="3" position="40,80" size="1220,450" transparent="1" itemHeight="30" scrollbarMode="showOnDemand" foregroundColor="#5C5C5C" backgroundColor="#212121" foregroundColorSelected="#ffffff" selectionPixmap="/usr/lib/enigma2/python/Plugins/Extensions/DreamPlex/skins/default/images/focus_settings-fs8.png" backgroundPixmap="/usr/lib/enigma2/python/Plugins/Extensions/DreamPlex/skins/default/images/sel_bg-fs8.png"/>
+		<widget name="config" zPosition="3" position="40,80" size="1220,450" transparent="1" itemHeight="30" scrollbarMode="showOnDemand" foregroundColor="ListColor" backgroundColor="#212121" foregroundColorSelected="#ffffff" selectionPixmap="/usr/lib/enigma2/python/Plugins/Extensions/DreamPlex/skins/default/images/focus_settings-fs8.png" backgroundPixmap="/usr/lib/enigma2/python/Plugins/Extensions/DreamPlex/skins/default/images/sel_bg-fs8.png"/>
 
 		<!-- hintbox -->
 		<ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/DreamPlex/skins/default/images/hintbox-fs8.png" position="20,550" zPosition="1" size="1227,93" transparent="0"/>
 		<widget source="help" render="Label" position="40,565" size="1025,100" font="OpenSans; 18" foregroundColor="#ffffff" backgroundColor="#0f0f0f" zPosition="30" transparent="1"/>
 
-		<widget name="btn_green" zPosition="6" position="20,687" size="12,17" alphatest="blend"/>
-		<widget name="btn_greenText" position="40,677" zPosition="9" size="231,37" font="OpenSans;16" halign="left" valign="center" foregroundColor="#5C5C5C" backgroundColor="#000000" transparent="1"/>
+		<panel name="TemplateButtonRed" conditional="btn_red" />
+		<panel name="TemplateButtonGreen" conditional="btn_green" />
+		<panel name="TemplateButtonYellow" conditional="btn_yellow" />
+		<panel name="TemplateButtonBlue" conditional="btn_blue" />
+
 	</screen>
 
 	<!-- DPS_SystemCheck -->
@@ -131,7 +162,7 @@
 		<ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/DreamPlex/skins/default/images/background2-fs8.png" position="0,0" zPosition="1" size="1280,720" transparent="0"/>
 
 		<!-- title -->
-		<widget source="Title" text="System Server" render="Label" transparent="1" zPosition="4" valign="center" position="18,12" size="190,30" font="OpenSans; 18" foregroundColor="#5C5C5C" backgroundColor="#0f0f0f" halign="left"/>
+		<widget source="Title" text="System Server" render="Label" transparent="1" zPosition="4" valign="center" position="18,12" size="190,30" font="OpenSans; 18" foregroundColor="TitleColor" backgroundColor="#0f0f0f" halign="left"/>
 
 		<!-- header -->
 		<widget name="header" zPosition="3" position="40,80" size="1220,20" foregroundColor="#ffffff" backgroundColor="#212121" transparent="1"  font="OpenSans;18"/>
@@ -156,18 +187,11 @@
 		<!-- clock -->
 		<panel name="clockpanel" />
 
-		<!-- functions -->
-		<widget name="btn_red"  zPosition="6" position="100,687" size="12,17" alphatest="blend"/>
-		<widget name="btn_redText" position="120,677" zPosition="9" size="231,37" font="OpenSans;14" halign="left" valign="center" foregroundColor="#5C5C5C" backgroundColor="#000000" transparent="1"/>
+		<panel name="TemplateButtonRed" conditional="btn_red" />
+		<panel name="TemplateButtonGreen" conditional="btn_green" />
+		<panel name="TemplateButtonYellow" conditional="btn_yellow" />
+		<panel name="TemplateButtonBlue" conditional="btn_blue" />
 
-		<widget name="btn_green" zPosition="6" position="380,687" size="12,17" alphatest="blend"/>
-		<widget name="btn_greenText" position="400,677" zPosition="9" size="231,37" font="OpenSans;14" halign="left" valign="center" foregroundColor="#5C5C5C" backgroundColor="#000000" transparent="1"/>
-
-		<widget name="btn_yellow"  zPosition="6" position="640,687" size="12,17" alphatest="blend"/>
-		<widget name="btn_yellowText" position="660,677" zPosition="9" size="231,37" font="OpenSans;14" halign="left" valign="center" foregroundColor="#5C5C5C" backgroundColor="#000000" transparent="1"/>
-
-		<widget name="btn_blue"  zPosition="6" position="890,687" size="12,17" alphatest="blend"/>
-		<widget name="btn_blueText" position="910,677" zPosition="9" size="231,37" font="OpenSans;14" halign="left" valign="center" foregroundColor="#5C5C5C" backgroundColor="#000000" transparent="1"/>
 	</screen>
 
 	<!-- DPS_ServerConfig -->
@@ -176,30 +200,23 @@
 		<ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/DreamPlex/skins/default/images/background2-fs8.png" position="0,0" zPosition="1" size="1280,720" transparent="0"/>
 
 		<!-- title -->
-		<widget source="Title" text="Server Config" render="Label" transparent="1" zPosition="4" valign="center" position="21,12" size="190,30" font="OpenSans; 18" foregroundColor="#5C5C5C" backgroundColor="#0f0f0f" halign="left"/>
+		<widget source="Title" text="Server Config" render="Label" transparent="1" zPosition="4" valign="center" position="21,12" size="190,30" font="OpenSans; 18" foregroundColor="TitleColor" backgroundColor="#0f0f0f" halign="left"/>
 
 		<!-- clock -->
 		<panel name="clockpanel" />
 
 		<!-- settings -->
-		<widget name="config" zPosition="3" position="40,80" size="1220,450" transparent="1" itemHeight="33" scrollbarMode="showOnDemand" foregroundColor="#5C5C5C" backgroundColor="#212121" foregroundColorSelected="#ffffff" selectionPixmap="/usr/lib/enigma2/python/Plugins/Extensions/DreamPlex/skins/default/images/focus_settings-fs8.png" backgroundPixmap="/usr/lib/enigma2/python/Plugins/Extensions/DreamPlex/skins/default/images/sel_bg-fs8.png"/>
+		<widget name="config" zPosition="3" position="40,80" size="1220,450" transparent="1" itemHeight="33" scrollbarMode="showOnDemand" foregroundColor="ListColor" backgroundColor="#212121" foregroundColorSelected="#ffffff" selectionPixmap="/usr/lib/enigma2/python/Plugins/Extensions/DreamPlex/skins/default/images/focus_settings-fs8.png" backgroundPixmap="/usr/lib/enigma2/python/Plugins/Extensions/DreamPlex/skins/default/images/sel_bg-fs8.png"/>
 
 		<!-- hintbox -->
 		<ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/DreamPlex/skins/default/images/hintbox-fs8.png" position="20,550" zPosition="1" size="1233,113" transparent="0"/>
 		<widget source="help" render="Label" position="40,565" size="1025,100" font="OpenSans; 18" foregroundColor="#ffffff" backgroundColor="#212121" zPosition="30" transparent="1"/>
 
-		<!-- functions -->
-		<widget name="btn_red"  zPosition="6" position="100,687" size="12,17" alphatest="blend"/>
-		<widget name="btn_redText" position="120,677" zPosition="9" size="231,37" font="OpenSans;14" halign="left" valign="center" foregroundColor="#5C5C5C" backgroundColor="#000000" transparent="1"/>
+		<panel name="TemplateButtonRed" conditional="btn_red" />
+		<panel name="TemplateButtonGreen" conditional="btn_green" />
+		<panel name="TemplateButtonYellow" conditional="btn_yellow" />
+		<panel name="TemplateButtonBlue" conditional="btn_blue" />
 
-		<widget name="btn_green" zPosition="6" position="380,687" size="12,17" alphatest="blend"/>
-		<widget name="btn_greenText" position="400,677" zPosition="9" size="231,37" font="OpenSans;14" halign="left" valign="center" foregroundColor="#5C5C5C" backgroundColor="#000000" transparent="1"/>
-
-		<widget name="btn_yellow"  zPosition="6" position="640,687" size="12,17" alphatest="blend"/>
-		<widget name="btn_yellowText" position="660,677" zPosition="9" size="231,37" font="OpenSans;14" halign="left" valign="center" foregroundColor="#5C5C5C" backgroundColor="#000000" transparent="1"/>
-
-		<widget name="btn_blue"  zPosition="6" position="890,687" size="12,17" alphatest="blend"/>
-		<widget name="btn_blueText" position="910,677" zPosition="9" size="231,37" font="OpenSans;14" halign="left" valign="center" foregroundColor="#5C5C5C" backgroundColor="#000000" transparent="1"/>
 	</screen>
 
 	<!-- DPS_Mappings -->
@@ -208,7 +225,7 @@
 		<ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/DreamPlex/skins/default/images/background2-fs8.png" position="0,0" zPosition="1" size="1280,720" transparent="0"/>
 
 		<!-- title -->
-		<widget source="Title" text="Mappings" render="Label" transparent="1" zPosition="4" valign="center" position="33,12" size="190,30" font="OpenSans; 18" foregroundColor="#5C5C5C" backgroundColor="#0f0f0f" halign="left"/>
+		<widget source="Title" text="Mappings" render="Label" transparent="1" zPosition="4" valign="center" position="33,12" size="190,30" font="OpenSans; 18" foregroundColor="TitleColor" backgroundColor="#0f0f0f" halign="left"/>
 
 		<!-- content -->
 		<widget name="content" zPosition="3" position="125,100" size="1025,600" transparent="1" itemHeight="35" scrollbarMode="showOnDemand" foregroundColor="#5C5C5C" backgroundColor="#212121" foregroundColorSelected="#ffffff" selectionPixmap="/usr/lib/enigma2/python/Plugins/Extensions/DreamPlex/skins/default/images/focus_settings-fs8.png" backgroundPixmap="/usr/lib/enigma2/python/Plugins/Extensions/DreamPlex/skins/default/images/sel_bg-fs8.png"/>
@@ -216,12 +233,12 @@
 		<!-- clock -->
 		<panel name="clockpanel" />
 
-		<!-- functions -->
-		<widget name="btn_red" zPosition="6" position="100,687" size="12,17" alphatest="blend"/>
-		<widget name="btn_redText" position="120,677" zPosition="9" size="231,37" font="OpenSans;16" halign="left" valign="center" foregroundColor="#5C5C5C" backgroundColor="#000000" transparent="1"/>
+		<!-- buttons -->
+		<panel name="TemplateButtonRed" conditional="btn_red" />
+		<panel name="TemplateButtonGreen" conditional="btn_green" />
+		<panel name="TemplateButtonYellow" conditional="btn_yellow" />
+		<panel name="TemplateButtonBlue" conditional="btn_blue" />
 
-		<widget name="btn_green" zPosition="6" position="380,687" size="12,17" alphatest="blend"/>
-		<widget name="btn_greenText" position="400,677" zPosition="9" size="231,37" font="OpenSans;16" halign="left" valign="center" foregroundColor="#5C5C5C" backgroundColor="#000000" transparent="1"/>
 	</screen>
 	
 	<!-- DPS_PathSelector -->
@@ -230,7 +247,7 @@
 		<ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/DreamPlex/skins/default/images/background2-fs8.png" position="0,0" zPosition="1" size="1280,720" transparent="0"/>
 
 		<!-- title -->
-		<widget source="Title" text="" render="Label" transparent="1" zPosition="4" valign="center" position="25,12" size="190,30" font="OpenSans; 18" foregroundColor="#5C5C5C" backgroundColor="#0f0f0f" halign="left"/>
+		<widget source="Title" text="" render="Label" transparent="1" zPosition="4" valign="center" position="25,12" size="190,30" font="OpenSans; 18" foregroundColor="TitleColor" backgroundColor="#0f0f0f" halign="left"/>
 
 		<!-- clock -->
 		<panel name="clockpanel" />
@@ -240,12 +257,12 @@
 		<widget name="target" zPosition="10" position="110,95" transparent="1" size="580,25" valign="center" font="OpenSans;18" backgroundColor="#212121" />
 		<widget name="filelist" zPosition="10" position="40,140" size="560,500" scrollbarMode="showOnDemand" backgroundColor="#212121" transparent="1"/>
 
-		<!-- functions -->
-		<widget name="btn_red"  zPosition="6" position="100,687" size="12,17" alphatest="blend"/>
-		<widget name="btn_redText" position="120,677" zPosition="9" size="231,37" font="OpenSans;16" halign="left" valign="center" foregroundColor="#5C5C5C" backgroundColor="#000000" transparent="1"/>
+		<!-- buttons -->
+		<panel name="TemplateButtonRed" conditional="btn_red" />
+		<panel name="TemplateButtonGreen" conditional="btn_green" />
+		<panel name="TemplateButtonYellow" conditional="btn_yellow" />
+		<panel name="TemplateButtonBlue" conditional="btn_blue" />
 
-		<widget name="btn_green" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/DreamPlex/skins/default/buttons/btn_green-fs8.png" zPosition="6" position="380,687" size="12,17" alphatest="blend"/>
-		<widget name="btn_greenText" position="400,677" zPosition="9" size="231,37" font="OpenSans;16" halign="left" valign="center" foregroundColor="#5C5C5C" backgroundColor="#000000" transparent="1"/>
 	</screen>
 
 	<!-- DPS_Users -->
@@ -254,7 +271,7 @@
 		<ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/DreamPlex/skins/default/images/background2-fs8.png" position="0,0" zPosition="1" size="1280,720" transparent="0"/>
 
 		<!-- title -->
-		<widget source="Title" text="Home Users" render="Label" transparent="1" zPosition="4" valign="center" position="33,12" size="190,30" font="OpenSans; 18" foregroundColor="#5C5C5C" backgroundColor="#0f0f0f" halign="left"/>
+		<widget source="Title" text="Home Users" render="Label" transparent="1" zPosition="4" valign="center" position="33,12" size="190,30" font="OpenSans; 18" foregroundColor="TitleColor" backgroundColor="#0f0f0f" halign="left"/>
 
 		<!-- content -->
 		<widget name="content" zPosition="3" position="125,100" size="1025,600" transparent="1" itemHeight="35" scrollbarMode="showOnDemand" foregroundColor="#5C5C5C" backgroundColor="#212121" foregroundColorSelected="#ffffff" selectionPixmap="/usr/lib/enigma2/python/Plugins/Extensions/DreamPlex/skins/default/images/focus_settings-fs8.png" backgroundPixmap="/usr/lib/enigma2/python/Plugins/Extensions/DreamPlex/skins/default/images/sel_bg-fs8.png"/>
@@ -262,15 +279,11 @@
 		<!-- clock -->
 		<panel name="clockpanel" />
 
-		<!-- functions -->
-		<widget name="btn_red" zPosition="6" position="100,687" size="12,17" alphatest="blend"/>
-		<widget name="btn_redText" position="120,677" zPosition="9" size="231,37" font="OpenSans;16" halign="left" valign="center" foregroundColor="#5C5C5C" backgroundColor="#000000" transparent="1"/>
-
-		<widget name="btn_green" zPosition="6" position="380,687" size="12,17" alphatest="blend"/>
-		<widget name="btn_greenText" position="400,677" zPosition="9" size="231,37" font="OpenSans;16" halign="left" valign="center" foregroundColor="#5C5C5C" backgroundColor="#000000" transparent="1"/>
-
-		<widget name="btn_yellow"  zPosition="6" position="640,687" size="12,17" alphatest="blend"/>
-		<widget name="btn_yellowText" position="660,677" zPosition="9" size="231,37" font="OpenSans;14" halign="left" valign="center" foregroundColor="#5C5C5C" backgroundColor="#000000" transparent="1"/>
+		<!-- buttons -->
+		<panel name="TemplateButtonRed" conditional="btn_red" />
+		<panel name="TemplateButtonGreen" conditional="btn_green" />
+		<panel name="TemplateButtonYellow" conditional="btn_yellow" />
+		<panel name="TemplateButtonBlue" conditional="btn_blue" />
 	</screen>
 
 	<!-- DPS_Syncer -->
@@ -279,7 +292,7 @@
 		<ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/DreamPlex/skins/default/images/background2-fs8.png" position="0,0" zPosition="-1" size="1280,720" transparent="0"/>
 
 		<!-- title -->
-		<widget source="Title" text="Server Syncer" render="Label" transparent="1" zPosition="4" valign="center" position="15,12" size="190,30" font="OpenSans; 18" foregroundColor="#5C5C5C" backgroundColor="#0f0f0f" halign="left"/>
+		<widget source="Title" text="Server Syncer" render="Label" transparent="1" zPosition="4" valign="center" position="15,12" size="190,30" font="OpenSans; 18" foregroundColor="TitleColor" backgroundColor="#0f0f0f" halign="left"/>
 
 		<!-- clock -->
 		<panel name="clockpanel" />
@@ -292,15 +305,11 @@
 		<ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/DreamPlex/skins/default/images/frame-fs8.png" position="0,0" zPosition="11" size="1280,720" alphatest="blend" transparent="1"/>
 		<widget name="miniTv" position="25,86" size="555,321" zPosition="10" backgroundColor="#ff111111"/>
 
-		<!-- functions -->
-		<widget name="btn_red" zPosition="6" position="100,687" size="12,17" alphatest="blend"/>
-		<widget name="btn_redText" position="120,677" zPosition="9" size="231,37" font="OpenSans;16" halign="left" valign="center" foregroundColor="#5C5C5C" backgroundColor="#000000" transparent="1"/>
-
-		<widget name="btn_green" zPosition="6" position="380,687" size="12,17" alphatest="blend"/>
-		<widget name="btn_greenText" position="400,677" zPosition="9" size="231,37" font="OpenSans;16" halign="left" valign="center" foregroundColor="#5C5C5C" backgroundColor="#000000" transparent="1"/>
-
-		<widget name="btn_blue" zPosition="6" position="980,687" size="12,17" alphatest="blend"/>
-		<widget name="btn_blueText" position="1000,677" zPosition="9" size="231,37" font="OpenSans;16" halign="left" valign="center" foregroundColor="#5C5C5C" backgroundColor="#000000" transparent="1"/>
+		<!-- buttons -->
+		<panel name="TemplateButtonRed" conditional="btn_red" />
+		<panel name="TemplateButtonGreen" conditional="btn_green" />
+		<panel name="TemplateButtonYellow" conditional="btn_yellow" />
+		<panel name="TemplateButtonBlue" conditional="btn_blue" />
 	</screen>
 
 	<!--DPS_ServerMenu -->
@@ -309,7 +318,7 @@
 		<ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/DreamPlex/skins/default/images/background-fs8.png" position="0,0" zPosition="-2" size="1280,720" transparent="1"/>
 
 		<!-- title -->
-		<widget source="Title" render="Label" transparent="1" zPosition="4" valign="center" position="21,12" size="190,30" font="OpenSans; 18" foregroundColor="#5C5C5C" backgroundColor="#0f0f0f" halign="left"/>
+		<widget source="Title" render="Label" transparent="1" zPosition="4" valign="center" position="21,12" size="190,30" font="OpenSans; 18" foregroundColor="TitleColor" backgroundColor="#0f0f0f" halign="left"/>
 
 		<!-- menu -->
 		<widget source="menu" render="Listbox" position="10,232" size="1,1" zPosition="0">
@@ -363,8 +372,11 @@
 		<widget name="text_HomeUserLabel" position="40,390" zPosition="15" size="231,37" font="OpenSans;16" halign="left" valign="center" foregroundColor="#5C5C5C" backgroundColor="#000000" transparent="1"/>
 		<widget name="text_HomeUser" position="160,390" zPosition="15" size="231,37" font="OpenSans;16" halign="left" valign="center" foregroundColor="#5C5C5C" backgroundColor="#000000" transparent="1"/>
 
-		<widget name="btn_green" zPosition="15" position="420,400" size="12,17" alphatest="blend"/>
-		<widget name="btn_greenText" position="440,390" zPosition="15" size="231,37" font="OpenSans;16" halign="left" valign="center" foregroundColor="#5C5C5C" backgroundColor="#000000" transparent="1"/>
+		<!-- buttons -->
+		<panel name="TemplateButtonRed" conditional="btn_red" />
+		<panel name="TemplateButtonGreen" conditional="btn_green" />
+		<panel name="TemplateButtonYellow" conditional="btn_yellow" />
+		<panel name="TemplateButtonBlue" conditional="btn_blue" />
 	</screen>
 
 	<!-- DPS_InputBox -->
@@ -373,7 +385,7 @@
 		<ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/DreamPlex/skins/default/images/background2-fs8.png" position="0,0" zPosition="1" size="1280,720" transparent="0"/>
 
 		<!-- title -->
-		<widget source="Title" text="" render="Label" transparent="1" zPosition="4" valign="center" position="55,12" size="190,30" font="OpenSans; 18" foregroundColor="#5C5C5C" backgroundColor="#0f0f0f" halign="left"/>
+		<widget source="Title" text="" render="Label" transparent="1" zPosition="4" valign="center" position="55,12" size="190,30" font="OpenSans; 18" foregroundColor="TitleColor" backgroundColor="#0f0f0f" halign="left"/>
 
 		<widget name="text" zPosition="10" position="20,445" transparent="1" size="610,30" font="OpenSans; 18" backgroundColor="#212121" halign="left"/>
 		<widget name="input" zPosition="10" position="355,445" transparent="1" size="580,25" backgroundColor="#212121" font="OpenSans; 18"/>
@@ -393,7 +405,7 @@
 		<ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/DreamPlex/skins/default/images/background1-fs8.png" position="0,0" zPosition="-1" size="1280,720" transparent="0"/>
 
 		<!-- title -->
-		<widget source="Title" text="" render="Label" transparent="1" zPosition="4" position="15,14" size="190,30" font="OpenSans; 18" foregroundColor="#5C5C5C" backgroundColor="#0f0f0f" halign="left"/>
+		<widget source="Title" text="" render="Label" transparent="1" zPosition="4" position="15,14" size="190,30" font="OpenSans; 18" foregroundColor="TitleColor" backgroundColor="#0f0f0f" halign="left"/>
 
 		<!-- clock -->
 		<panel name="clockpanel" />
@@ -502,17 +514,10 @@
 		<!-- music specific -->
 
 		<!-- buttons -->
-		<widget name="btn_red"  zPosition="6" position="100,687" size="12,17" alphatest="blend"/>
-		<widget name="btn_redText" position="120,677" zPosition="9" size="231,37" font="OpenSans;14" halign="left" valign="center" foregroundColor="#5C5C5C" backgroundColor="#000000" transparent="1"/>
-
-		<widget name="btn_green" zPosition="6" position="380,687" size="12,17" alphatest="blend"/>
-		<widget name="btn_greenText" position="400,677" zPosition="9" size="231,37" font="OpenSans;14" halign="left" valign="center" foregroundColor="#5C5C5C" backgroundColor="#000000" transparent="1"/>
-
-		<widget name="btn_yellow"  zPosition="6" position="640,687" size="12,17" alphatest="blend"/>
-		<widget name="btn_yellowText" position="660,677" zPosition="9" size="231,37" font="OpenSans;14" halign="left" valign="center" foregroundColor="#5C5C5C" backgroundColor="#000000" transparent="1"/>
-
-		<widget name="btn_blue"  zPosition="6" position="890,687" size="12,17" alphatest="blend"/>
-		<widget name="btn_blueText" position="910,677" zPosition="9" size="231,37" font="OpenSans;14" halign="left" valign="center" foregroundColor="#5C5C5C" backgroundColor="#000000" transparent="1"/>
+		<panel name="TemplateButtonRed" conditional="btn_red" />
+		<panel name="TemplateButtonGreen" conditional="btn_green" />
+		<panel name="TemplateButtonYellow" conditional="btn_yellow" />
+		<panel name="TemplateButtonBlue" conditional="btn_blue" />
 
 		<!-- functions -->
 		<widget name="number_key_popup" zPosition="51" halign="left" valign="center" position="501,310" size="75,80" font="OpenSans;70" foregroundColor="#FF8C00" transparent="1"/>
@@ -531,7 +536,7 @@
 		<ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/DreamPlex/skins/default/images/background3-fs8.png" position="0,0" zPosition="-1" size="1280,720" transparent="0" alphatest="blend"/>
 
 		<!-- title -->
-		<widget source="Title" text="" render="Label" transparent="1" zPosition="4" position="15,14" size="190,30" font="OpenSans; 18" foregroundColor="#5C5C5C" backgroundColor="#0f0f0f" halign="left"/>
+		<widget source="Title" text="" render="Label" transparent="1" zPosition="4" position="15,14" size="190,30" font="OpenSans; 18" foregroundColor="TitleColor" backgroundColor="#0f0f0f" halign="left"/>
 
 		<!-- clock -->
 		<panel name="clockpanel" />
@@ -637,17 +642,10 @@
 		<widget name="miniTv" position="0,0" size="1280,720" zPosition="-4" backgroundColor="#ff111111"/>
 
 		<!-- buttons -->
-		<widget name="btn_red"  zPosition="6" position="100,687" size="12,17" alphatest="blend"/>
-		<widget name="btn_redText" position="120,677" zPosition="9" size="231,37" font="OpenSans;14" halign="left" valign="center" foregroundColor="#5C5C5C" backgroundColor="#000000" transparent="1"/>
-
-		<widget name="btn_green"  zPosition="6" position="380,687" size="12,17" alphatest="blend"/>
-		<widget name="btn_greenText" position="400,677" zPosition="9" size="231,37" font="OpenSans;14" halign="left" valign="center" foregroundColor="#5C5C5C" backgroundColor="#000000" transparent="1"/>
-
-		<widget name="btn_yellow"  zPosition="6" position="640,687" size="12,17" alphatest="blend"/>
-		<widget name="btn_yellowText" position="660,677" zPosition="9" size="231,37" font="OpenSans;14" halign="left" valign="center" foregroundColor="#5C5C5C" backgroundColor="#000000" transparent="1"/>
-
-		<widget name="btn_blue"  zPosition="6" position="890,687" size="12,17" alphatest="blend"/>
-		<widget name="btn_blueText" position="910,677" zPosition="9" size="231,37" font="OpenSans;14" halign="left" valign="center" foregroundColor="#5C5C5C" backgroundColor="#000000" transparent="1"/>
+		<panel name="TemplateButtonRed" conditional="btn_red" />
+		<panel name="TemplateButtonGreen" conditional="btn_green" />
+		<panel name="TemplateButtonYellow" conditional="btn_yellow" />
+		<panel name="TemplateButtonBlue" conditional="btn_blue" />
 
 		<!-- functions -->
 		<widget name="number_key_popup" zPosition="51" halign="left" valign="center" position="501,310" size="75,80" font="OpenSans;70" foregroundColor="#FF8C00" transparent="1"/>
