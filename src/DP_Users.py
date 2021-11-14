@@ -95,6 +95,8 @@ class DPS_Users(Screen):
 		else:
 			self.error = True
 
+		self["Title"] = Label(_("Home Users"))
+
 		self["btn_red"] = Pixmap()
 		self["btn_redText"] = Label()
 

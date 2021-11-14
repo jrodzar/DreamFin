@@ -98,6 +98,8 @@ class DPS_Mappings(Screen):
 		else:
 			self.error = True
 
+		self["Title"] = Label(_("Mappings"))
+
 		self["btn_red"] = Pixmap()
 		self["btn_redText"] = Label()
 

@@ -69,6 +69,7 @@ class DPS_Settings(Screen, ConfigListScreen, HelpableScreen, DPH_PlexScreen):
 
 		self._hasChanged = False
 
+		self["Title"] = Label(_("System Settings"))
 		self["btn_greenText"] = Label()
 		self["btn_green"] = Pixmap()
 

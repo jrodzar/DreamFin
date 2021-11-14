@@ -97,6 +97,8 @@ class DPS_Syncer(Screen, DPH_ScreenHelper, DPH_PlexScreen):
 		# we use this counter to reset scorll label every x entries to stay responsive
 		self.counter = 0
 
+		self["Title"] = Label(_("Server Syncer"))
+
 		self["btn_greenText"] = Label()
 		if self._mode == "sync":
 			self["btn_greenText"].setText(_("Start Sync"))

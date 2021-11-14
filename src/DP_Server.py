@@ -67,6 +67,8 @@ class DPS_Server(Screen, DPH_PlexScreen):
 
 		self.guiElements = getGuiElements()
 
+		self["Title"] = Label(_("System Server"))
+
 		self["entryList"] = List(self.builEntryList(), True)
 		self["header"] = Label()
 		self["columnHeader"] = Label()
@@ -330,6 +332,8 @@ class DPS_ServerConfig(ConfigListScreen, Screen, DPH_PlexScreen):
 		}, -2)
 
 		self["help"] = StaticText()
+
+		self["Title"] = Label(_("Server Config"))
 
 		self["btn_redText"] = Label()
 		self["btn_red"] = Pixmap()
