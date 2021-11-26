@@ -1451,8 +1451,10 @@ class PlexLibrary(Screen):
 
 			authHeaderPartTwo = getPlexHeader(self.g_sessionID)
 
-			self.authHeader = dict(list(authHeaderPartOne.items()) + list(authHeaderPartTwo.items()))
-
+			if authHeaderPartOne and authHeaderPartTwo:
+				self.authHeader = dict(list(authHeaderPartOne.items()) + list(authHeaderPartTwo.items()))
+			else:
+				self.authHeader = {}
 			#printl("header: " + str(self.authHeader), self, "D")
 			conn.request(myType, urlPath, headers=self.authHeader)
 
