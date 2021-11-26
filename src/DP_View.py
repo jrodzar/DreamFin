@@ -2661,7 +2661,7 @@ class DP_View(DPH_Screen, DPH_ScreenHelper, DPH_MultiColorFunctions, DPH_Filter)
 						position = self[element].getPosition()
 						self.viewChangeStorage[self.viewStep][element]["xCoord"] = position[0]
 						self.viewChangeStorage[self.viewStep][element]["yCoord"] = position[1]
-						self.alterGuiElementPosition(element, xCoord, yCoord)
+						self.alterGuiElementPosition(element, int(xCoord), int(yCoord))
 
 				printl("viewChangeStorage:" + str(self.viewChangeStorage), self, "D")
 		# it not we use the params form the main view
@@ -2697,8 +2697,7 @@ class DP_View(DPH_Screen, DPH_ScreenHelper, DPH_MultiColorFunctions, DPH_Filter)
 				if "xCoord" in params and "yCoord" in params:
 					xCoord = params.get("xCoord")
 					yCoord = params.get("yCoord")
-
-					self.alterGuiElementPosition(element, xCoord, yCoord)
+					self.alterGuiElementPosition(element, int(xCoord), int(yCoord))
 		else:
 			printl("key is 0 or not in storage ...", self, "D")
 
