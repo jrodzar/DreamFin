@@ -1715,6 +1715,9 @@ class PlexLibrary(Screen):
 		printl("server +  myId: " + str(server) + " / " + str(myId), self, "D")
 
 		tree = self.getStreamDataById(server, myId)
+		if tree == None:
+			printl("error getStreamDataById is None", self, "D")
+			return {}
 
 		fromParts = tree.getiterator('Part') if PY2 else tree.iter('Part')
 		partitem = None
@@ -1771,6 +1774,9 @@ class PlexLibrary(Screen):
 		subtitlesList = []
 
 		tree = self.getStreamDataById(server, myId)
+		if tree == None:
+			printl("error getStreamDataById is None", self, "D")
+			return {}
 
 		fromParts = tree.getiterator('Part') if PY2 else tree.iter('Part')
 		partitem = None
@@ -1848,6 +1854,9 @@ class PlexLibrary(Screen):
 		audioList = []
 
 		tree = self.getStreamDataById(server, myId)
+		if tree == None:
+			printl("error getStreamDataById is None", self, "D")
+			return []
 
 		fromParts = tree.getiterator('Part') if PY2 else tree.iter('Part')
 		partitem = None
