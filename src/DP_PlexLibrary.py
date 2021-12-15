@@ -28,10 +28,9 @@ import os
 import ssl
 import socket
 import sys
-import base64
 import hmac
 import traceback
-from six import PY2
+from six import PY2, PY3
 # import uuid
 try:
 	import cPickle as pickle
@@ -1369,11 +1368,9 @@ class PlexLibrary(Screen):
 			return False
 
 		up = '%s:%s' % (self.g_myplex_username, self.g_myplex_password)
-		if PY2:
-			base64string = base64.encodestring(up).replace('\n', '')
-		else:
-			up = up.encode('utf-8')
-			base64string = base64.encodebytes(up).replace(b'\n', b'').decode()
+		base64string = b64encode(up.encode())
+		if PY3:
+			base64string = base64string.decode()
 
 		myplex_header = getPlexHeader(self.g_sessionID)
 		myplex_header['Authorization'] = "Basic %s" % base64string
@@ -2926,7 +2923,8 @@ class PlexLibrary(Screen):
 			printl("Encoded HTTP Stream URL: " + str(streamURL), self, "I")
 
 		timestamp = "@%d" % ts
-		pac = quote_plus(b64encode(hmac.new(b64decode(privateKey), '/' + streamParams + timestamp, digestmod=sha256).digest()).decode()).replace('+', '%20')
+		hw = b'/' + streamParams.encode() + timestamp.encode()
+		pac = quote_plus(b64encode(hmac.new(b64decode(privateKey), hw, digestmod=sha256).digest()).decode()).replace('+', '%20')
 
 		req = Request(streamURL, headers=getPlexHeader(self.g_sessionID))
 		req.add_header('X-Plex-Client-Capabilities', self.g_capability)
