@@ -1018,7 +1018,8 @@ def encodeThat(stringToEncode):
 			encodedString = stringToEncode.encode('utf-8', "ignore")
 		except:
 			encodedString = stringToEncode
-	encodedString = stringToEncode
+	else:
+		return stringToEncode
 
 	#printl2("", "__common__::encodeThat", "C")
 	return encodedString
