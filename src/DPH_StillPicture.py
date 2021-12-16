@@ -32,7 +32,7 @@ from Components.Renderer.Renderer import Renderer
 from Components.ServiceEventTracker import ServiceEventTracker, InfoBarBase
 from Components.config import config
 
-from .__common__ import printl2 as printl, getBoxInformation
+from .__common__ import printl2 as printl
 
 #===============================================================================
 #
@@ -48,9 +48,6 @@ class Showiframe(object):
 	#===========================================================================
 	def __init__(self):
 		printl("", self, "S")
-
-		self.boxInformation = getBoxInformation()
-		printl("boxInformation: " + str(self.boxInformation), self, "D")
 
 		try:
 			self.load()
@@ -266,7 +263,9 @@ class StillPicture(Renderer, InfoBarBase):
 		if self.session is not None and self.session.nav is not None:
 			service = self.session.nav.getCurrentService()
 
-			if self.boxInformation[2] != "sh4" and service and service.seek():
+			# FIXME check sh4
+			nosh = True # platform != 'sh4'
+			if nosh and service and service.seek():
 				service.seek().seekTo(0)
 			else:
 				self.session.nav.playService(eServiceReference(4097, 0, self.getStillpicture()), forceRestart=True)

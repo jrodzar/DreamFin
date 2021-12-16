@@ -37,7 +37,6 @@ from enigma import addFont, loadPNG, loadJPG, getDesktop
 from skin import loadSkin
 from Components.config import config
 from Components.AVSwitch import AVSwitch
-from Components.SystemInfo import BoxInfo
 from boxbranding import getMachineBuild
 
 from .DPH_Singleton import Singleton
@@ -601,9 +600,15 @@ def setBoxInformation():
 	printl2("", "__common__::_setBoxtype", "C")
 
 	model = getMachineBuild()
-	manu = BoxInfo.getItem("displaybrand","unknown")
-	oe = BoxInfo.getItem("oe","unknown")
-	arch = BoxInfo.getItem("architecture","unknown")
+	try:
+		from Components.SystemInfo import BoxInfo
+		manu = BoxInfo.getItem("displaybrand","unknown")
+		oe = BoxInfo.getItem("oe","unknown")
+		arch = BoxInfo.getItem("architecture","unknown")
+	except ImportError:
+		arch = "unknown"
+		oe = "unknown"
+		manu = "unknown"
 
 	global g_boxData
 	g_boxData = (manu, model, arch, oe)
