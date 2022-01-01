@@ -304,7 +304,7 @@ def openLogFile():
 #===============================================================================
 
 
-def testInetConnectivity(target="http://www.google.com"):
+def testInetConnectivity(target="https://www.google.com"):
 	"""
 	test if we get an answer from the specified url
 
@@ -317,17 +317,10 @@ def testInetConnectivity(target="http://www.google.com"):
 		from urllib.request import build_opener
 	except:
 		from urllib2 import build_opener
-	from sys import version_info
-	import socket
 
 	try:
 		opener = build_opener()
-
-		if version_info[1] >= 6:
-			page = opener.open(target, timeout=2)
-		else:
-			socket.setdefaulttimeout(2)
-			page = opener.open(target)
+		page = opener.open(target, timeout=2)
 		if page is not None:
 			printl2("success, returning TRUE", "__common__::testInetConnectivity", "D")
 			printl2("", "__common__::testInetConnectivity", "C")
