@@ -2861,7 +2861,7 @@ class DP_View(DPH_Screen, DPH_ScreenHelper, DPH_MultiColorFunctions, DPH_Filter)
 			found = True
 			self["rated"].setPixmapNum(9)
 
-		elif mpaa == "UNKNOWN" or mpaa == "UNKNOWN" or mpaa == "":
+		elif mpaa == "UNKNOWN" or mpaa == "":
 			found = False
 
 		else:

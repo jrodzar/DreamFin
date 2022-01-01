@@ -704,8 +704,8 @@ class PlexLibrary(Screen):
 					viewState = self.getViewStateForShowEntry(entryData)
 					printl("viewState: " + str(viewState), self, "D")
 
-					if self.g_showUnSeenCounts:
-						entryData['title'] = entryData['title']# + " ("+ str(entryData["leafCount"]) + "/" + str(entryData["viewedLeafCount"]) + ")"
+#					if self.g_showUnSeenCounts:
+#						entryData['title'] = entryData['title'] + " ("+ str(entryData["leafCount"]) + "/" + str(entryData["viewedLeafCount"]) + ")"
 				else:
 					entryData['tagType'] = "Directory"
 					entryData["type"] = "Folder"

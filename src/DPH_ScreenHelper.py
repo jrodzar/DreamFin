@@ -503,11 +503,11 @@ class DPH_Filter(NumericalTextInput):
 		printl("", self, "S")
 
 		printl(self.onNumberKeyLastChar, self, "I")
-		if self.onNumberKeyLastChar != ' ':
-			pass
+#		if self.onNumberKeyLastChar != ' ':
+#			pass
 			# filter
-		else:
-			pass
+#		else:
+#			pass
 			# reset filter
 
 		self.filter()

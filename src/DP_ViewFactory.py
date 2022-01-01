@@ -80,9 +80,9 @@ def getNoneDirectoryElements():
 		if element not in directoryElementsList:
 			noneDirectoryElements.append(element)
 
+	printl("", "DP_ViewFactory::getNoneDirectoryElements", "C")
 	return noneDirectoryElements
 
-	printl("", "DP_ViewFactory::getNoneDirectoryElements", "C")
 #===========================================================================
 #
 #===========================================================================

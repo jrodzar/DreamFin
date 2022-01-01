@@ -148,9 +148,9 @@ def getHttpDeamonInformation():
 
 
 def gotThreadMsg(msg):
-	msg = globalvars.HttpDeamonThread.PlayerData.pop()
+	_msg = globalvars.HttpDeamonThread.PlayerData.pop()
 
-	data = msg[0]
+	data = _msg[0]
 	print("data ==>")
 	print(str(data))
 

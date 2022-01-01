@@ -437,10 +437,10 @@ class MediaSyncerInfo(object):
 	def gotThreadMsg(self, msg):
 		printl("", self, "S")
 
-		msg = self.backgroundMediaSyncer.Message.pop()
-		self.infoCallBack(msg[1])
+		_msg = self.backgroundMediaSyncer.Message.pop()
+		self.infoCallBack(_msg[1])
 
-		if msg[0] == THREAD_FINISHED:
+		if _msg[0] == THREAD_FINISHED:
 			# clean up
 			self.backgroundMediaSyncer.MessagePump.recv_msg.get().remove(self.gotThreadMsg)
 
@@ -459,8 +459,8 @@ class MediaSyncerInfo(object):
 	def gotThreadProgressMsg(self, msg):
 		printl("", self, "S")
 
-		msg = self.backgroundMediaSyncer.Progress.pop()
-		self.progressCallBack(msg[1])
+		_msg = self.backgroundMediaSyncer.Progress.pop()
+		self.progressCallBack(_msg[1])
 
 		printl("", self, "C")
 

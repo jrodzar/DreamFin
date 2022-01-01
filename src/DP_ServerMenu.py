@@ -306,10 +306,10 @@ class DPS_ServerMenu(DPH_Screen, DPH_HorizontalMenu, DPH_ScreenHelper, DPH_Filte
 		else:
 			if int(enteredPin) == int(self.currentPin):
 				self.session.open(MessageBox, "The pin was correct! Switching user.", MessageBox.TYPE_INFO)
-				if self.isHomeUser:
-					self.switchUser()
-				else:
-					self.switchUser()
+#				if self.isHomeUser:
+#					self.switchUser()
+#				else:
+				self.switchUser()
 			else:
 				self.session.open(MessageBox, "The pin was wrong! Abort user switiching.", MessageBox.TYPE_INFO)
 
