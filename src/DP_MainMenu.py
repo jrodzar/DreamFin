@@ -421,7 +421,6 @@ class DPS_MainMenu(DPH_Screen, DPH_HorizontalMenu, DPH_ScreenHelper):
 			isOnline = testPlexConnectivity(ip, port)
 
 		elif connectionType == "2":
-			#state = testInetConnectivity("http://my.plexapp.com")
 			isOnline = True
 		else:
 			isOnline = testInetConnectivity()

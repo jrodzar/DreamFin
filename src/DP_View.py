@@ -622,14 +622,16 @@ class DP_View(DPH_Screen, DPH_ScreenHelper, DPH_MultiColorFunctions, DPH_Filter)
 		printl("choice: " + str(choice), self, "D")
 
 		if choice is not None:
-			url = "http://" + self.server + choice[2]
+			http = self.plexInstance.http
+			url = "%s://%s%s" % (http, self.server, choice[2])
 			ratingKey = choice[3]
 
 			printl("url: " + str(url), self, "D")
 			printl("ratingKey: " + str(ratingKey), self, "D")
 			isExtraData = ratingKey, url
 
-			listViewList, mediaContainer = self.plexInstance.getMoviesFromSection("http://" + self.server + "/library/metadata/" + ratingKey)
+			url = "%s://%s/library/metadata/%s" % (http, self.server, ratingKey)
+			listViewList, mediaContainer = self.plexInstance.getMoviesFromSection(url)
 			autoPlayMode = False
 			resumeMode = False # this is always false because we are in extradata here
 			playbackMode = str(1) #because we are a trailer we override to streamed self.serverConfig.playbackType.value
@@ -2366,8 +2368,9 @@ class DP_View(DPH_Screen, DPH_ScreenHelper, DPH_MultiColorFunctions, DPH_Filter)
 			theme = self.details["theme"]
 			server = self.details["server"]
 			accessToken = Singleton().getPlexInstance().get_aTokenForServer(server)
+			http = Singleton().getPlexInstance().http
 			printl("theme: " + str(theme), self, "D")
-			url = "http://" + str(server) + str(theme) + str(accessToken)
+			url = "%s://%s%s%s" % (http, str(server), str(theme), str(accessToken))
 			sref = "4097:0:0:0:0:0:0:0:0:0:%s" % quote_plus(url)
 			printl("sref: " + str(sref), self, "D")
 			self.session.nav.stopService()

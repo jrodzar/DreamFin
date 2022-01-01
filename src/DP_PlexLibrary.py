@@ -159,6 +159,7 @@ class PlexLibrary(Screen):
 	lastResponse = None
 	lastError = None
 	fallback = ""
+	http = "http"
 
 	#===========================================================================
 	#
@@ -1574,7 +1575,7 @@ class PlexLibrary(Screen):
 		if self.g_stream == "1":
 			printl("Selecting stream", self, "I")
 			printl("", self, "C")
-			return "http://" + server + stream
+			return "%s://%s%s" % (self.http, server, stream)
 
 		# 2 is use SMB or afp override
 		elif self.g_stream == "2":
@@ -1621,7 +1622,7 @@ class PlexLibrary(Screen):
 					filelocation = '/'.join(components)
 		else:
 			printl("No option detected, streaming is safest to choose", self, "I")
-			filelocation = "http://" + server + stream
+			filelocation = "%s://%s%s" % (self.http, server, stream)
 
 		printl("Returning URL: " + filelocation, self, "I")
 		printl("", self, "C")
@@ -1682,7 +1683,7 @@ class PlexLibrary(Screen):
 		printl("Gather media stream info", self, "I")
 
 		#get metadata for audio and subtitle
-		suburl = "http://" + server + "/library/metadata/" + myId
+		suburl = "%s://%s/library/metadata/%s" % (self.http, server, myId)
 
 		if loadExtraData:
 			suburl += "?checkFiles=1&includeExtras=1&includeRelated=1&includeRelatedCount=0"
@@ -1895,7 +1896,7 @@ class PlexLibrary(Screen):
 	def setSubtitleById(self, server, sub_id, part_id):
 		printl("", self, "S")
 
-		url = "http://" + str(server) + "/library/parts/" + str(part_id) + "?subtitleStreamID=" + str(sub_id)
+		url = "%s://%s/library/parts/%s?subtitleStreamID=%s" % (self.http, str(server), str(part_id), str(sub_id))
 
 		self.doRequest(url, myType="PUT")
 
@@ -1907,7 +1908,7 @@ class PlexLibrary(Screen):
 	def setAudioById(self, server, audio_id, part_id):
 		printl("", self, "S")
 
-		url = "http://" + str(server) + "/library/parts/" + str(part_id) + "?audioStreamID=" + str(audio_id)
+		url = "%s://%s/library/parts/%s?audioStreamID=%s" % (self.http, str(server), str(part_id), str(audio_id))
 
 		self.doRequest(url, myType="PUT")
 
@@ -2586,15 +2587,15 @@ class PlexLibrary(Screen):
 		context['libraryRefreshURL'] = libraryRefreshURL
 
 		#Mark media unwatched
-		unwatchedURL = "http://" + server + "/:/unscrobble?key=" + ratingKey + "&identifier=com.plexapp.plugins.library"# + self.get_uTokenForServer(server)
+		unwatchedURL = "%s://%s/:/unscrobble?key=%s&identifier=com.plexapp.plugins.library" % (self.http, server, ratingKey)
 		context['unwatchURL'] = unwatchedURL
 
 		#Mark media watched
-		watchedURL = "http://" + server + "/:/scrobble?key=" + ratingKey + "&identifier=com.plexapp.plugins.library"# + self.get_uTokenForServer(server)
+		watchedURL = "%s://%s/:/scrobble?key=%s&identifier=com.plexapp.plugins.library" % (self.http, server, ratingKey)
 		context['watchedURL'] = watchedURL
 
 		#Delete media from Library
-		deleteURL = "http://" + server + "/library/metadata/" + ratingKey # + self.get_uTokenForServer(server)
+		deleteURL = "%s://%s/library/metadata/%s" % (self.http, server, ratingKey)
 		context['deleteURL'] = deleteURL
 
 		printl("", self, "C")

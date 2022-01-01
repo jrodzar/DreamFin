@@ -1213,18 +1213,21 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 
 			#Legacy PMS Server server support before MultiUser version v0.9.8.0 and if we are not connected via plex.tv
 			else:
+
+				http = self.plexInstance.http
+
 				if currentTime < 30:
 					printl("Less that 30 seconds, will not set resume", self, "I")
 
 				#If we are less than 95% complete, store resume time
 				elif progress < 95:
 					printl("Less than 95% progress, will store resume time", self, "I")
-					self.plexInstance.doRequest("http://" + self.server + "/:/progress?key=" + self.id + "&identifier=com.plexapp.plugins.library&time=" + str(currentTime * 1000))
+					self.plexInstance.doRequest(http + "://" + self.server + "/:/progress?key=" + self.id + "&identifier=com.plexapp.plugins.library&time=" + str(currentTime * 1000))
 
 				#Otherwise, mark as watched
 				else:
 					printl("Movie marked as watched. Over 95% complete", self, "I")
-					self.plexInstance.doRequest("http://" + self.server + "/:/scrobble?key=" + self.id + "&identifier=com.plexapp.plugins.library")
+					self.plexInstance.doRequest(http + "://" + self.server + "/:/scrobble?key=" + self.id + "&identifier=com.plexapp.plugins.library")
 
 		except:
 			printl("no progress data maybe playback never started, returning ...", self, "D")
@@ -1238,7 +1241,8 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 	def keepTranscoderAlive(self):
 		printl("", self, "S")
 
-		self.plexInstance.doRequest("http://" + self.server + "/video/:/transcode/universal/ping?session=" + self.transcodingSession)
+		http = self.plexInstance.http
+		self.plexInstance.doRequest(http + "://" + self.server + "/video/:/transcode/universal/ping?session=" + self.transcodingSession)
 
 		printl("", self, "C")
 
@@ -1248,10 +1252,11 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 	def stopTranscoding(self):
 		printl("", self, "S")
 
+		http = self.plexInstance.http
 		if self.universalTranscoder:
-			self.plexInstance.doRequest("http://" + self.server + "/video/:/transcode/universal/stop?session=" + self.transcodingSession)
+			self.plexInstance.doRequest(http + "://" + self.server + "/video/:/transcode/universal/stop?session=" + self.transcodingSession)
 		else:
-			self.plexInstance.doRequest("http://" + self.server + "/video/:/transcode/segmented/stop?session=" + self.transcodingSession)
+			self.plexInstance.doRequest(http + "://" + self.server + "/video/:/transcode/segmented/stop?session=" + self.transcodingSession)
 
 		printl("", self, "C")
 

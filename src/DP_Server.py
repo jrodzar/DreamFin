@@ -661,7 +661,9 @@ class DPS_ServerConfig(ConfigListScreen, Screen, DPH_PlexScreen):
 					machineIdentifiers += ", " + machineIdentifier
 
 		else:
-			xmlResponse = self.plexInstance.getXmlTreeFromUrl("http://" + str(self.plexInstance.g_host) + ":" + str(self.plexInstance.serverConfig_port))
+			http = self.plexInstance.http
+			url = "%s://%s:%s" % (http, str(self.plexInstance.g_host), str(self.plexInstance.serverConfig_port))
+			xmlResponse = self.plexInstance.getXmlTreeFromUrl(url)
 			machineIdentifier = xmlResponse.get("machineIdentifier")
 
 			if machineIdentifier is not None:
