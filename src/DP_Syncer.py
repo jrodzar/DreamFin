@@ -25,6 +25,7 @@ You should have received a copy of the GNU General Public License
 # IMPORT
 #===============================================================================
 #noinspection PyUnresolvedReferences
+from six import PY2
 from enigma import eTimer, ePythonMessagePump, eConsoleAppContainer
 
 from threading import Thread
@@ -844,7 +845,11 @@ class BackgroundMediaSyncer(Thread):
 
 							printl("cmd: " + str(cmd), self, "D")
 
-							response = subprocess.getstatusoutput(cmd)
+							if PY2:
+								import commands
+								response = commands.getstatusoutput(cmd)
+							else:
+								response = subprocess.getstatusoutput(cmd)
 
 							if fileExists(videoLocation) and response[0] == 0:
 								printl("finished rendering myFile: " + str(myFile), self, "D")
