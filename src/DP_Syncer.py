@@ -847,17 +847,17 @@ class BackgroundMediaSyncer(Thread):
 
 							if PY2:
 								import commands
-								response = commands.getstatusoutput(cmd)
+								(status, response) = commands.getstatusoutput(cmd)
 							else:
-								response = subprocess.getstatusoutput(cmd)
+								(status, response) = subprocess.getstatusoutput(cmd)
 
-							if fileExists(videoLocation) and response[0] == 0:
+							if fileExists(videoLocation) and status == 0:
 								printl("finished rendering myFile: " + str(myFile), self, "D")
 							else:
 								printl("File does not exist after rendering!", self, "D")
-								printl("Error: " + str(response[1]), self, "D")
+								printl("Error: " + str(response), self, "D")
 
-								self.messages.push((THREAD_WORKING, _("Error: ") + str(response[1]) + "Location: " + imageLocation))
+								self.messages.push((THREAD_WORKING, _("Error: ") + str(response) + "Location: " + imageLocation))
 								self.messagePump.send(0)
 
 								sleep(1)
