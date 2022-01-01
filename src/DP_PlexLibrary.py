@@ -715,9 +715,9 @@ class PlexLibrary(Screen):
 				#Create URL based on whether we are going to flatten the season view
 				if self.g_flattenShow:
 					printl("Flattening all shows", self, "I")
-					url = 'http://%s/%s' % (server, entryData['key'].replace("children", "allLeaves"))
+					url = '%s://%s/%s' % (self.http, server, entryData['key'].replace("children", "allLeaves"))
 				else:
-					url = 'http://%s/%s' % (server, entryData['key'])
+					url = '%s://%s/%s' % (self.http, server, entryData['key'])
 
 				# add to fullList
 				fullList.append(self.getFullListEntry(entryData, url, viewState))
@@ -754,7 +754,7 @@ class PlexLibrary(Screen):
 				printl("entryData: " + str(entryData), self, "D")
 
 				if self.g_flattenShow:
-					url = 'http://' + server + entryData["key"]
+					url = self.http + '://' + server + entryData["key"]
 					self.getEpisodesOfSeason(url)
 					return
 
@@ -783,7 +783,7 @@ class PlexLibrary(Screen):
 					entryData["type"] = "Folder"
 					viewState = None
 
-				url = 'http://%s/%s' % (server, entryData['key'])
+				url = '%s://%s/%s' % (self.http, server, entryData['key'])
 
 				# add to fullList
 				fullList.append(self.getFullListEntry(entryData, url, viewState))
@@ -1248,7 +1248,7 @@ class PlexLibrary(Screen):
 				tree = self.getXmlTreeFromPlex('/pms/system/library/sections')
 
 		else:
-			tree = self.getXmlTreeFromUrl('http://' + self.g_serverDict['address'] + '/library/sections')
+			tree = self.getXmlTreeFromUrl(self.http + '://' + self.g_serverDict['address'] + '/library/sections')
 
 		printl("", self, "C")
 		return tree
@@ -1314,7 +1314,7 @@ class PlexLibrary(Screen):
 	def getContentUrl(self, address, path):
 		printl("", self, "S")
 
-		contentUrl = 'http://%s%s' % (address, path)
+		contentUrl = '%s://%s%s' % (self.http, address, path)
 
 		printl("contentUrl = " + contentUrl, self, "D")
 		printl("", self, "C")
@@ -2019,7 +2019,7 @@ class PlexLibrary(Screen):
 										if stream['key']:
 											printl("Found external subtitles id : " + str(stream['id']), self, "I")
 											external = stream
-											external['key'] = 'http://' + server + external['key']
+											external['key'] = "%s://%s%s" % (self.http, server, external['key'])
 									except:
 										#Otherwise it's probably embedded
 										try:
@@ -2166,7 +2166,7 @@ class PlexLibrary(Screen):
 										if stream['key']:
 											printl("Found external subtitles id : " + str(stream['id']), self, "I")
 											external = stream
-											external['key'] = 'http://' + server + external['key']
+											external['key'] = "%s://%s%s" % (self.http, server, external['key'])
 									except Exception as e:
 										printl("Error: " + str(e) + " maybe we are embedded?", self, "D")
 										try:
@@ -2519,7 +2519,7 @@ class PlexLibrary(Screen):
 				return self.photoTranscode(server, 'http://localhost:32400' + image)
 			else:
 				printl("", self, "C")
-				return 'http://' + server + image
+				return "%s://%s%s" % (self.http, server, image)
 
 		else:
 			printl("", self, "C")
@@ -2534,7 +2534,7 @@ class PlexLibrary(Screen):
 		transcode_url = None
 
 		if width is not None and height is not None:
-			transcode_url = 'http://%s/photo/:/transcode?url=%s&width=%s&height=%s' % (server, quote_plus(url), width, height)
+			transcode_url = '%s://%s/photo/:/transcode?url=%s&width=%s&height=%s' % (self.http, server, quote_plus(url), width, height)
 			printl("transcode_url: " + str(transcode_url), self, "D")
 		else:
 			printl("unspecified width and height", self, "D")
@@ -2667,7 +2667,7 @@ class PlexLibrary(Screen):
 		elif path[0] == '/':
 			printl("Detected base path link", self, "I")
 			printl("", self, "C")
-			return 'http://%s%s' % (server, path)
+			return '%s://%s%s' % (self.http, server, path)
 
 		#If key starts with plex:// then it requires transcoding
 		elif path[0:5] == "plex:":
@@ -2983,7 +2983,7 @@ class PlexLibrary(Screen):
 			contextMenu = None
 
 		# build url for content
-		nextUrl = 'http://%s%s' % (entryData['server'], entryData['key'])
+		nextUrl = '%s://%s%s' % (self.http, entryData['server'], entryData['key'])
 
 		title = entryData.get('title', 'no Title')
 		title = title.encode('utf-8') if PY2 else title
