@@ -49,7 +49,7 @@ import socket
 import struct
 import threading
 import time
-from six import PY2
+from six import PY2, PY3
 try:
 	from urllib.request import urlopen
 except:
@@ -157,7 +157,10 @@ class PlexGdm(object):
 
 		#Send initial client registration
 		try:
-			update_sock.sendto("HELLO %s\n%s" % (self.client_header, self.client_data), self.client_register_group)
+			sendstr = "HELLO %s\n%s" % (self.client_header, self.client_data)
+			if PY3:
+				sendstr = sendstr.encode()
+			update_sock.sendto(sendstr, self.client_register_group)
 		except:
 			printl("Error: Unable to send registeration message", self, "D")
 
@@ -173,7 +176,10 @@ class PlexGdm(object):
 				if "M-SEARCH * HTTP/1." in data:
 					#printl("Detected client discovery request from %s.  Replying" % addr, self, "D")
 					try:
-						update_sock.sendto("HTTP/1.0 200 OK\n%s" % self.client_data, addr)
+						sendstr = "HTTP/1.0 200 OK\n%s" % self.client_data
+						if PY3:
+							sendstr = sendstr.encode()
+						update_sock.sendto(sendstr, addr)
 					except:
 						printl("Error: Unable to send client update message", self, "D")
 
@@ -187,7 +193,10 @@ class PlexGdm(object):
 		#When we are finished, then send a final goodbye message to deregister cleanly.
 		printl("Sending registration data: BYE %s\n%s" % (self.client_header, self.client_data), self, "D")
 		try:
-			update_sock.sendto("BYE %s\n%s" % (self.client_header, self.client_data), self.client_register_group)
+			sendstr = "BYE %s\n%s" % (self.client_header, self.client_data)
+			if PY3:
+				sendstr = sendstr.encode()
+			update_sock.sendto(sendstr, self.client_register_group)
 		except:
 			printl("Error: Unable to send client update message", self, "D")
 
@@ -262,8 +271,8 @@ class PlexGdm(object):
 			# Send data to the multicast group
 			printl("Sending discovery messages: %s" % str(self.discover_message), self, "D")
 			discover_message = self.discover_message if PY2 else self.discover_message.encode()
-			print("discover_group")
-			print(self.discover_group)
+			# print("discover_group")
+			# print(self.discover_group)
 #			discover_group = self.discover_group if PY2 else self.discover_group.encode()
 			sock.sendto(discover_message, self.discover_group)
 
