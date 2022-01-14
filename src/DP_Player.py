@@ -1609,7 +1609,9 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 		self.tempPoster = tempPath + "dreamplex.jpg"
 
 		from shutil import copy2
-
-		copy2(self.whatPoster, self.tempPoster)
+		try:
+			copy2(self.whatPoster, self.tempPoster)
+		except Exception as e:
+			printl("error copy poster from '%s' to '%s' / '%s'" % (self.whatPoster, self.tempPoster, str(e)), self, "D")
 
 		printl("", self, "C")
