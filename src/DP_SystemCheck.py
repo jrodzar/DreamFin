@@ -24,22 +24,13 @@ You should have received a copy of the GNU General Public License
 #=================================
 #IMPORT
 #=================================
-import sys
-import time
-#import httplib
-import ssl
-
-from os import system, popen
-from Screens.Standby import TryQuitMainloop
 
 from Components.ActionMap import ActionMap
 from Components.MenuList import MenuList
-from Components.config import config
 from Components.Label import Label
 
 from Screens.MessageBox import MessageBox
 from Screens.Screen import Screen
-from Screens.Console import Console as SConsole
 
 from .__common__ import printl2 as printl, revokeCacheFiles
 
@@ -69,8 +60,6 @@ class DPS_SystemCheck(Screen):
 		}, -1)
 
 		vlist = []
-
-		vlist.append((_("Check for gst-plugins-bad-fragmented"), "gst-plugins-bad-fragmented"))
 		vlist.append((_("Revoke cache files manually"), "revoke_cache"))
 
 		self["header"] = Label()
@@ -106,128 +95,9 @@ class DPS_SystemCheck(Screen):
 		if content == "revoke_cache":
 			revokeCacheFiles()
 			self.session.openWithCallback(self.close, MessageBox, _("Cache files successfully deleted."), MessageBox.TYPE_INFO)
-		else:
-			self.package = content
-
-			# first we check the state
-			self.checkInstallationState()
 
 		printl("", self, "C")
 
-	#===========================================================================
-	#
-	#===========================================================================
-	def checkIfBetaVersion(self, foundVersion):
-		printl("", self, "S")
-
-		isBeta = foundVersion.find("beta")
-		if isBeta != -1:
-
-			printl("", self, "C")
-			return True
-		else:
-
-			printl("", self, "C")
-			return False
-
-	#===========================================================================
-	#
-	#===========================================================================s
-	def searchLatestStable(self):
-		printl("", self, "S")
-
-		isStable = False
-		latestStabel = ""
-		leftLimiter = 0
-
-		while not isStable:
-			starter = self.response.find('},', leftLimiter)
-			printl("starter: " + str(starter), self, "D")
-			end = starter + 50
-			closer = self.response.find('",', starter, end)
-			printl("closer: " + str(closer), self, "D")
-			# is a bit dirty but better than forcing users to install simplejson
-			start = (self.response.find('": "', starter, end)) + 4 # we correct the string here right away => : "1.09-beta.9 becomes 1.09.beta.9
-			latestStabel = self.response[start:closer]
-			printl("found version: " + str(latestStabel), self, "D")
-			isBeta = self.checkIfBetaVersion(latestStabel)
-			if not isBeta:
-				isStable = True
-			else:
-				leftLimiter = closer
-
-		printl("latestStable: " + str(latestStabel), self, "D")
-
-		printl("", self, "C")
-		return latestStabel
-
-	#===========================================================================
-	# override is used to get bool as answer and not the plugin information
-	#===========================================================================
-	def checkInstallationState(self, override=False):
-		printl("", self, "S")
-
-		command = "opkg status " + str(self.package)
-
-		state = self.executeStateCheck(command, override)
-
-		printl("", self, "C")
-		return state
-
-	#===============================================================================
-	#
-	#===============================================================================
-	def executeStateCheck(self, command, override=False):
-		printl("", self, "S")
-
-		pipe = popen(command)
-
-		if pipe:
-			data = pipe.read(8192)
-			pipe.close()
-			if data is not None and data != "":
-				if override:
-					return True
-				# plugin is installed
-				self.session.open(MessageBox, _("Information:\n") + data, MessageBox.TYPE_INFO)
-			else:
-				if override:
-					return False
-
-				# if plugin is not installed
-				self.session.openWithCallback(self.installPackage, MessageBox, _("The selected lib/package/plugin is not installed!\n Do you want to proceed to install?"), MessageBox.TYPE_YESNO)
-
-		printl("", self, "C")
-
-	#===============================================================================
-	#
-	#===============================================================================
-	def installPackage(self, confirm):
-		printl("", self, "S")
-
-		command = ""
-
-		if confirm:
-			# User said 'Yes'
-
-			command = "opkg update; opkg install " + str(self.package)
-
-			self.executeInstallationCommand(command)
-		else:
-			# User said 'no'
-			self.cancel()
-
-		printl("", self, "C")
-
-	#===============================================================================
-	#
-	#===============================================================================
-	def executeInstallationCommand(self, command):
-		printl("", self, "S")
-
-		self.session.open(SConsole, "Excecuting command:", [command], self.finishupdate)
-
-		printl("", self, "C")
 
 	#===================================================================
 	#
@@ -236,34 +106,5 @@ class DPS_SystemCheck(Screen):
 		printl("", self, "S")
 
 		self.close(False, self.session)
-
-		printl("", self, "C")
-
-	#===========================================================================
-	#
-	#===========================================================================
-	def finishupdate(self):
-		printl("", self, "S")
-
-		time.sleep(2)
-		self.session.openWithCallback(self.e2restart, MessageBox, _("Enigma2 must be restarted!\nShould Enigma2 now restart?"), MessageBox.TYPE_YESNO)
-
-		printl("", self, "C")
-
-	#===========================================================================
-	#
-	#===========================================================================
-	def e2restart(self, answer):
-		printl("", self, "S")
-
-		if answer is True:
-			try:
-				self.session.open(TryQuitMainloop, 3)
-			except Exception as ex:
-				printl("Exception: " + str(ex), self, "W")
-				data = "TryQuitMainLoop is not implemented in your OS.\n Please restart your box manually."
-				self.session.open(MessageBox, _("Information:\n") + data, MessageBox.TYPE_INFO)
-		else:
-			self.close()
 
 		printl("", self, "C")

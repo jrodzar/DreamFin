@@ -66,7 +66,6 @@ class DPS_MainMenu(DPH_Screen, DPH_HorizontalMenu, DPH_ScreenHelper):
 	currentService = None
 	plexInstance = None
 	selectionOverride = None
-	checkedForUpdates = False
 
 	#===========================================================================
 	#
@@ -371,9 +370,9 @@ class DPS_MainMenu(DPH_Screen, DPH_HorizontalMenu, DPH_ScreenHelper):
 		if self.selectionOverride is not None:
 			self.okbuttonClick()
 
-		if config.plugins.dreamplex.checkForUpdateOnStartup.value and not self.checkedForUpdates:
-			DPS_SystemCheck(self.session).checkForUpdate(silent=True)
-			self.checkedForUpdates = True
+#		if config.plugins.dreamplex.checkForUpdateOnStartup.value and not self.checkedForUpdates:
+#			DPS_SystemCheck(self.session).checkForUpdate(silent=True)
+#			self.checkedForUpdates = True
 
 		printl("", self, "C")
 	#===============================================================================

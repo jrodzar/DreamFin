@@ -89,9 +89,6 @@ config.plugins.dreamplex.boxName = ConfigText(default="DreamPlex", visible_width
 config.plugins.dreamplex.lcd4linux = ConfigYesNo()
 config.plugins.dreamplex.exitFunction = ConfigSelection(default="0", choices=[("0", "Nothing"), ("1", "stop playback, return to library"), ("2", "search library while playing")])
 
-config.plugins.dreamplex.checkForUpdateOnStartup = ConfigYesNo()
-config.plugins.dreamplex.updateType = ConfigSelection(default="1", choices=[("1", "Stable"), ("2", "Beta")])
-
 config.plugins.dreamplex.pluginfolderpath = ConfigDirectory(default=defaultPluginFolderPath)
 config.plugins.dreamplex.skinfolderpath = ConfigDirectory(default=defaultSkinsFolderPath)
 

@@ -72,7 +72,6 @@ class DPS_Users(Screen):
 		Screen.__init__(self, session)
 		self["actions"] = ActionMap(["ColorActions", "SetupActions"],
 		{
-		#"ok": self.startSelection,
 		"cancel": self.cancel,
 		"red": self.redKey,
 		"green": self.greenKey,
