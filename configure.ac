@@ -46,5 +46,6 @@ src/skins/default_FHD/buttons/Makefile
 src/skins/default_FHD/icons/Makefile
 src/skins/default_FHD/images/Makefile
 src/skins/default_FHD/picons/Makefile
+src/fonts/Makefile
 ])
 AC_OUTPUT
