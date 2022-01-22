@@ -1,4 +1,4 @@
-SUBDIRS = skins
+SUBDIRS = skins fonts
 
 installdir = $(libdir)/enigma2/python/Plugins/Extensions/DreamPlex
 
