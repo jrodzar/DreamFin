@@ -1441,7 +1441,7 @@ class PlexLibrary(Screen):
 			#if self.authHeader is None or server != self.lastHeaderForServer:
 
 			authHeaderPartOne = self.get_hTokenForServer(server)
-			print("authHeaderPartOne " + str(authHeaderPartOne))
+			#print("authHeaderPartOne " + str(authHeaderPartOne))
 			self.lastHeaderForServer = server
 
 			# if self.g_sessionID is None:

@@ -166,6 +166,7 @@ class DPS_MainMenu(DPH_Screen, DPH_HorizontalMenu, DPH_ScreenHelper):
 				if self.selectedEntry == Plugin.MENU_MAIN:
 					printl("found Plugin.MENU_MAIN", self, "D")
 					self["menu"].setList(self.menu_main_list)
+					self["menu"].top()
 
 				elif self.selectedEntry == Plugin.MENU_SERVER:
 					printl("found Plugin.MENU_SERVER", self, "D")
@@ -180,6 +181,7 @@ class DPS_MainMenu(DPH_Screen, DPH_HorizontalMenu, DPH_ScreenHelper):
 				elif self.selectedEntry == Plugin.MENU_SYSTEM:
 					printl("found Plugin.MENU_SYSTEM", self, "D")
 					self["menu"].setList(self.getSettingsMenu())
+					self["menu"].top()
 					self.setTitle(_("System"))
 					self.refreshMenu()
 
@@ -369,10 +371,6 @@ class DPS_MainMenu(DPH_Screen, DPH_HorizontalMenu, DPH_ScreenHelper):
 
 		if self.selectionOverride is not None:
 			self.okbuttonClick()
-
-#		if config.plugins.dreamplex.checkForUpdateOnStartup.value and not self.checkedForUpdates:
-#			DPS_SystemCheck(self.session).checkForUpdate(silent=True)
-#			self.checkedForUpdates = True
 
 		printl("", self, "C")
 	#===============================================================================
