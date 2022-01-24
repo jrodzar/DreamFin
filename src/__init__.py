@@ -24,7 +24,8 @@ You should have received a copy of the GNU General Public License
 #===============================================================================
 # IMPORT
 #===============================================================================
-import os
+from os import environ, listdir
+from os.path import isdir, join as path_join, isfile
 import gettext
 
 from Components.config import config
@@ -297,13 +298,10 @@ def registerSkinParamsInstance():
 	printl("current skin: " + skinName, "__common__::registerSkinParamsInstance", "S")
 
 	# if we are our default we switch automatically between the resolutions
-	if skinName == "default":
-		if boxResolution == "FHD":
-			skinfolder = "/usr/lib/enigma2/python/Plugins/Extensions/DreamPlex/skins/" + config.plugins.dreamplex.skin.value + "_FHD"
-		else:
-			skinfolder = "/usr/lib/enigma2/python/Plugins/Extensions/DreamPlex/skins/" + config.plugins.dreamplex.skin.value
-	else:
-		skinfolder = "/usr/lib/enigma2/python/Plugins/Extensions/DreamPlex/skins/" + config.plugins.dreamplex.skin.value
+	if (skinName == "default" or skinName == "BlueMod") and boxResolution == "FHD":
+		skinName = "%s_FHD" % skinName
+
+	skinfolder = "/usr/lib/enigma2/python/Plugins/Extensions/DreamPlex/skins/%s" % skinName
 
 	setSkinFolder(currentSkinFolder=skinfolder)
 	printl("current skinfolder: " + skinfolder, "__common__::checkSkinResolution", "S")
@@ -401,7 +399,7 @@ def localeInit():
 	printl("", "__init__::localeInit", "S")
 
 	lang = language.getLanguage()
-	os.environ["LANGUAGE"] = lang[:2]
+	environ["LANGUAGE"] = lang[:2]
 	gettext.bindtextdomain("enigma2", resolveFilename(SCOPE_LANGUAGE))
 	gettext.textdomain("enigma2")
 	gettext.bindtextdomain("DreamPlex", "%s%s" % (resolveFilename(SCOPE_PLUGINS), "Extensions/DreamPlex/locale/"))
@@ -420,10 +418,12 @@ def getInstalledSkins():
 	myDefaultSkin = "default"
 
 	try:
-		for skin in os.listdir(config.plugins.dreamplex.skinfolderpath.value):
-			# print(("skin: " + str(skin), None, "D"))
-			if os.path.isdir(os.path.join(config.plugins.dreamplex.skinfolderpath.value, skin)) and skin != "default_FHD": # we exclude the default FHD because we switch between HD and FHD automatically
-				mySkins.append(skin)
+		folderpath = config.plugins.dreamplex.skinfolderpath.value
+		for skin in listdir(folderpath):
+			if skin not in ["default_FHD" , "BlueMod_FHD"]: # we exclude the default_FHD and BlueMod_FHD because we switch between HD and FHD automatically
+				# print(("skin: " + str(skin), None, "D"))
+				if isdir(path_join(folderpath, skin)):
+					mySkins.append(skin)
 	except Exception as ex:
 		printl("no skin found in Dreamplex", "__init__::getInstalledSkins", "D")
 		printl("Exception(" + str(type(ex)) + "): " + str(ex), "__init__::getInstalledSkins", "E")
@@ -434,11 +434,11 @@ def getInstalledSkins():
 		skinPath = resolveFilename(SCOPE_SKIN)
 		printl("__init__:: Current enigma2 skin " + resolveFilename(SCOPE_CURRENT_SKIN), "__init__::getInstalledSkins", "D")
 
-		for skin in os.listdir(skinPath):
-			path = os.path.join(skinPath, skin)
-			if os.path.isdir(path):
-				xml = os.path.join(path, "skin_dreamplex.xml")
-				if os.path.isfile(xml):
+		for skin in listdir(skinPath):
+			path = path_join(skinPath, skin)
+			if isdir(path):
+				xml = path_join(path, "skin_dreamplex.xml")
+				if isfile(xml):
 					mySkins.append("~" + skin)
 	except Exception as ex:
 		printl("no skindata in enigma2 skin found", "__init__::getInstalledSkins", "D")

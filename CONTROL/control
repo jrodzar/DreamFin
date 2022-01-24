@@ -1,11 +1,11 @@
 Package: DreamPlex
-Version: 2.2.0
+Version: 2.3.0
 Description: Plex Client for Enigma2
 Section: extra
 Priority: optional
 Maintainer: DonDavici <dondavici@gmail.com>, jbleyel
 Architecture: all
-OE: dreamplex_2.2.0_all
+OE: dreamplex_2.3.0_all
 Homepage: https://github.com/oe-alliance/DreamPlex
 Depends: python-textutils, python-pyopenssl, curl, gstreamer1.0-plugins-bad-fragmented, mjpegtools, python-imaging, openssl
 Source:  https://github.com/oe-alliance/DreamPlex

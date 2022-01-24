@@ -46,6 +46,14 @@ src/skins/default_FHD/buttons/Makefile
 src/skins/default_FHD/icons/Makefile
 src/skins/default_FHD/images/Makefile
 src/skins/default_FHD/picons/Makefile
+src/skins/BlueMod/Makefile
+src/skins/BlueMod/icons/Makefile
+src/skins/BlueMod/images/Makefile
+src/skins/BlueMod/picons/Makefile
+src/skins/BlueMod_FHD/Makefile
+src/skins/BlueMod_FHD/icons/Makefile
+src/skins/BlueMod_FHD/images/Makefile
+src/skins/BlueMod_FHD/picons/Makefile
 src/fonts/Makefile
 ])
 AC_OUTPUT

@@ -1904,6 +1904,7 @@ class DP_View(DPH_Screen, DPH_ScreenHelper, DPH_MultiColorFunctions, DPH_Filter)
 		title = title.encode('utf-8') if PY2 else title
 		self["shortDescription"].setText(title)
 
+		# FIXME there is no /all/folder-fs8.png
 		self.whatPoster = defaultSkinsFolderPath + "/" + config.plugins.dreamplex.skin.value + "/all/folder-fs8.png"
 		self["poster"].show()
 
