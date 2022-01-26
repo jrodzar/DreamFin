@@ -3112,6 +3112,14 @@ class DP_View(DPH_Screen, DPH_ScreenHelper, DPH_MultiColorFunctions, DPH_Filter)
 		self.whatPoster = self.mediaPath + self.image_prefix + "_" + self.pname + self.poster_postfix
 		self.whatBackdrop = self.mediaPath + self.image_prefix + "_" + self.bname + self.backdrop_postfix
 
+		# FIX Wrong backdrop
+		if self.currentViewType == "Backdrop" and self.currentViewMode == str("ShowEpisodesDirect") and self.bname != self.pname:
+			alterBackdrop = self.mediaPath + self.image_prefix + "_" + self.pname + self.backdrop_postfix
+			if not os.path.exists(self.whatBackdrop) and os.path.exists(alterBackdrop):
+				self.whatBackdrop = self.mediaPath + self.image_prefix + "_" + self.pname + self.backdrop_postfix
+				self.resetBackdrop = True
+				self.changeBackdrop = True
+
 		printl("self.whatPoster : " + str(self.whatPoster), self, "D")
 		printl("self.whatBackdrop: " + str(self.whatBackdrop), self, "D")
 
