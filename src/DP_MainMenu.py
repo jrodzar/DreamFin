@@ -166,7 +166,13 @@ class DPS_MainMenu(DPH_Screen, DPH_HorizontalMenu, DPH_ScreenHelper):
 				if self.selectedEntry == Plugin.MENU_MAIN:
 					printl("found Plugin.MENU_MAIN", self, "D")
 					self["menu"].setList(self.menu_main_list)
-					self["menu"].top()
+					try:
+						self["menu"].top()
+					except:
+						try:
+							self["menu"].setIndex(0)
+						except:
+							pass
 
 				elif self.selectedEntry == Plugin.MENU_SERVER:
 					printl("found Plugin.MENU_SERVER", self, "D")
@@ -181,7 +187,13 @@ class DPS_MainMenu(DPH_Screen, DPH_HorizontalMenu, DPH_ScreenHelper):
 				elif self.selectedEntry == Plugin.MENU_SYSTEM:
 					printl("found Plugin.MENU_SYSTEM", self, "D")
 					self["menu"].setList(self.getSettingsMenu())
-					self["menu"].top()
+					try:
+						self["menu"].top()
+					except:
+						try:
+							self["menu"].setIndex(0)
+						except:
+							pass
 					self.setTitle(_("System"))
 					self.refreshMenu()
 

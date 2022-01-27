@@ -563,7 +563,13 @@ class DPS_ServerMenu(DPH_Screen, DPH_HorizontalMenu, DPH_ScreenHelper, DPH_Filte
 			self["menu"].setList(serverData)
 			self.beforeFilterListViewList = self.g_serverDataMenu
 			self.refreshMenu()
-			self["menu"].top()
+			try:
+				self["menu"].top()
+			except:
+				try:
+					self["menu"].setIndex(0)
+				except:
+					pass
 
 		printl("", self, "C")
 
