@@ -1451,6 +1451,8 @@ class PlexLibrary(Screen):
 
 			if authHeaderPartOne and authHeaderPartTwo:
 				self.authHeader = dict(list(authHeaderPartOne.items()) + list(authHeaderPartTwo.items()))
+			elif authHeaderPartTwo:
+				self.authHeader = dict(list(authHeaderPartTwo.items()))
 			else:
 				self.authHeader = {}
 			#printl("header: " + str(self.authHeader), self, "D")
