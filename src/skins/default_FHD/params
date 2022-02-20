@@ -62,17 +62,17 @@
 			<element name="grandparentTitle" visible="False"/>
 			<element name="title" xCoord="245" yCoord="722" />
 			<element name="shortDescription" xCoord="245" yCoord="770" visible="True"/>
-			<element name="studio" xCoord="1375" yCoord="970"/>
-			<element name="duration" xCoord="1375" yCoord="1005"/>
+			<element name="studio" xCoord="1400" yCoord="970"/>
+			<element name="duration" xCoord="1400" yCoord="1005"/>
 		</subView>
 
 		<subView name="ShowSeasons">
 			<element name="grandparentTitle" visible="True"/>
 			<element name="title" xCoord="245" yCoord="722" />
-			<element name="shortDescription" xCoord="245" yCoord="770"/>
+			<element name="shortDescription" xCoord="245" yCoord="780"/>
 			<element name="duration" visible="False"/>
 			<element name="childCount" visible="False"/>
-			<element name="studio" xCoord="1375" yCoord="970"/>
+			<element name="studio" xCoord="1400" yCoord="970"/>
 			<element name="info" visible="False"/>
 			<element name="btn_yellow" visible="False"/>
 		</subView>
@@ -80,12 +80,12 @@
 		<subView name="ShowEpisodes">
 			<element name="grandparentTitle" visible="False"/>
 			<element name="title" xCoord="245" yCoord="722" />
-			<element name="shortDescription" xCoord="245" yCoord="770"/>
-			<element name="studio" xCoord="1375" yCoord="970"/>
-			<element name="writer" visible="True" xCoord="1375" yCoord="795"/>
-			<element name="subtitles" visible="True" xCoord="1375" yCoord="900"/>
-			<element name="audio" visible="True" xCoord="1375" yCoord="935"/>
-			<element name="duration" visible="True" xCoord="1375" yCoord="1005"/>
+			<element name="shortDescription" xCoord="245" yCoord="780"/>
+			<element name="studio" xCoord="1400" yCoord="970"/>
+			<element name="writer" visible="True" xCoord="1400" yCoord="795"/>
+			<element name="subtitles" visible="True" xCoord="1400" yCoord="900"/>
+			<element name="audio" visible="True" xCoord="1400" yCoord="935"/>
+			<element name="duration" visible="True" xCoord="1400" yCoord="1005"/>
 			<element name="codec" visible="True"/>
 			<element name="aspect" visible="True"/>
 			<element name="resolution" visible="True"/>
@@ -100,14 +100,14 @@
 		<subView name="ShowEpisodesDirect">
 			<element name="grandparentTitle" visible="False"/>
 			<element name="title" xCoord="245" yCoord="722" />
-			<element name="shortDescription" xCoord="245" yCoord="774"/>
+			<element name="shortDescription" xCoord="245" yCoord="780"/>
 			<element name="studio" visible="False"/>
 			<element name="genre" visible="False"/>
 			<element name="year" visible="False"/>
-			<element name="writer" visible="True" xCoord="1375" yCoord="795"/>
-			<element name="subtitles" visible="True" xCoord="1375" yCoord="900"/>
-			<element name="audio" visible="True" xCoord="1375" yCoord="935"/>
-			<element name="duration" visible="True" xCoord="1375" yCoord="1005"/>
+			<element name="writer" visible="True" xCoord="1400" yCoord="795"/>
+			<element name="subtitles" visible="True" xCoord="1400" yCoord="900"/>
+			<element name="audio" visible="True" xCoord="1400" yCoord="935"/>
+			<element name="duration" visible="True" xCoord="1400" yCoord="1005"/>
 			<element name="codec" visible="True"/>
 			<element name="aspect" visible="True"/>
 			<element name="resolution" visible="True"/>
@@ -123,7 +123,7 @@
 
 	<showView name="Backdrop" type="Backdrop" apiLevel="1" itemsPerPage="12" screen="DPS_ViewBackdrop" backdropVideos="True" backdropVideoHeight="1080" backdropVideoWidth="1920" miniTv="True" posterHeight="268" posterWidth="195" backdropHeight="1080" backdropWidth="1920">
 		<subView name="ShowShows">
-			<element name="title" xCoord="558" yCoord="596" />
+			<element name="title" xCoord="555" yCoord="596" />
 			<element name="grandparentTitle" visible="False"/>
 			<element name="studio" xCoord="903" yCoord="920"/>
 			<element name="duration" xCoord="903" yCoord="955"/>
@@ -132,7 +132,7 @@
 		</subView>
 
 		<subView name="ShowSeasons">
-			<element name="title" xCoord="558" yCoord="596" />
+			<element name="title" xCoord="555" yCoord="596" />
 			<element name="grandparentTitle" visible="True"/>
 			
 			<element name="duration" visible="False"/>
@@ -143,7 +143,7 @@
 		</subView>
 
 		<subView name="ShowEpisodes">
-			<element name="title" xCoord="558" yCoord="596" />
+			<element name="title" xCoord="555" yCoord="596" />
 			<element name="grandparentTitle" visible="False"/>
 			<element name="duration" xCoord="903" yCoord="955" visible="True"/>
 			<element name="audio" visible="True"/>
@@ -164,7 +164,7 @@
 		</subView>
 
 		<subView name="ShowEpisodesDirect">
-			<element name="title" xCoord="558" yCoord="606" />
+			<element name="title" xCoord="555" yCoord="596" />
 			<element name="grandparentTitle" visible="False"/>
 			<element name="duration" xCoord="903" yCoord="955" visible="True"/>
 			<element name="audio" visible="True"/>
