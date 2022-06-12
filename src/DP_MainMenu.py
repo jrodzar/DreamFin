@@ -54,6 +54,24 @@ from .__init__ import _ # _ is translation
 #
 #===============================================================================
 
+# Subclass of List to support horizontal menu
+class DPS_List(List):
+	def __init__(self):
+		List.__init__(self)
+
+	def selectPrevious(self):
+		if self.getIndex() - 1 < 0:
+			self.index = self.count() - 1
+		else:
+			self.index -= 1
+		self.setIndex(self.index)
+
+	def selectNext(self):
+		if self.getIndex() + 1 >= self.count():
+			self.index = 0
+		else:
+			self.index += 1
+		self.setIndex(self.index)
 
 class DPS_MainMenu(DPH_Screen, DPH_HorizontalMenu, DPH_ScreenHelper):
 
@@ -93,7 +111,7 @@ class DPS_MainMenu(DPH_Screen, DPH_HorizontalMenu, DPH_ScreenHelper):
 
 		self["title"] = StaticText()
 
-		self["menu"] = List(enableWrapAround=True)
+		self["menu"] = DPS_List()
 
 		self["actions"] = HelpableActionMap(self, "DP_MainMenuActions",
 			{
