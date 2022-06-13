@@ -27,7 +27,6 @@ You should have received a copy of the GNU General Public License
 import time
 
 from Components.ActionMap import HelpableActionMap
-from Components.Sources.List import List
 from Components.Sources.StaticText import StaticText
 from Components.config import config
 
@@ -38,7 +37,7 @@ from .DP_SystemCheck import DPS_SystemCheck
 from .DP_Settings import DPS_Settings
 from .DP_Server import DPS_Server
 from .DP_About import DPS_About
-from .DP_ServerMenu import DPS_ServerMenu
+from .DP_ServerMenu import DPS_ServerMenu, DPS_List
 from .DP_Syncer import DPS_Syncer
 
 from .DPH_Singleton import Singleton
@@ -53,25 +52,6 @@ from .__init__ import _ # _ is translation
 #===============================================================================
 #
 #===============================================================================
-
-# Subclass of List to support horizontal menu
-class DPS_List(List):
-	def __init__(self):
-		List.__init__(self)
-
-	def selectPrevious(self):
-		if self.getIndex() - 1 < 0:
-			self.index = self.count() - 1
-		else:
-			self.index -= 1
-		self.setIndex(self.index)
-
-	def selectNext(self):
-		if self.getIndex() + 1 >= self.count():
-			self.index = 0
-		else:
-			self.index += 1
-		self.setIndex(self.index)
 
 class DPS_MainMenu(DPH_Screen, DPH_HorizontalMenu, DPH_ScreenHelper):
 

@@ -29,6 +29,7 @@ import time
 from Components.ActionMap import ActionMap
 from Components.ConfigList import ConfigListScreen
 from Components.Sources.StaticText import StaticText
+from Components.Sources.List import List
 from Components.Label import Label
 from Components.Pixmap import Pixmap
 from Components.config import config, getConfigListEntry, configfile
@@ -62,8 +63,6 @@ class DPS_Server(Screen, DPH_PlexScreen):
 
 		Screen.__init__(self, session)
 		DPH_PlexScreen.__init__(self)
-
-		from Components.Sources.List import List
 
 		self.guiElements = getGuiElements()
 
