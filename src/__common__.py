@@ -534,7 +534,7 @@ def checkDirectory(directory):
 #===============================================================================
 
 
-def getServerFromURL(url): # CHECKED
+def getServerFromURL(url):  # CHECKED
 	"""
 	Simply split the URL up and get the server portion, sans port
 
@@ -595,9 +595,9 @@ def setBoxInformation():
 	model = getMachineBuild()
 	try:
 		from Components.SystemInfo import BoxInfo
-		manu = BoxInfo.getItem("displaybrand","unknown")
-		oe = BoxInfo.getItem("oe","unknown")
-		arch = BoxInfo.getItem("architecture","unknown")
+		manu = BoxInfo.getItem("displaybrand", "unknown")
+		oe = BoxInfo.getItem("oe", "unknown")
+		arch = BoxInfo.getItem("architecture", "unknown")
 	except ImportError:
 		arch = "unknown"
 		oe = "unknown"
@@ -967,14 +967,14 @@ def getPlexHeader(g_sessionID, asDict=True):
 					'X-Plex-Client-Platform': "iOS"}
 	else:
 		plexHeader = []
-		plexHeader.append('X-Plex-Platform:iOS')# + boxData[2]) # arch
-		plexHeader.append('X-Plex-Platform-Version:' + boxData[3]) # version
+		plexHeader.append('X-Plex-Platform:iOS')  # + boxData[2]) # arch
+		plexHeader.append('X-Plex-Platform-Version:' + boxData[3])  # version
 		plexHeader.append('X-Plex-Provides:player')
 		plexHeader.append('X-Plex-Product:DreamPlex')
 		plexHeader.append('X-Plex-Version:' + getVersion())
-		plexHeader.append('X-Plex-Device:' + boxData[0]) # manu
+		plexHeader.append('X-Plex-Device:' + boxData[0])  # manu
 		plexHeader.append("X-Plex-Device-Name:" + boxName)
-		plexHeader.append("X-Plex-Model:" + boxData[1]) # model
+		plexHeader.append("X-Plex-Model:" + boxData[1])  # model
 		plexHeader.append('X-Plex-Client-Identifier:' + g_sessionID)
 		plexHeader.append("X-Plex-Client-Platform:iOS")
 

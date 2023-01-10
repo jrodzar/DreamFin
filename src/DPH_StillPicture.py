@@ -63,7 +63,7 @@ class Showiframe(object):
 		printl("", self, "S")
 
 		# we append here to have ctype.so also for sh4 boxes
-		libsFolder = "/usr/libs" # config.plugins.dreamplex.pluginfolderpath.value + "libs"
+		libsFolder = "/usr/libs"  # config.plugins.dreamplex.pluginfolderpath.value + "libs"
 		libname = "libshowiframe.so.0"
 		sys.path.append(libsFolder)
 
@@ -264,7 +264,7 @@ class StillPicture(Renderer, InfoBarBase):
 			service = self.session.nav.getCurrentService()
 
 			# FIXME check sh4
-			nosh = True # platform != 'sh4'
+			nosh = True  # platform != 'sh4'
 			if nosh and service and service.seek():
 				service.seek().seekTo(0)
 			else:

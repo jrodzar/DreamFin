@@ -34,7 +34,7 @@ from Screens.Screen import Screen
 
 from .__common__ import printl2 as printl, revokeCacheFiles
 
-from .__init__ import _ # _ is translation
+from .__init__ import _  # _ is translation
 
 #===============================================================================
 #
@@ -98,10 +98,10 @@ class DPS_SystemCheck(Screen):
 
 		printl("", self, "C")
 
-
 	#===================================================================
 	#
 	#===================================================================
+
 	def cancel(self):
 		printl("", self, "S")
 

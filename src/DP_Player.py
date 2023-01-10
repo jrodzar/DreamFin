@@ -65,12 +65,13 @@ from .DPH_Singleton import Singleton
 from .DPH_ScreenHelper import DPH_ScreenHelper
 
 from .__common__ import printl2 as printl, convertSize, encodeThat
-from .__init__ import _ # _ is translation
+from .__init__ import _  # _ is translation
 
 
 # we need this to see the states for subtitles also in audioselction with yellow button
 SUBTITLES_ENABLED = False
 SUBTITLES_CONTENT = None
+
 
 #===============================================================================
 #
@@ -85,6 +86,7 @@ class InfobarAudioSelectionExtended(InfoBarAudioSelection):
 	#
 	#===========================================================================
 	def audioSelection(self):
+		printl("mh: audioSelection", self, "D")
 		self.session.openWithCallback(self.audioSelected, myAudioSelection, infobar=self.session.infobar or self)
 
 #===============================================================================
@@ -94,11 +96,15 @@ class InfobarAudioSelectionExtended(InfoBarAudioSelection):
 
 class myAudioSelection(AudioSelection):
 	def __init__(self, session, infobar=None):
+		printl("mh: myAudioSelection.__init__", self, "D")
+
 		AudioSelection.__init__(self, session, infobar)
 		self.skinName = ["AudioSelection"]
 
 		# check if we are active and we have content
 		if SUBTITLES_CONTENT and SUBTITLES_ENABLED:
+			printl("mh: myAudioSelection.__init__ (2)", self, "D")
+
 			# run to set subtitle active in screen
 			self.enableSubtitle(SUBTITLES_CONTENT)
 
@@ -115,7 +121,7 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 	ENIGMA_SERVICE_ID = None
 	ENIGMA_SERVICETS_ID = 0x1		#1
 	ENIGMA_SERVIDEM2_ID = 0x3		#3
-	ENIGMA_SERVICEGS_ID = 0x1001	#4097
+	ENIGMA_SERVICEGS_ID = 0x1001  # 4097
 
 	seek = None
 	resume = False
@@ -153,9 +159,13 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 	subtitleLanguageCode = None
 	subtitleWatcher = None
 
+	#mh
+	mhSeekHack = 0
+
 	#===========================================================================
 	#
 	#===========================================================================
+
 	def __init__(self, session, listViewList, currentIndex, libraryName, autoPlayMode, resumeMode, playbackMode, forceResume=False, isExtraData=False, sessionData=None, subtitleData=None, startedByRemotePlayer=False):
 		printl("", self, "S")
 		Screen.__init__(self, session)
@@ -177,17 +187,19 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 
 		self.listViewList = listViewList
 		self.currentIndex = currentIndex
-		self.listCount = len(self.listViewList) - 1# list starts counting with 0
+		self.listCount = len(self.listViewList) - 1  # list starts counting with 0
 		self.playerData = {}
 		self.autoPlayMode = autoPlayMode
 		self.resumeMode = resumeMode
-		self.forceResume = forceResume # we use this to able to resume out of android or ios
+		self.forceResume = forceResume  # we use this to able to resume out of android or ios
 		self.playbackMode = playbackMode
 		self.isExtraData = isExtraData
 		self.sessionData = sessionData
 		self.subtitleData = subtitleData
 		self.startedByRemotePlayer = startedByRemotePlayer
 		self.onChangedEntry = []
+
+		printl("mh: subtitleData=" + str(subtitleData), self, "D")
 
 		# we add this for vix images due to their long press button support
 		self.LongButtonPressed = False
@@ -252,8 +264,8 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 
 		if not sessionData:
 			if self.isExtraData:
-				self.media_id = isExtraData[0] #"125629"
-				mediaFileUrl = isExtraData[1] #"http://92.60.8.106:34400/services/iva/assets/853333/video.mp4?bitrate=1500"
+				self.media_id = isExtraData[0]  # "125629"
+				mediaFileUrl = isExtraData[1]  # "http://92.60.8.106:34400/services/iva/assets/853333/video.mp4?bitrate=1500"
 				self.buildPlayerData(mediaFileUrl, isExtraData=True)
 			else:
 				# from here we go on
@@ -267,6 +279,7 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 
 	def __evUpdatedInfo(self):
 		if self.resume and self.resumeStamp is not None and self.resumeStamp > 0.0:
+			self.mhSeekHack = 0
 			self.seekwatcherThread = eTimer()
 			self.seekwatcherThread.callback.append(self.seekWatcher)
 			self.seekwatcherThread.start(900, False)
@@ -324,7 +337,7 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 		# set new volume
 		self.volumeHandler.setVolume(volume, volume)
 		if self.volumeControlInstance is not None:
-			self.volumeControlInstance.volumeDialog.setValue(volume) # update progressbar value
+			self.volumeControlInstance.volumeDialog.setValue(volume)  # update progressbar value
 			self.volumeControlInstance.volumeDialog.show()
 			self.volumeControlInstance.hideVolTimer.start(3000, True)
 
@@ -339,7 +352,7 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 		selection = self.listViewList[self.currentIndex]
 		printl("selection: " + str(selection), self, "D")
 
-		if "parentRatingKey" in selection[1]: # this is the case with shows
+		if "parentRatingKey" in selection[1]:  # this is the case with shows
 			self.show_id = selection[1]['parentRatingKey']
 			self.isShow = True
 		else:
@@ -466,7 +479,12 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 		printl("", self, "S")
 
 		if resumeStamp > 0 and self.resumeMode:
+			#mh - resume locks up too often so disable #
 			self.session.openWithCallback(self.handleResume, MessageBox, _(" This file was partially played.\n\n Do you want to resume?"), MessageBox.TYPE_YESNO)
+
+			#printl("mh: not resuming as it's fucked too often", self, "D")
+			#resumeStamp = 0
+			#self.play()
 
 		elif self.forceResume:
 			self.play(resume=True)
@@ -550,16 +568,16 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 		printl("Checking for usable gstreamer service (builtin)... ", self, "I")
 
 		# lets built the sref for the movieplayer out of the gathered information
-		if self.url[:4] == "http": #this means we are in streaming mode so we will use sref 4097
+		if self.url[:4] == "http":  # this means we are in streaming mode so we will use sref 4097
 			self.ENIGMA_SERVICE_ID = self.ENIGMA_SERVICEGS_ID
 
-		elif self.url[-3:] == ".ts" or self.url[-4:] == ".iso": # seems like we have a real ts file ot a iso file so we will use sref 1
+		elif self.url[-3:] == ".ts" or self.url[-4:] == ".iso":  # seems like we have a real ts file ot a iso file so we will use sref 1
 			self.ENIGMA_SERVICE_ID = self.ENIGMA_SERVICETS_ID
 
 		elif self.url[-5:] == ".m2ts":
 			self.ENIGMA_SERVICE_ID = self.ENIGMA_SERVIDEM2_ID
 
-		else: # if we have a real file but no ts but for eg mkv we will use sref 4097
+		else:  # if we have a real file but no ts but for eg mkv we will use sref 4097
 			if self.isValidServiceId(self.ENIGMA_SERVICEGS_ID):
 				printl("we are able to stream over 4097", self, "I")
 				self.ENIGMA_SERVICE_ID = self.ENIGMA_SERVICEGS_ID
@@ -647,10 +665,27 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 
 		self.startTimelineWatcher()
 
+		#mh
+		sesd = self.plexInstance.getSelectedEmbeddedSubtitleData()
+		printl("mh: g_SelectedEmbeddedSubtitleData=" + str(sesd), self, "D")
+		if sesd != None:
+			self.subtitleData = sesd
+
+		printl("mh: subtitleData=" + str(self.subtitleData), self, "D")
+
 		if self.subtitleData is not None:
 			if self.subtitleData["id"] != -1:
+				printl("mh: subtitleData.id=" + str(self.subtitleData["id"]), self, "D")
 				printl("starting subtitleWatcher ...")
 				self.startSubtitleWatcher()
+			#mh
+			else:
+				self.disableSubtitleNow()
+		#mh
+		else:
+			self.disableSubtitleNow()
+
+		printl("mh: playbackType=" + str(self.playbackType), self, "D")
 
 		if self.playbackType == "2":
 			self["bufferslider"].setValue(100)
@@ -685,20 +720,30 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 		printl("", self, "S")
 
 		try:
+			#printl("mh: stc 1", self, "S")
 			subtitles = self.getCurrentServiceSubtitle()
+			#printl("mh: stc 2", self, "S")
 			subtitlelist = subtitles.getSubtitleList()
+			#printl("mh: stc 3", self, "S")
+
 			subtitleStreams = []
 			printl("subtitles: " + str(subtitles), self, "D")
 			printl("what: " + str(subtitlelist), self, "D")
 
+			matched = False
+			foundDefined = False
+
 			if len(subtitlelist):
 				for x in subtitlelist:
+
 					number = str(x[1])
 					description = "?"
 					myLanguage = _("<unknown>")
 					selected = ""
 
 					if x[4] != "und":
+						foundDefined = True  # mh
+
 						if x[4] in LanguageCodes:
 							myLanguage = LanguageCodes[x[4]][0]
 						else:
@@ -716,27 +761,61 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 						types = (_("<unknown>"), "UTF-8 text", "SSA", "AAS", ".SRT file", "VOB", "PGS (unsupported)")
 						description = types[x[2]]
 
+					printl("mh: myLanguage=" + myLanguage + " description=" + description, self, "D")
+
 					subs = (x, "", number, description, myLanguage, selected)
+					printl("mh: subs=" + str(subs), self, "D")
 
 					myLanguageFromPlex = self.subtitleData["languageCode"]
 
-					if myLanguageFromPlex in LanguageCodes:
-						myLanguageFromPlex = LanguageCodes[myLanguageFromPlex][0]
+					try:
+						if myLanguageFromPlex in LanguageCodes:
+							myLanguageFromPlex = LanguageCodes[myLanguageFromPlex][0]
 
-					printl("myLanguage: " + str(myLanguage) + " / myLanguageFromPlex: " + str(myLanguageFromPlex), self, "D")
+						printl("myLanguage: " + str(myLanguage) + " / myLanguageFromPlex: " + str(myLanguageFromPlex), self, "D")
 
-					if myLanguageFromPlex == myLanguage:
-						printl("we have a match ...", self, "D")
-						self.enableSubtitleNow(subs[0])
-						self.subtitleWatcher.stop()
+						#mh : external force subs are first in list and are undefined
+						forceMatch = False
+						if self.plexInstance.getServerConfig().useForcedSubtitles.value:
+							if foundDefined == False:
+								if myLanguage == "<unknown>":
+									if description == "UTF-8 text":
+										try:
+											if self.playerData[self.currentIndex]['usingExtForcedSubs'] == True:
+												forceMatch = True
+												printl("mh: force match", self, "D")
 
-					else:
-						print(self.subtitleData)
-						print(myLanguage)
-						raise Exception
+										except Exception as e:
+											printl("Subtitle Message (3): " + str(e), self, "D")
+											pass
 
-					# just for debugging
-					subtitleStreams.append((x, "", number, description, myLanguage, selected))
+						if myLanguageFromPlex == myLanguage or forceMatch:  # check force match
+							printl("we have a match ...", self, "D")
+
+							if matched == False:
+								subtitleStreams.append((x, "", number, description, myLanguage, selected))  # mh
+
+								self.disableSubtitleNow()  # mh : fixes subs being enabled on audio selection dialog but not appearing until toggled - no idea why
+
+								self.enableSubtitleNow(subs[0])
+								self.subtitleWatcher.stop()
+								matched = True
+								break  # mh - uncomment to trace subsequent subs streams for debugging
+							else:
+								printl("already set first match - just continuing for debugging", self, "D")
+
+						else:
+							printl("mh: no match", self, "D")
+							print(self.subtitleData)
+							print(myLanguage)
+							#mh //raise Exception
+
+							# just for debugging
+							subtitleStreams.append((x, "", number, description, myLanguage, selected))
+
+					except Exception as e:
+						printl("Subtitle Message (2): " + str(e), self, "D")
+						pass
 
 			printl("subtitleStreams: " + str(subtitleStreams), self, "D")
 
@@ -766,9 +845,11 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 				success = True
 
 			except Exception as e:
-				printl("Subtitle Message: " + str(e), self, "D")
+				printl("Subtitle Message (2): " + str(e), self, "D")
 
 		if success:
+			printl("success", self, "D")  # mh
+
 			global SUBTITLES_ENABLED
 			global SUBTITLES_CONTENT
 			SUBTITLES_ENABLED = True
@@ -777,8 +858,43 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 		printl("", self, "C")
 
 	#===========================================================================
+	# mh:
+	#===========================================================================
+	def disableSubtitleNow(self):
+		printl("", self, "S")
+		success = False
+		try:
+			self.setSelectedSubtitle(None)
+			self.setSubtitlesEnable(False)
+			self.setSubtitlesDisable()
+			success = True
+
+		except Exception as e:
+			printl("Subtitle Message: " + str(e), self, "D")
+
+			try:
+				printl("maybe we are openpli, trying their subtitle function", self, "D")
+				# maybe we are openpli
+				self.enableSubtitle(None)
+				success = True
+
+			except Exception as e:
+				printl("Subtitle Message (2): " + str(e), self, "D")
+
+		if True:  # success:
+			printl("success", self, "D")  # mh
+
+			global SUBTITLES_ENABLED
+			global SUBTITLES_CONTENT
+			SUBTITLES_ENABLED = False
+			SUBTITLES_CONTENT = None
+
+		printl("", self, "C")
+
+	#===========================================================================
 	#
 	#===========================================================================
+
 	def startTimelineWatcher(self):
 		printl("", self, "S")
 
@@ -848,7 +964,7 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 		#self.mediaData = self.playerData[self.currentIndex]['mediaData']
 
 		# go through the data out of the function call
-		self.resumeStamp = int(self.playbackData['resumeStamp']) / 1000 # plex stores seconds * 1000
+		self.resumeStamp = int(self.playbackData['resumeStamp']) / 1000  # plex stores seconds * 1000
 		self.server = str(self.playbackData['server'])
 		self.id = str(self.playbackData['id'])
 		self.multiUserServer = self.playbackData['multiUserServer']
@@ -1047,10 +1163,17 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 					r = seek.getPlayPosition()
 					if not r[0]:
 						printl("playbacktime " + str(r[1]), self, "D")
-						if r[1] < 90000:# ~2 sekunden
-							printl("do not seek yet " + str(r[1]), self, "D")
-							printl("", self, "C")
-							return
+
+						if r[1] < 90000:  # ~2 sekunden
+
+							self.mhSeekHack = self.mhSeekHack + 1
+							if self.mhSeekHack < 5:
+
+								printl("do not seek yet (mhSeekHack:" + str(self.mhSeekHack) + ") " + str(r[1]), self, "D")
+								printl("", self, "C")
+								return
+
+							self.mhSeekHack = 0
 					else:
 						printl("", self, "C")
 						return
@@ -1058,10 +1181,10 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 					elapsed = self.resumeStamp * 90000
 					printl("seeking to " + str(time) + " length " + str(length) + " ", self, "D")
 
-					if elapsed < 90000:
-						printl("skip seeking < 10s", self, "D")
-						printl("", self, "C")
-						return
+					#mh //if elapsed < 90000:
+					#mh //	printl("skip seeking < 10s", self, "D")
+					#mh //	printl("", self, "C")
+					#mh //	return
 
 					self.doSeek(int(elapsed))
 					self.resumeStamp = None
@@ -1441,7 +1564,7 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 					printl("lang: " + str(lang), self, "D")
 					trackList += [str(lang)]
 
-				systemLanguage = language.getLanguage()[:2] # getLanguage returns e.g. "fi_FI" for "language_country"
+				systemLanguage = language.getLanguage()[:2]  # getLanguage returns e.g. "fi_FI" for "language_country"
 				printl("found systemLanguage: " + systemLanguage, self, "I")
 				#systemLanguage = "en"
 
@@ -1481,7 +1604,7 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 
 	def getServiceInterface(self, iface):
 		printl("", self, "S")
-		service = self.session.nav.getCurrentService() # self.service
+		service = self.session.nav.getCurrentService()  # self.service
 		if service:
 			attr = getattr(service, iface, None)
 			if callable(attr):

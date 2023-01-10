@@ -38,7 +38,7 @@ from Screens.Screen import Screen
 from Screens.VirtualKeyBoard import VirtualKeyBoard
 
 from .__common__ import printl2 as printl, checkXmlFile, getXmlContent, writeXmlContent
-from .__init__ import _ # _ is translation
+from .__init__ import _  # _ is translation
 
 from .DP_PathSelector import DPS_PathSelector
 from .DP_ViewFactory import getGuiElements
@@ -238,7 +238,7 @@ class DPS_Mappings(Screen):
 
 class DPS_MappingsEntryList(MenuList):
 
-	lastMappingId = 0 # we use this to find the next id if we add a new element
+	lastMappingId = 0  # we use this to find the next id if we add a new element
 	location = None
 
 	def __init__(self, menuList, serverID, tree, enableWrapAround=True):
@@ -291,7 +291,6 @@ class DPS_MappingsEntryList(MenuList):
 					res.append((eListboxPythonMultiContent.TYPE_TEXT, 355, 0, 300, 20, 1, RT_HALIGN_LEFT | RT_VALIGN_CENTER, str(remotePathPart)))
 					self.list.append(res)
 
-
 		self.l.setList(self.list)
 		self.moveToIndex(0)
 
@@ -339,7 +338,7 @@ class DPS_MappingsEntryList(MenuList):
 				server.append(etree.Element('mapping id="' + str(newId) + '" remotePathPart="' + remotePath + '" localPathPart="' + localPath + '"'))
 				writeXmlContent(tree, self.location)
 
-		if not existingServer: # this server has no node in the xml
+		if not existingServer:  # this server has no node in the xml
 			printl("expanding server list", self, "D")
 			tree.append(etree.Element('server id="' + str(self.serverID) + '"'))
 			writeXmlContent(tree, self.location)

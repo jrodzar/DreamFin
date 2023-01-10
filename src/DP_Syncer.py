@@ -58,7 +58,7 @@ from .DPH_Singleton import Singleton
 from .DPH_ScreenHelper import DPH_ScreenHelper, DPH_PlexScreen
 
 from .__common__ import printl2 as printl, isValidSize, encodeThat, getSkinResolution
-from .__init__ import _ # _ is translation
+from .__init__ import _  # _ is translation
 
 #===========================================================================
 #
@@ -393,7 +393,7 @@ class MediaSyncerInfo(object):
 		printl("", self, "S")
 
 		assert not MediaSyncerInfo.instance, "only one MediaSyncerInfo instance is allowed!"
-		MediaSyncerInfo.instance = self # set instance
+		MediaSyncerInfo.instance = self  # set instance
 		self.syncer = None
 		self.running = False
 		self.backgroundMediaSyncer = None

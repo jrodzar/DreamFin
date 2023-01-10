@@ -67,7 +67,7 @@ from .DP_ViewFactory import getNoneDirectoryElements, getDefaultDirectoryElement
 
 from .__common__ import printl2 as printl, loadPicture, durationToTime, getLiveTv, encodeThat, checkXmlFile, getXmlContent, getSkinResolution
 from .__plugin__ import Plugin
-from .__init__ import _, defaultSkinsFolderPath # _ is translation
+from .__init__ import _, defaultSkinsFolderPath  # _ is translation
 
 #===========================================================================
 #
@@ -119,17 +119,17 @@ class DP_View(DPH_Screen, DPH_ScreenHelper, DPH_MultiColorFunctions, DPH_Filter)
 	changePoster = True
 	changeBackdrop = True
 	fastScroll = False
-	viewStep = 0 # we use this to know the steps we did to store the changes form subviews
-	viewChangeStorage = {} # we use this to save changed value if we have subViews
-	loadedStillPictureLib = False # until we do not know if we can load the libs it will be false
+	viewStep = 0  # we use this to know the steps we did to store the changes form subviews
+	viewChangeStorage = {}  # we use this to save changed value if we have subViews
+	loadedStillPictureLib = False  # until we do not know if we can load the libs it will be false
 	usedStillPicture = False
-	refreshTimer = None # initial value to stay agile in list of media
-	selection = None # this stores the current list entry of list
-	leaving = False # we use this to know if we are going deeper into the lib or leaving e.g. show - season - episode
+	refreshTimer = None  # initial value to stay agile in list of media
+	selection = None  # this stores the current list entry of list
+	leaving = False  # we use this to know if we are going deeper into the lib or leaving e.g. show - season - episode
 
-	playerData = {} # inital playerData dict
-	currentQueuePosition = 0 # this is the current selection id
-	detailsPaneVisible = False # is shortDescription or details visible
+	playerData = {}  # inital playerData dict
+	currentQueuePosition = 0  # this is the current selection id
+	detailsPaneVisible = False  # is shortDescription or details visible
 	autoPlayMode = False
 	resumeMode = True
 	currentFunctionLevel = "1"
@@ -413,7 +413,7 @@ class DP_View(DPH_Screen, DPH_ScreenHelper, DPH_MultiColorFunctions, DPH_Filter)
 				self.session.nav.stopService()
 
 			try:
-				self["stillPicture"] = StillPicture(viewClass) # this is working over an renderer
+				self["stillPicture"] = StillPicture(viewClass)  # this is working over an renderer
 				# we use this to be able to resize the tv picture and show as backdrop
 				self.loadedStillPictureLib = True
 
@@ -633,8 +633,8 @@ class DP_View(DPH_Screen, DPH_ScreenHelper, DPH_MultiColorFunctions, DPH_Filter)
 			url = "%s://%s/library/metadata/%s" % (http, self.server, ratingKey)
 			listViewList, mediaContainer = self.plexInstance.getMoviesFromSection(url)
 			autoPlayMode = False
-			resumeMode = False # this is always false because we are in extradata here
-			playbackMode = str(1) #because we are a trailer we override to streamed self.serverConfig.playbackType.value
+			resumeMode = False  # this is always false because we are in extradata here
+			playbackMode = str(1)  # because we are a trailer we override to streamed self.serverConfig.playbackType.value
 			currentIndex = 0
 			libraryName = "Mixed"
 			forceResume = False
@@ -649,8 +649,8 @@ class DP_View(DPH_Screen, DPH_ScreenHelper, DPH_MultiColorFunctions, DPH_Filter)
 	def myCallback(self, stillPlaying):
 		printl("", self, "S")
 
-		if stillPlaying[0]: # Bool
-			self.sessionData = stillPlaying[1] # is list with data
+		if stillPlaying[0]:  # Bool
+			self.sessionData = stillPlaying[1]  # is list with data
 			currentIndex = int(self.sessionData[3])
 			self["listview"].setIndex(currentIndex)
 			self.refresh()
@@ -742,11 +742,11 @@ class DP_View(DPH_Screen, DPH_ScreenHelper, DPH_MultiColorFunctions, DPH_Filter)
 
 		self.setColorFunction(color="red", level="1", functionList=("", self.togglePlayMode))
 		self.setColorFunction(color="green", level="1", functionList=("", self.toggleResumeMode))
-		self.setColorFunction(color="yellow", level="1", functionList=("", self.executeLibraryFunction)) # name is empty because we set it dynamical
+		self.setColorFunction(color="yellow", level="1", functionList=("", self.executeLibraryFunction))  # name is empty because we set it dynamical
 		self.setColorFunction(color="blue", level="1", functionList=(_("playback mode '" + self.playbackModes[self.configuredPlaybackMode][1] + "'"), self.togglePlaybackMode))
 
 		self.setColorFunction(color="red", level="2", functionList=(_("View '") + str(self.currentViewName) + " '", self.onToggleView))
-		self.setColorFunction(color="green", level="2", functionList=("", self.toggleFastScroll)) # name is empty because we set it dynamical
+		self.setColorFunction(color="green", level="2", functionList=("", self.toggleFastScroll))  # name is empty because we set it dynamical
 		self.setColorFunction(color="yellow", level="2", functionList=("refresh Library", self.initiateRefresh))
 		self.setColorFunction(color="blue", level="2", functionList=(_("show 'Details'"), self.toggleDetails))
 
@@ -755,7 +755,7 @@ class DP_View(DPH_Screen, DPH_ScreenHelper, DPH_MultiColorFunctions, DPH_Filter)
 		self.setColorFunction(color="yellow", level="3", functionList=(_("delete Medias"), self.deleteMedias))
 		self.setColorFunction(color="blue", level="3", functionList=(_("use for Mapping"), self.useForMappingHelper))
 
-		self.setColorFunction(color="red", level="4", functionList=("", self.toggleFilterMode)) # name is empty because we set it dynamical
+		self.setColorFunction(color="red", level="4", functionList=("", self.toggleFilterMode))  # name is empty because we set it dynamical
 		self.setColorFunction(color="green", level="4", functionList=None)
 		self.setColorFunction(color="yellow", level="4", functionList=None)
 		self.setColorFunction(color="blue", level="4", functionList=None)
@@ -810,7 +810,7 @@ class DP_View(DPH_Screen, DPH_ScreenHelper, DPH_MultiColorFunctions, DPH_Filter)
 			# now we reduce the identical folders
 			while reductionSuccessState:
 				pathElements = string.split(currentRemotePath, "/")
-				currentLimiter = pathElements[-2] # [-1] would lead to " " empty limiter due to the fact that there is a / at the end
+				currentLimiter = pathElements[-2]  # [-1] would lead to " " empty limiter due to the fact that there is a / at the end
 				printl("pathElements: " + str(pathElements), self, "D")
 				currentRemotePath, currentLocalPath, reductionSuccessState = self.reduceMappings(currentRemotePath, currentLocalPath, currentLimiter)
 
@@ -1086,7 +1086,7 @@ class DP_View(DPH_Screen, DPH_ScreenHelper, DPH_MultiColorFunctions, DPH_Filter)
 			if self.keyOneDisabled:
 				self.onKey2()
 			else:
-				self.onKey1() # we return to normal functions
+				self.onKey1()  # we return to normal functions
 				self["L1"].show()
 
 			self["L2"].show()
@@ -2492,7 +2492,7 @@ class DP_View(DPH_Screen, DPH_ScreenHelper, DPH_MultiColorFunctions, DPH_Filter)
 				printl("header: " + str(authHeader), self, "D")
 				download_url = str(download_url) if PY2 else str(download_url).encode("UTF-8")
 				if not PY2 and 'X-Plex-Token' in authHeader:
-					authHeader = {b'X-Plex-Token' : authHeader["X-Plex-Token"].encode("UTF-8")}
+					authHeader = {b'X-Plex-Token': authHeader["X-Plex-Token"].encode("UTF-8")}
 				downloadPage(download_url, self.whatPoster, headers=authHeader).addCallback(lambda _: self.showPoster(forceShow=True))
 			else:
 				self.noPicData()
@@ -2521,7 +2521,7 @@ class DP_View(DPH_Screen, DPH_ScreenHelper, DPH_MultiColorFunctions, DPH_Filter)
 				printl("header: " + str(authHeader), self, "D")
 				download_url = str(download_url) if PY2 else str(download_url).encode("UTF-8")
 				if not PY2 and 'X-Plex-Token' in authHeader:
-					authHeader = {b'X-Plex-Token' : authHeader["X-Plex-Token"].encode("UTF-8")}
+					authHeader = {b'X-Plex-Token': authHeader["X-Plex-Token"].encode("UTF-8")}
 				downloadPage(download_url, self.whatBackdrop, headers=authHeader).addCallback(lambda _: self.showBackdrop(forceShow=True))
 			else:
 				self.noPicData()
@@ -2583,7 +2583,7 @@ class DP_View(DPH_Screen, DPH_ScreenHelper, DPH_MultiColorFunctions, DPH_Filter)
 		self.getSeenVisus()
 
 		# enable audio and subtitles information if we have transcoding active
-		if self.serverConfig.playbackType.value == "1": # transcoded
+		if self.serverConfig.playbackType.value == "1":  # transcoded
 			printl("audio: " + str(self.viewParams["elements"]["audio"]), self, "D")
 			if self.viewParams["elements"]["audio"]["visible"]:
 				self.toggleElementVisibilityWithLabel("audio")
@@ -2927,11 +2927,11 @@ class DP_View(DPH_Screen, DPH_ScreenHelper, DPH_MultiColorFunctions, DPH_Filter)
 		soundchannels = self.details["mediaDataArr"][0].get("audioChannels", "unknown").upper()
 		printl("soundchannels: " + str(soundchannels), self, "D")
 
-		if soundchannels == "2": #2.0
+		if soundchannels == "2":  # 2.0
 			found = True
 			self["soundchannels"].setPixmapNum(0)
 
-		elif soundchannels == "3": #2.1
+		elif soundchannels == "3":  # 2.1
 			found = True
 			self["soundchannels"].setPixmapNum(1)
 
@@ -3021,7 +3021,7 @@ class DP_View(DPH_Screen, DPH_ScreenHelper, DPH_MultiColorFunctions, DPH_Filter)
 			found = True
 			self["aspect"].setPixmapNum(1)
 
-		elif aspect == "2.35": # 21:9
+		elif aspect == "2.35":  # 21:9
 			found = True
 			self["aspect"].setPixmapNum(1)
 

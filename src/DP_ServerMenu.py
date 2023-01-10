@@ -46,13 +46,15 @@ from .DP_Users import DPS_Users
 
 from .__common__ import printl2 as printl, getLiveTv
 from .__plugin__ import Plugin
-from .__init__ import _ # _ is translation
+from .__init__ import _  # _ is translation
 
 #===============================================================================
 #
 #===============================================================================
 
 # Subclass of List to support horizontal menu
+
+
 class DPS_List(List):
 	def __init__(self):
 		List.__init__(self)
@@ -84,7 +86,7 @@ class DPS_ServerMenu(DPH_Screen, DPH_HorizontalMenu, DPH_ScreenHelper, DPH_Filte
 	plexInstance = None
 	selectionOverride = None
 	secondRun = False
-	menuStep = 0 # vaule how many steps we made to restore navigation data
+	menuStep = 0  # vaule how many steps we made to restore navigation data
 	currentMenuDataDict = {}
 	currentIndexDict = {}
 	isHomeUser = False
@@ -448,7 +450,7 @@ class DPS_ServerMenu(DPH_Screen, DPH_HorizontalMenu, DPH_ScreenHelper, DPH_Filte
 			self.selectedEntry.fnc(self.session)
 
 		if config.plugins.dreamplex.showFilter.value:
-			self.selectedEntry = Plugin.MENU_FILTER # we overwrite this now to handle correct menu jumps with exit/cancel button
+			self.selectedEntry = Plugin.MENU_FILTER  # we overwrite this now to handle correct menu jumps with exit/cancel button
 
 		printl("", self, "C")
 
@@ -577,7 +579,7 @@ class DPS_ServerMenu(DPH_Screen, DPH_HorizontalMenu, DPH_ScreenHelper, DPH_Filte
 		if not serverData:
 			self.showNoDataMessage()
 		else:
-			self.g_serverDataMenu = serverData #lets save the menu to call it when cancel is pressed
+			self.g_serverDataMenu = serverData  # lets save the menu to call it when cancel is pressed
 
 			self["menu"].setList(serverData)
 			self.beforeFilterListViewList = self.g_serverDataMenu
@@ -606,7 +608,7 @@ class DPS_ServerMenu(DPH_Screen, DPH_HorizontalMenu, DPH_ScreenHelper, DPH_Filte
 
 		else:
 			self["menu"].setList(menuData)
-			self.g_serverDataMenu = menuData #lets save the menu to call it when cancel is pressed
+			self.g_serverDataMenu = menuData  # lets save the menu to call it when cancel is pressed
 			self.beforeFilterListViewList = self.g_serverDataMenu
 			self.refreshMenu()
 

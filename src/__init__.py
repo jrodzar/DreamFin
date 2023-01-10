@@ -52,7 +52,7 @@ from .__common__ import getVersion, registerPlexFonts, loadSkinParams, loadPlexS
 #
 #===============================================================================
 version = getVersion()
-source = "ipk" # other option is "ipk"
+source = "ipk"  # other option is "ipk"
 
 defaultPluginFolderPath = resolveFilename(SCOPE_PLUGINS, "Extensions/DreamPlex/")
 defaultSkinsFolderPath = resolveFilename(SCOPE_PLUGINS, "Extensions/DreamPlex/skins")
@@ -67,7 +67,7 @@ defaultSkin = "original"
 skins = []
 
 config.plugins.dreamplex = ConfigSubsection()
-config.plugins.dreamplex.about = ConfigSelection(default="1", choices=[("1", " ")]) # need this for seperator in settings
+config.plugins.dreamplex.about = ConfigSelection(default="1", choices=[("1", " ")])  # need this for seperator in settings
 config.plugins.dreamplex.debugMode = ConfigYesNo()
 config.plugins.dreamplex.writeDebugFile = ConfigYesNo()
 config.plugins.dreamplex.showInMainMenu = ConfigYesNo(default=True)
@@ -420,7 +420,7 @@ def getInstalledSkins():
 	try:
 		folderpath = config.plugins.dreamplex.skinfolderpath.value
 		for skin in listdir(folderpath):
-			if skin not in ["default_FHD" , "BlueMod_FHD"]: # we exclude the default_FHD and BlueMod_FHD because we switch between HD and FHD automatically
+			if skin not in ["default_FHD", "BlueMod_FHD"]:  # we exclude the default_FHD and BlueMod_FHD because we switch between HD and FHD automatically
 				# print(("skin: " + str(skin), None, "D"))
 				if isdir(path_join(folderpath, skin)):
 					mySkins.append(skin)

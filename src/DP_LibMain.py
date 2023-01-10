@@ -299,7 +299,7 @@ class DP_LibMain(Screen):
 		try:
 			pickleData = library
 			fd = open(self.pickleName, "wb")
-			pickle.dump(pickleData, fd, 2) #pickle.HIGHEST_PROTOCOL
+			pickle.dump(pickleData, fd, 2)  # pickle.HIGHEST_PROTOCOL
 			fd.close()
 		except Exception as e:
 			printl("Error while saving cache file: " + str(e), self, "D")

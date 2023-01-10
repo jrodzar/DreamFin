@@ -41,7 +41,7 @@ from Screens.InputBox import InputBox
 from Screens.Screen import Screen
 
 from .__common__ import printl2 as printl
-from .__init__ import initServerEntryConfig, _ # _ is translation
+from .__init__ import initServerEntryConfig, _  # _ is translation
 
 from .DP_PlexLibrary import PlexLibrary
 from .DP_Mappings import DPS_Mappings
@@ -110,7 +110,7 @@ class DPS_Server(Screen, DPH_PlexScreen):
 
 		self["header"].setText(_("Server List:"))
 
-		if self.skinResolution == "FHD": # FHD is used for FULL HD Boxes with new framebuffer
+		if self.skinResolution == "FHD":  # FHD is used for FULL HD Boxes with new framebuffer
 			self["columnHeader"].setText(_("Name                                         IP/plex.tv                                            Port/Email                                        Active"))
 		else:
 			self["columnHeader"].setText(_("Name                                         IP/plex.tv                                 Port/Email                                  Active"))
@@ -446,7 +446,7 @@ class DPS_ServerConfig(ConfigListScreen, Screen, DPH_PlexScreen):
 		##
 		self.cfglist.append(getConfigListEntry(_(" > Connection Type"), self.current.connectionType, _("Select your type how the box is reachable.")))
 
-		if self.current.connectionType.value == "0" or self.current.connectionType.value == "1": # IP or DNS
+		if self.current.connectionType.value == "0" or self.current.connectionType.value == "1":  # IP or DNS
 			self.cfglist.append(getConfigListEntry(_(" > Local Authentication"), self.current.localAuth, _("Use this if you secured your plex server in the settings.")))
 			if self.current.connectionType.value == "0":
 				self.addIpSettings()
@@ -456,7 +456,7 @@ class DPS_ServerConfig(ConfigListScreen, Screen, DPH_PlexScreen):
 			if self.current.localAuth.value:
 				self.addMyPlexSettings()
 
-		elif self.current.connectionType.value == "2": # plex.tv
+		elif self.current.connectionType.value == "2":  # plex.tv
 			self.addMyPlexSettings()
 
 		##
@@ -564,7 +564,7 @@ class DPS_ServerConfig(ConfigListScreen, Screen, DPH_PlexScreen):
 
 		cur = self["config"].getCurrent()
 		printl("cur: " + str(cur), self, "D")
-		self["help"].setText(cur[2])# = cur and cur[2] or ""
+		self["help"].setText(cur[2])  # = cur and cur[2] or ""
 
 		printl("", self, "C")
 

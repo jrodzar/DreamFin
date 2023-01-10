@@ -47,11 +47,12 @@ from .DPH_ScreenHelper import DPH_ScreenHelper, DPH_Screen
 
 from .__common__ import printl2 as printl, testPlexConnectivity, testInetConnectivity, saveLiveTv
 from .__plugin__ import Plugin
-from .__init__ import _ # _ is translation
+from .__init__ import _  # _ is translation
 
 #===============================================================================
 #
 #===============================================================================
+
 
 class DPS_MainMenu(DPH_Screen, DPH_HorizontalMenu, DPH_ScreenHelper):
 

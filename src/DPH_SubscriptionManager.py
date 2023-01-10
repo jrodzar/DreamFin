@@ -121,11 +121,11 @@ class SubscriptionManager:
 			ret += ' duration="%s"' % self.durationFromEnigma2
 			ret += ' seekRange="0-%s"' % self.progressFromEnigma2
 			ret += ' controllable="%s"' % self.controllable()
-			ret += ' machineIdentifier="%s"' % getUUID() #serv.get('uuid', "")
+			ret += ' machineIdentifier="%s"' % getUUID()  # serv.get('uuid', "")
 			ret += ' protocol="%s"' % self.protocol
 			ret += ' address="%s"' % self.server
 			ret += ' port="%s"' % self.port
-			ret += ' guid="%s"' % 11111 #info['guid']
+			ret += ' guid="%s"' % 11111  # info['guid']
 			ret += ' containerKey="%s"' % (self.lastkey or "/library/metadata/900000")
 			ret += ' key="%s"' % (self.lastkey or "/library/metadata/900000")
 			m = re.search(r'(\d+)$', self.lastkey)
@@ -210,7 +210,7 @@ class SubscriptionManager:
 		info = {}
 		try:
 			# get info from the player
-			props = {}#jsonrpc("Player.GetProperties", {"playerid": playerid, "properties": ["time", "totaltime", "speed", "shuffled"]})
+			props = {}  # jsonrpc("Player.GetProperties", {"playerid": playerid, "properties": ["time", "totaltime", "speed", "shuffled"]})
 			info['time'] = timeToMillis(props['time'])
 			info['duration'] = timeToMillis(props['totaltime'])
 			info['state'] = ("paused", "playing")[int(props['speed'])]

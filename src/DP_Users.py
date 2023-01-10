@@ -37,7 +37,7 @@ from Screens.Screen import Screen
 from Screens.VirtualKeyBoard import VirtualKeyBoard
 
 from .__common__ import printl2 as printl, checkXmlFile, getXmlContent, writeXmlContent
-from .__init__ import _ # _ is translation
+from .__init__ import _  # _ is translation
 
 from .DP_ViewFactory import getGuiElements
 
@@ -289,7 +289,7 @@ class DPS_Users(Screen):
 
 class DPS_UsersEntryList(MenuList):
 
-	lastMappingId = 0 # we use this to find the next id if we add a new element
+	lastMappingId = 0  # we use this to find the next id if we add a new element
 	location = None
 
 	def __init__(self, menuList, serverID, tree, enableWrapAround=True):
@@ -391,7 +391,7 @@ class DPS_UsersEntryList(MenuList):
 
 		tree = getXmlContent(self.location)
 
-		newId = myId#int(self.lastMappingId) + 1
+		newId = myId  # int(self.lastMappingId) + 1
 
 		printl("newId: " + str(newId), self, "D")
 		printl("username: " + str(username), self, "D")
@@ -408,7 +408,7 @@ class DPS_UsersEntryList(MenuList):
 				server.append(etree.Element('user id="' + str(newId) + '" username="' + username + '" pin="' + pin + '" token="' + authenticationToken + '"'))
 				writeXmlContent(tree, self.location)
 
-		if not existingServer: # this server has no node in the xml
+		if not existingServer:  # this server has no node in the xml
 			printl("expanding server list", self, "D")
 			tree.append(etree.Element('server id="' + str(self.serverID) + '"'))
 			writeXmlContent(tree, self.location)

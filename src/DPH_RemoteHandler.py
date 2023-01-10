@@ -287,7 +287,7 @@ class RemoteHandler(BaseHTTPRequestHandler):
 						else:
 							forceResume = False
 
-						resumeMode = False # this is always false because the ios and android app ask itself if we want to resume :-) no need to ask second time
+						resumeMode = False  # this is always false because the ios and android app ask itself if we want to resume :-) no need to ask second time
 
 						playbackMode = self.g_serverConfig.playbackType.value
 						currentIndex = 0
