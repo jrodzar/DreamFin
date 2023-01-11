@@ -9,14 +9,8 @@ m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
 AC_USE_SYSTEM_EXTENSIONS
 AC_SYS_LARGEFILE
 
-AC_PROG_CC
-AC_PROG_CXX
 m4_ifdef([LT_INIT], [LT_INIT], [AC_PROG_LIBTOOL])
 AC_CONFIG_MACRO_DIR([m4])
-
-AC_CHECK_HEADERS([dbox/fp.h dbox/lcd-ks0713.h])
-
-AC_PATH_PROG(MSGFMT, msgfmt, AC_MSG_ERROR(Could not find msgfmt))
 
 AC_PATH_PROG(MSGFMT, msgfmt, AC_MSG_ERROR(Could not find msgfmt))
 AC_PATH_PROG(MSGINIT, msginit, AC_MSG_ERROR(Could not find msginit))
@@ -27,8 +21,6 @@ AC_PATH_PROG(XGETTEXT, xgettext, AC_MSG_ERROR(Could not find xgettext))
 AM_PATH_PYTHON
 AX_PYTHON_DEVEL
 AX_PTHREAD
-
-AM_CONDITIONAL(IS_SH4, test "$TARGET_ARCH" = "sh4")
 
 AC_CONFIG_FILES([
 Makefile
