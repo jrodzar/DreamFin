@@ -2279,7 +2279,6 @@ class PlexLibrary(Screen):
 	#========================================================================
 	def playLibraryMedia(self, myId, url, isExtraData=False):
 		printl("", self, "S")
-		subtitleFileTemp = None
 
 		printl("playLibraryMediaUrl: " + str(url), self, "D")
 
@@ -2294,6 +2293,9 @@ class PlexLibrary(Screen):
 		playurl = url
 
 		token = self.get_aTokenForServer(self.server)
+
+		foundForcedSubs = False
+		subtitleFileTemp = None
 
 		#alter playurl if needed
 		if protocol == "file":
@@ -2312,8 +2314,6 @@ class PlexLibrary(Screen):
 				printl("extension " + str(extension), self, "D")
 				printl("myFile " + str(myFile), self, "D")
 
-				foundForcedSubs = False
-				subtitleFileTemp = None
 				if self.g_setSubtitleById_None == True:
 					printl("mh: skipping external forced subs check becase g_setSubtitleById_None=" + str(self.g_setSubtitleById_None), self, "D")
 				else:
