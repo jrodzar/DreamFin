@@ -1716,7 +1716,7 @@ class PlexLibrary(Screen):
 	#===========================================================================
 	#
 	#===========================================================================
-	def getSelectedSubtitleDataById(self, server, myId):
+	def getSelectedSubtitleDataById(self, server, myId, forcedOnly=False):  # mh : added forcedOnly param
 		printl("", self, "S")
 		printl("server +  myId: " + str(server) + " / " + str(myId), self, "D")
 
@@ -1747,19 +1747,33 @@ class PlexLibrary(Screen):
 							}
 		for bits in tags:
 			stream = dict(bits.items())
+			printl("mh: stream=" + str(stream), self, "D")
+
 			selected = stream.get('selected', "")
-			if stream['streamType'] == '3' and selected == '1':  # subtitle
+			default = stream.get('default', "")
+
+			if stream['streamType'] == '3' and (selected == '1' or default == '1'):  # subtitle #mh: treat default same as selected
 				try:
 					index = stream.get('index', "-1")
-
-					selectedSubtitle = {'id': stream['id'],
-								'index': index,
-								'language': stream['language'],
-								'languageCode': stream['languageCode'],
-								'format': stream['format'],
-								'partid': partitem[0]
-						   }
-					printl("selectedSubtitle = " + str(selectedSubtitle), self, "D")
+					#mh : handle forced only
+					reject = False
+					if forcedOnly:
+						streamForced = stream.get('forced', "")
+						printl("mh: streamForced=" + str(streamForced), self, "D")
+						if streamForced != '1':
+							reject = True
+					if reject:
+						printl("mh: subtitle rejected as not forced", self, "D")
+					else:
+					#
+						selectedSubtitle = {'id': stream['id'],
+									'index': index,
+									'language': stream['language'],
+									'languageCode': stream['languageCode'],
+									'format': stream['format'],
+									'partid': partitem[0]
+							}
+						printl("selectedSubtitle = " + str(selectedSubtitle), self, "D")
 				except:
 					printl("Unable to read subtitles due to XML parsing error", self, "E")
 
@@ -1835,6 +1849,8 @@ class PlexLibrary(Screen):
 										'default': default,
 										'forced': forced
 								}
+
+					printl("subtitle = " + str(subtitle), self, "D")
 
 					subtitlesList.append(subtitle)
 				except:
@@ -2204,30 +2220,30 @@ class PlexLibrary(Screen):
 													subCount += 1
 													subtitle = stream
 													selectedSubOffset = subOffset
-
-													try:
-														self.selectedSubtitle = {'id': stream['id'],
-																			'index': stream['index'],
-																			'language': stream['language'],
-																			'languageCode': stream['languageCode'],
-																			'format': stream['codec'],
-																			'partid': partId
-																			}
-														printl("mh: default selectedSubtitle=" + str(self.selectedSubtitle), self, "D")
-
-														printl("mh: stream.forced=" + str(stream['forced']), self, "D")
-														printl("mh: g_serverConfig.useForcedSubtitles=" + str(self.g_serverConfig.useForcedSubtitles.value), self, "D")
-
-														if self.g_serverConfig.useForcedSubtitles.value:
-															if stream['forced'] == '1':
-																printl("mh: setting forced g_SelectedEmbeddedSubtitleData", self, "D")
-																self.g_SelectedEmbeddedSubtitleData = self.selectedSubtitle
-
-													except Exception as e:
-														printl("mh: error setting selectedSubtitle: " + str(e), self, "D")
-
 											except Exception as e:
 												printl("even not embedded (2)...: " + str(e), self, "D")
+
+											if selectedSubOffset == subOffset:
+												try:
+													self.selectedSubtitle = {'id': stream['id'],
+																		'index': stream['index'],
+																		'language': stream['language'],
+																		'languageCode': stream['languageCode'],
+																		'format': stream['codec'],
+																		'partid': partId
+																		}
+													printl("mh: default selectedSubtitle=" + str(self.selectedSubtitle), self, "D")
+
+													printl("mh: stream.forced=" + str(stream['forced']), self, "D")
+													printl("mh: g_serverConfig.useForcedSubtitles=" + str(self.g_serverConfig.useForcedSubtitles.value), self, "D")
+
+													if self.g_serverConfig.useForcedSubtitles.value:
+														if stream['forced'] == '1':
+															printl("mh: setting forced g_SelectedEmbeddedSubtitleData", self, "D")
+															self.g_SelectedEmbeddedSubtitleData = self.selectedSubtitle
+
+												except Exception as e:
+													printl("mh: error setting selectedSubtitle: " + str(e), self, "D")
 
 						else:
 								printl("Stream selection is set OFF", self, "I")

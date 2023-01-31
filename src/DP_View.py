@@ -1437,7 +1437,8 @@ class DP_View(DPH_Screen, DPH_ScreenHelper, DPH_MultiColorFunctions, DPH_Filter)
 					self.session.openWithCallback(self.myCallback, DP_Player, self.listViewList, currentIndex, self.libraryName, self.autoPlayMode, self.resumeMode, self.playbackMode, sessionData=self.sessionData)
 				else:
 					if self.serverConfig.useForcedSubtitles.value and self.serverConfig.playbackType.value == "2":
-						self.subtitleData = Singleton().getPlexInstance().getSelectedSubtitleDataById(entryData["server"], entryData["ratingKey"])
+						self.subtitleData = Singleton().getPlexInstance().getSelectedSubtitleDataById(entryData["server"], entryData["ratingKey"], True)  # mh : pass in forcedOnly
+						printl("mh: setting subtitleData=" + str(self.subtitleData), self, "D")
 
 					self.session.openWithCallback(self.myCallback, DP_Player, self.listViewList, currentIndex, self.libraryName, self.autoPlayMode, self.resumeMode, self.playbackMode, subtitleData=self.subtitleData)
 

@@ -253,7 +253,7 @@ def writeToLog(dmode, out):
 	if config.plugins.dreamplex.writeDebugFile.value:
 		try:
 			instance = Singleton()
-			if instance.getLogFileInstance() is "":
+			if instance.getLogFileInstance() == "":
 				openLogFile()
 				gLogFile = instance.getLogFileInstance()
 				gLogFile.truncate()

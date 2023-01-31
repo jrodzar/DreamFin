@@ -96,7 +96,7 @@ class InfobarAudioSelectionExtended(InfoBarAudioSelection):
 
 class myAudioSelection(AudioSelection):
 	def __init__(self, session, infobar=None):
-		printl("mh: myAudioSelection.__init__", self, "D")
+		printl("mh: myAudioSelection.__init__: session=" + str(session) + ", infobar=" + str(infobar), self, "D")
 
 		AudioSelection.__init__(self, session, infobar)
 		self.skinName = ["AudioSelection"]
