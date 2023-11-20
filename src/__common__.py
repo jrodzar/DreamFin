@@ -37,7 +37,7 @@ from enigma import addFont, loadPNG, loadJPG, getDesktop
 from skin import loadSkin
 from Components.config import config
 from Components.AVSwitch import AVSwitch
-from boxbranding import getMachineBuild
+
 
 from .DPH_Singleton import Singleton
 
@@ -592,13 +592,15 @@ def getUUID():
 def setBoxInformation():
 	printl2("", "__common__::_setBoxtype", "C")
 
-	model = getMachineBuild()
 	try:
 		from Components.SystemInfo import BoxInfo
 		manu = BoxInfo.getItem("displaybrand", "unknown")
 		oe = BoxInfo.getItem("oe", "unknown")
 		arch = BoxInfo.getItem("architecture", "unknown")
+		model = BoxInfo.getItem("model", "unknown")
 	except ImportError:
+		from boxbranding import getMachineBuild
+		model = getMachineBuild()
 		arch = "unknown"
 		oe = "unknown"
 		manu = "unknown"
