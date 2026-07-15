@@ -1,0 +1,85 @@
+{
+ "Items": [
+  {
+   "AirDays": [],
+   "BackdropImageTags": [
+    "95cbb93dea6ed24da48105bf1b382da5"
+   ],
+   "ChildCount": 1,
+   "DateCreated": "2021-10-21T16:21:15.0000000Z",
+   "GenreItems": [
+    {
+     "Id": 3295,
+     "Name": "Familia"
+    },
+    {
+     "Id": 3294,
+     "Name": "Comedia"
+    }
+   ],
+   "Genres": [
+    "Familia",
+    "Comedia"
+   ],
+   "Id": "129110",
+   "ImageTags": {
+    "Logo": "09f6565f9768a06144773f255c4ab667",
+    "Primary": "fc2d9d0ac2d3835be5c46937b6b7bd3b",
+    "Thumb": "4b1f8f5922d20058a87122e888fa90a8"
+   },
+   "IsFolder": true,
+   "Name": "Al otro lado del instituto",
+   "Overview": "Una serie que narra historias increíbles que nos harán reflexionar sobre una realidad que está al otro lado de la que conocemos. Cada episodio les presenta a los espectadores un nuevo elenco de personajes que han de adentrarse en una sorprendente aventura de autodescubrimiento en un mundo sobrenatural de brujas, alienígenas, fantasmas y universos alternativos.",
+   "People": [
+    {
+     "Id": "16830",
+     "Name": "Mckenna Grace",
+     "PrimaryImageTag": "1cedd56951bef44d9fdff59438318ffd",
+     "Role": "Veronica",
+     "Type": "Actor"
+    },
+    {
+     "Id": "129128",
+     "Name": "Jy Prishkulnik",
+     "PrimaryImageTag": "53ba7e1ff23e3247b8185deddf227b23",
+     "Role": "Luna",
+     "Type": "Actor"
+    },
+    {
+     "Id": "129129",
+     "Name": "Rachel Marsh",
+     "PrimaryImageTag": "9c9407d75309322d45bb6e3707b68590",
+     "Role": "Fiona",
+     "Type": "Actor"
+    },
+    {
+     "Id": "6904",
+     "Name": "Gabriel Bateman",
+     "PrimaryImageTag": "e371d4434e7ac59bccde08693e138542",
+     "Role": "Jack",
+     "Type": "Actor"
+    }
+   ],
+   "PremiereDate": "2021-10-12T22:00:00.0000000Z",
+   "ProductionYear": 2021,
+   "RecursiveItemCount": 8,
+   "ServerId": "db3c63e39b9c4fa6bca65c62102e40e9",
+   "Studios": [
+    {
+     "Id": 14900,
+     "Name": "Disney+"
+    }
+   ],
+   "Taglines": [],
+   "Type": "Series",
+   "UserData": {
+    "IsFavorite": false,
+    "PlayCount": 0,
+    "PlaybackPositionTicks": 0,
+    "Played": false,
+    "UnplayedItemCount": 8
+   }
+  }
+ ],
+ "TotalRecordCount": 122
+}

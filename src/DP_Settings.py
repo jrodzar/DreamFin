@@ -375,12 +375,11 @@ class DPS_ServerEntryList(MenuList):
 			res = [entry]
 			res.append((eListboxPythonMultiContent.TYPE_TEXT, 55, 0, 200, 20, 1, RT_HALIGN_LEFT | RT_VALIGN_CENTER, str(entry.name.value)))
 
-			if entry.connectionType.value == "2":
-				text1 = entry.myplexUrl.value
-				text2 = entry.myplexUsername.value
+			if entry.connectionType.value == "1":
+				text1 = entry.dns.value
 			else:
 				text1 = "%d.%d.%d.%d" % tuple(entry.ip.value)
-				text2 = "%d" % entry.port.value
+			text2 = "%d" % entry.port.value
 
 			res.append((eListboxPythonMultiContent.TYPE_TEXT, 260, 0, 150, 20, 1, RT_HALIGN_LEFT | RT_VALIGN_CENTER, str(text1)))
 			res.append((eListboxPythonMultiContent.TYPE_TEXT, 450, 0, 80, 20, 1, RT_HALIGN_LEFT | RT_VALIGN_CENTER, str(text2)))

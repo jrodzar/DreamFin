@@ -123,6 +123,45 @@ def main():
 		decades = lib.getSectionFilter(decadeRoot)
 		say(u"  decades: %s" % u", ".join(to_text(e[0]) for e in decades[:6]))
 
+		# phase 2: real navigation - movies, then a show down to episodes
+		allEntry = None
+		for entry in menu:
+			if entry[3]["key"] == "all":
+				allEntry = entry[3]
+				break
+		movies, _mc = lib.getMoviesFromSection(allEntry["contentUrl"])
+		say(u"  movies: %d (first: %s)" % (len(movies), to_text(movies[0][0]) if movies else u"-"))
+		if movies:
+			first = movies[0]
+			if len(first) != 5 or first[3] not in ("seen", "started", "unseen"):
+				failures.append("%s: malformed movie list entry" % label)
+			if "mediaDataArr" not in first[1] or not first[1]["mediaDataArr"]:
+				failures.append("%s: first movie has no mediaDataArr" % label)
+		else:
+			failures.append("%s: no movies came back" % label)
+
+		showRoot = None
+		for entry in sections:
+			if entry[2] == "showEntry" and entry[3].get("isSectionRoot"):
+				showRoot = entry[3]
+				break
+		if showRoot is not None:
+			shows, _mc = lib.getShowsFromSection(showRoot["contentUrl"])
+			say(u"  shows: %d (first: %s)" % (len(shows), to_text(shows[0][0]) if shows else u"-"))
+			if shows:
+				seasons, _mc = lib.getSeasonsOfShow(shows[0][4])
+				say(u"  seasons of first show: %d" % len(seasons))
+				if seasons:
+					episodes, _mc = lib.getEpisodesOfSeason(seasons[0][4])
+					say(u"  episodes of first season: %d (first: %s)" % (
+						len(episodes), to_text(episodes[0][0]) if episodes else u"-"))
+					if not episodes:
+						failures.append("%s: no episodes came back" % label)
+				else:
+					failures.append("%s: no seasons came back" % label)
+			else:
+				failures.append("%s: no shows came back" % label)
+
 		if server.get("username"):
 			bad = make_lib(server, password="definitely-wrong")
 			badResult = bad.authenticate()

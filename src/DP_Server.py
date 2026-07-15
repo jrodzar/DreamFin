@@ -31,10 +31,8 @@ from Components.Sources.List import List
 from Components.Label import Label
 from Components.Pixmap import Pixmap
 from Components.config import config, getConfigListEntry, configfile
-from Components.Input import Input
 
 from Screens.MessageBox import MessageBox
-from Screens.InputBox import InputBox
 from Screens.Screen import Screen
 
 from .__common__ import printl2 as printl
@@ -238,7 +236,6 @@ class DPS_Server(Screen, DPH_PlexScreen):
 class DPS_ServerConfig(ConfigListScreen, Screen, DPH_PlexScreen):
 
 	useMappings = False
-	authenticated = False
 
 	def __init__(self, session, entry):
 		printl("", self, "S")
@@ -290,7 +287,7 @@ class DPS_ServerConfig(ConfigListScreen, Screen, DPH_PlexScreen):
 
 		self.onLayoutFinish.append(self.finishLayout)
 
-		self.onShown.append(self.checkForPinUsage)
+		self.onShown.append(self.showSetup)
 
 		printl("", self, "C")
 
@@ -299,7 +296,6 @@ class DPS_ServerConfig(ConfigListScreen, Screen, DPH_PlexScreen):
 	#===========================================================================
 	def finishLayout(self):
 		printl("", self, "S")
-		print("here")
 
 		# first we set the pics for buttons
 		self.setColorFunctionIcons()
@@ -311,38 +307,11 @@ class DPS_ServerConfig(ConfigListScreen, Screen, DPH_PlexScreen):
 	#===========================================================================
 	#
 	#===========================================================================
-	def checkForPinUsage(self):
+	def showSetup(self):
 		printl("", self, "S")
 
 		self.onShown = []
-
-		if not self.authenticated:
-			if self.current.protectSettings.value:
-				self.session.openWithCallback(self.askForPin, InputBox, title=_("Please enter the pincode!"), type=Input.PIN)
-			else:
-				self.authenticated = True
-				self.createSetup()
-		else:
-			self.createSetup()
-
-		printl("", self, "C")
-
-	#===============================================================
-	#
-	#===============================================================
-	def askForPin(self, enteredPin):
-		printl("", self, "S")
-
-		if enteredPin is None:
-			pass
-		else:
-			if int(enteredPin) == int(self.current.settingsPin.value):
-				#self.session.open(MessageBox,"The pin was correct!", MessageBox.TYPE_INFO)
-				self.authenticated = True
-				self.createSetup()
-			else:
-				self.session.open(MessageBox, "The pin was wrong! Returning ...", MessageBox.TYPE_INFO)
-				self.close()
+		self.createSetup()
 
 		printl("", self, "C")
 

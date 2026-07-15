@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 """Tiny in-process mock of an Emby/Jellyfin server for offline tests.
 
-JSON twin of :mod:`tests.plexmock`: serves canned JSON per path, records
-every request (method, path, query, headers and decoded JSON body) and
-supports the Emby paging protocol (``StartIndex``/``Limit`` query
-parameters, ``TotalRecordCount`` in the envelope) plus HTTP redirects
-and canned error statuses.
+Serves canned JSON per path, records every request (method, path,
+query, headers and decoded JSON body) and supports the Emby paging
+protocol (``StartIndex``/``Limit`` query parameters,
+``TotalRecordCount`` in the envelope) plus HTTP redirects and canned
+error statuses.
 
 Works on Python 2.7 and Python 3.x.
 """

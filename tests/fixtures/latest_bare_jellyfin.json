@@ -1,0 +1,131 @@
+[
+ {
+  "AirDays": [],
+  "BackdropImageTags": [
+   "5eba6440116e283442f2e45ce0b9dc52"
+  ],
+  "ChannelId": null,
+  "ChildCount": 15,
+  "CommunityRating": 5.6,
+  "DateCreated": "2026-07-15T05:47:39.0000000Z",
+  "DisplayOrder": "aired",
+  "EndDate": "2026-05-06T22:00:00.0000000Z",
+  "GenreItems": [
+   {
+    "Id": "090eac6e9de4fe1fbc194e5b96691277",
+    "Name": "Drama"
+   },
+   {
+    "Id": "d3d3728a0f119813db4c7733da59771a",
+    "Name": "Action & Adventure"
+   }
+  ],
+  "Genres": [
+   "Drama",
+   "Action & Adventure"
+  ],
+  "Id": "85b4fe85d0935b499af032c81f96edd4",
+  "ImageBlurHashes": {
+   "Backdrop": {
+    "5eba6440116e283442f2e45ce0b9dc52": "WSJGN5~A-p^%oM=_~B={xtxuxaWX59xYoINHxsNHw]njVtjFoft5"
+   },
+   "Logo": {
+    "687b85440df7e2aa5125dc9088b81d6b": "NVMF2ct8?bRQ%LM_{dMwIVaKt7t7tm%3xvf+WBRj"
+   },
+   "Primary": {
+    "890c8832922524bbb18d5746621eac64": "dQFOMu-oNHxE-:WVR*WU0gIWNHbbE2WrR-s;%L%Kt5WC"
+   },
+   "Thumb": {
+    "416f183be9f9e65adbd9c7b8c43e5de5": "WREeSxnjENxGNZNH%2WBs:NHS5so0fR+xsR*xtofI;R,ja%1sSR*"
+   }
+  },
+  "ImageTags": {
+   "Logo": "687b85440df7e2aa5125dc9088b81d6b",
+   "Primary": "890c8832922524bbb18d5746621eac64",
+   "Thumb": "416f183be9f9e65adbd9c7b8c43e5de5"
+  },
+  "IsFolder": true,
+  "LocationType": "FileSystem",
+  "MediaType": "Unknown",
+  "Name": "9-1-1: Nashville",
+  "OfficialRating": "ES-16",
+  "Overview": "Sigue a los heroicos socorristas, así como a su saga familiar de poder y glamour, en una de las ciudades más diversas y dinámicas de Estados Unidos: Nashville, Tennessee.",
+  "People": [
+   {
+    "Id": "7b0147f383a341d2dcf04db6d76ada8c",
+    "ImageBlurHashes": {
+     "Primary": {
+      "8ebd1af7dea84bcedb1c8479aecb6861": "dPJ@I4IU5Q-:}?D*x]xt5no#wJWEEMIU%1kDWBWCxuRj"
+     }
+    },
+    "Name": "Chris O'Donnell",
+    "PrimaryImageTag": "8ebd1af7dea84bcedb1c8479aecb6861",
+    "Role": "Captain Don Hart",
+    "Type": "Actor"
+   },
+   {
+    "Id": "02c8e8ba8abab75671c7326c7ead5653",
+    "ImageBlurHashes": {
+     "Primary": {
+      "caba6ac4d15af889e28c78f9b9c9946a": "dTO2pg%J%#?G*JjFx^W=?cRjxbW?J.kCxaxutSWEjFtR"
+     }
+    },
+    "Name": "Jessica Capshaw",
+    "PrimaryImageTag": "caba6ac4d15af889e28c78f9b9c9946a",
+    "Role": "Blythe Hart",
+    "Type": "Actor"
+   },
+   {
+    "Id": "e82c5bdb6fd6209766837858ba75e01f",
+    "ImageBlurHashes": {
+     "Primary": {
+      "3230af21866995ba22254fa40da534e4": "dgL|r?xutk%g_Mt6x[xtIVW,V?Ri-;M{RjoL?bWBf5xu"
+     }
+    },
+    "Name": "Kimberly Williams-Paisley",
+    "PrimaryImageTag": "3230af21866995ba22254fa40da534e4",
+    "Role": "Cammie Raleigh",
+    "Type": "Actor"
+   },
+   {
+    "Id": "1ff3ca8e9fd0ecb01ae4dc50171c8151",
+    "ImageBlurHashes": {
+     "Primary": {
+      "31adc6c03dec2913f056b5bcb252d159": "dPOVMpxa*J%2Tzj]-=tRyDozspt7tRoJxGWBTKog%1oz"
+     }
+    },
+    "Name": "LeAnn Rimes",
+    "PrimaryImageTag": "31adc6c03dec2913f056b5bcb252d159",
+    "Role": "Dixie Bennings",
+    "Type": "Actor"
+   }
+  ],
+  "PremiereDate": "2025-10-09T00:00:00.0000000Z",
+  "ProductionYear": 2025,
+  "RecursiveItemCount": 0,
+  "RunTimeTicks": 0,
+  "ServerId": "dbc3bcfa250443c08044a27bc7e74553",
+  "Status": "Continuing",
+  "Studios": [
+   {
+    "Id": "96b48893d56b599270991d22c7a88280",
+    "Name": "ABC"
+   },
+   {
+    "Id": "ff412a16d1f10159b651253fe2aa1e0c",
+    "Name": "ABC (US)"
+   }
+  ],
+  "Taglines": [],
+  "Type": "Series",
+  "UserData": {
+   "IsFavorite": false,
+   "ItemId": "85b4fe85d0935b499af032c81f96edd4",
+   "Key": "460463",
+   "PlayCount": 0,
+   "PlaybackPositionTicks": 0,
+   "Played": true,
+   "UnplayedItemCount": 0
+  }
+ }
+]

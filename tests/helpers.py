@@ -3,8 +3,8 @@
 
 ``setup_environment()`` puts the enigma2 stubs and the repository root on
 ``sys.path`` so the real plugin package (``src``) can be imported in a
-plain CPython interpreter. ``make_plex_instance()`` builds a fully wired
-``PlexLibrary`` pointing at a :class:`tests.plexmock.MockPMS`.
+plain CPython interpreter. ``make_emby_instance()`` builds a fully wired
+``EmbyLibrary`` pointing at a :class:`tests.embymock.MockEmby`.
 """
 
 import os
@@ -56,9 +56,8 @@ def get_config():
 	return config
 
 
-def make_server_config(host="127.0.0.1", port=32400, name="TestServer",
-					playbackType="0", localAuth=False, myplexToken="",
-					myplexLocalToken="", universalTranscoder=True, **extraValues):
+def make_server_config(host="127.0.0.1", port=8096, name="TestServer",
+					playbackType="0", universalTranscoder=True, **extraValues):
 	"""Create a server entry through the real initServerEntryConfig()."""
 	setup_environment()
 	import src
@@ -69,34 +68,12 @@ def make_server_config(host="127.0.0.1", port=32400, name="TestServer",
 	serverConfig.ip.value = [int(x) for x in host.split(".")]
 	serverConfig.port.value = port
 	serverConfig.playbackType.value = playbackType
-	serverConfig.localAuth.value = localAuth
-	serverConfig.myplexToken.value = myplexToken
-	serverConfig.myplexLocalToken.value = myplexLocalToken
 	serverConfig.universalTranscoder.value = universalTranscoder
 
 	for key, value in extraValues.items():
 		getattr(serverConfig, key).value = value
 
 	return serverConfig
-
-
-def make_plex_instance(mock=None, showFilter=True, useCache=False, **serverKwargs):
-	"""Instantiate PlexLibrary against a MockPMS (or bare, if mock is None)."""
-	setup_environment()
-	config = get_config()
-	config.plugins.dreamfin.showFilter.value = showFilter
-	config.plugins.dreamfin.useCache.value = useCache
-	config.plugins.dreamfin.summerizeSections.value = False
-	config.plugins.dreamfin.debugMode.value = False
-
-	if mock is not None:
-		serverKwargs.setdefault("host", mock.host)
-		serverKwargs.setdefault("port", mock.port)
-
-	serverConfig = make_server_config(**serverKwargs)
-
-	from src.DP_PlexLibrary import PlexLibrary
-	return PlexLibrary(session=None, serverConfig=serverConfig)
 
 
 def make_emby_instance(mock=None, showFilter=True, serverType="auto",

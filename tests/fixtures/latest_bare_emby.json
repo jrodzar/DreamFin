@@ -1,0 +1,243 @@
+[
+ {
+  "AirDays": [],
+  "BackdropImageTags": [
+   "b80860bc5bf97e6e384c5a7c8229687c"
+  ],
+  "ChildCount": 2,
+  "DateCreated": "2026-07-15T05:13:36.9479745Z",
+  "EndDate": "1992-09-28T00:00:00.0000000Z",
+  "GenreItems": [
+   {
+    "Id": 7481,
+    "Name": "Animación"
+   },
+   {
+    "Id": 59175,
+    "Name": "Action & Adventure"
+   },
+   {
+    "Id": 3432,
+    "Name": "Misterio"
+   }
+  ],
+  "Genres": [
+   "Animación",
+   "Action & Adventure",
+   "Misterio"
+  ],
+  "Id": "492421",
+  "ImageTags": {
+   "Logo": "b676d498a30a74c9585a50216cfdecc2",
+   "Primary": "14539b1050106f597e315e34d99b1a3e",
+   "Thumb": "eb7b34b0cc57bf84165091bda2ed33c6"
+  },
+  "IsFolder": true,
+  "Name": "Las aventuras de Tintín",
+  "Overview": "Tintín, un intrépido reportero de aspecto juvenil y edad nunca aclarada que viaja por todo el mundo junto con su perro Milú, hay una serie de personajes secundarios que han alcanzado tanta o más celebridad que el protagonista: entre ellos, el capitán Haddock, el profesor Tornasol, los detectives Hernández y Fernández y la cantante Bianca Castafiore. Las aventuras de estos personajes están cuidadosamente ambientadas en escenarios reales de los cinco continentes, y en lugares imaginarios creados por Hergé, tales como Syldavia o San Theodoros. Sobre todo a partir del quinto álbum de la serie (El Loto Azul), su autor se documentó minuciosamente sobre los lugares visitados por sus personajes.",
+  "People": [
+   {
+    "Id": "492591",
+    "Name": "Thierry Wermuth",
+    "PrimaryImageTag": "8990902218c0b79b9a5baa3dd0666090",
+    "Role": "Tintin (voice)",
+    "Type": "Actor"
+   },
+   {
+    "Id": "492592",
+    "Name": "Christian Pelissier",
+    "PrimaryImageTag": "36f5b60a4ec6161669dfb0cc3fc2d26d",
+    "Role": "Haddock (voice)",
+    "Type": "Actor"
+   },
+   {
+    "Id": "129624",
+    "Name": "Henri Labussière",
+    "PrimaryImageTag": "0c6753a6f58d47fddc16a34bd111191f",
+    "Role": "Tournesol (voice)",
+    "Type": "Actor"
+   },
+   {
+    "Id": "188206",
+    "Name": "Yves Barsacq",
+    "PrimaryImageTag": "75efd3f92564f7d805b305407778ffa6",
+    "Role": "Dupont (voice)",
+    "Type": "Actor"
+   }
+  ],
+  "PremiereDate": "1991-10-02T00:00:00.0000000Z",
+  "ProductionYear": 1991,
+  "RecursiveItemCount": 25,
+  "RunTimeTicks": 13200000000,
+  "ServerId": "db3c63e39b9c4fa6bca65c62102e40e9",
+  "Status": "Ended",
+  "Studios": [
+   {
+    "Id": 492597,
+    "Name": "FR3"
+   }
+  ],
+  "Taglines": [],
+  "Type": "Series",
+  "UserData": {
+   "IsFavorite": false,
+   "PlayCount": 0,
+   "PlaybackPositionTicks": 0,
+   "Played": false,
+   "UnplayedItemCount": 25
+  }
+ },
+ {
+  "AirDays": [],
+  "BackdropImageTags": [
+   "cff8ea672342d8c360ff2c5fe2036408"
+  ],
+  "ChildCount": 2,
+  "DateCreated": "2026-07-15T05:13:36.9478169Z",
+  "EndDate": "2019-08-22T22:00:00.0000000Z",
+  "GenreItems": [
+   {
+    "Id": 110661,
+    "Name": "Kids"
+   },
+   {
+    "Id": 7481,
+    "Name": "Animación"
+   },
+   {
+    "Id": 3294,
+    "Name": "Comedia"
+   }
+  ],
+  "Genres": [
+   "Kids",
+   "Animación",
+   "Comedia"
+  ],
+  "Id": "492420",
+  "ImageTags": {
+   "Logo": "f4ee564584289ec435ca88df6d8a9bdc",
+   "Primary": "8424c4f5a1add48dd4aadf0ce72b2c0a",
+   "Thumb": "cc2708c749b14608b0c95a3cd90b845b"
+  },
+  "IsFolder": true,
+  "Name": "La hora de Tufo y Pringue",
+  "Overview": "Las aventuras de dos amigos inseparables que se convierten en unos héroes poco convencionales: estos son Tufo el camión de la basura y Pringue, la retroexcavadora. Son un dúo dinámico y gracioso, aprenden de sus errores y que preguntarse «¿y si?» puede servir para encontrar una soluciónl. Basado en los libros de Jim y Kate McMullan. Escrito y desarrollado por Guy Toubes.",
+  "People": [
+   {
+    "Id": "28699",
+    "Name": "Issac Ryan Brown",
+    "PrimaryImageTag": "c46c40b7d290305c6d161423fa2f69b7",
+    "Role": "Stinky (voice)",
+    "Type": "Actor"
+   },
+   {
+    "Id": "30973",
+    "Name": "Jet Jurgensmeyer",
+    "PrimaryImageTag": "598998e061fae0af4f684df024ee3be7",
+    "Role": "Dirty (voice)",
+    "Type": "Actor"
+   }
+  ],
+  "PremiereDate": "2016-09-01T00:00:00.0000000Z",
+  "ProductionYear": 2016,
+  "RecursiveItemCount": 39,
+  "RunTimeTicks": 0,
+  "ServerId": "db3c63e39b9c4fa6bca65c62102e40e9",
+  "Status": "Continuing",
+  "Studios": [
+   {
+    "Id": 175444,
+    "Name": "Prime Video"
+   }
+  ],
+  "Taglines": [],
+  "Type": "Series",
+  "UserData": {
+   "IsFavorite": false,
+   "PlayCount": 0,
+   "PlaybackPositionTicks": 0,
+   "Played": false,
+   "UnplayedItemCount": 39
+  }
+ },
+ {
+  "AirDays": [],
+  "BackdropImageTags": [
+   "6ecef8fa4eb20c45453ea5f3665c3af7"
+  ],
+  "ChildCount": 1,
+  "DateCreated": "2026-07-15T05:13:36.9471167Z",
+  "EndDate": "2007-06-03T00:00:00.0000000Z",
+  "GenreItems": [
+   {
+    "Id": 60665,
+    "Name": "Soap"
+   },
+   {
+    "Id": 106,
+    "Name": "Drama"
+   }
+  ],
+  "Genres": [
+   "Soap",
+   "Drama"
+  ],
+  "Id": "492419",
+  "ImageTags": {
+   "Primary": "de882cb1035261d791c641ed171b84de"
+  },
+  "IsFolder": true,
+  "Name": "Dream Team",
+  "Overview": "On and off pitch battles of of the fictional Harchester United Football Club.",
+  "People": [
+   {
+    "Id": "492563",
+    "Name": "Frankie Fitzgerald",
+    "PrimaryImageTag": "7b4eccf737d0f7760a0ced8cd2aaf72b",
+    "Role": "Jason Porter",
+    "Type": "Actor"
+   },
+   {
+    "Id": "160529",
+    "Name": "James Floyd",
+    "PrimaryImageTag": "b37286261df8efcbfa08e0108275312d",
+    "Role": "Miguel Lopez",
+    "Type": "Actor"
+   },
+   {
+    "Id": "492564",
+    "Name": "Terry Kiely",
+    "Role": "Karl Fletcher",
+    "Type": "Actor"
+   },
+   {
+    "Id": "492565",
+    "Name": "Danny Husbands",
+    "Role": "Danny Sullivan",
+    "Type": "Actor"
+   }
+  ],
+  "PremiereDate": "1997-10-07T00:00:00.0000000Z",
+  "ProductionYear": 1997,
+  "RecursiveItemCount": 4,
+  "RunTimeTicks": 36000000000,
+  "ServerId": "db3c63e39b9c4fa6bca65c62102e40e9",
+  "Status": "Ended",
+  "Studios": [
+   {
+    "Id": 132933,
+    "Name": "Sky One"
+   }
+  ],
+  "Taglines": [],
+  "Type": "Series",
+  "UserData": {
+   "IsFavorite": false,
+   "PlayCount": 0,
+   "PlaybackPositionTicks": 0,
+   "Played": false,
+   "UnplayedItemCount": 4
+  }
+ }
+]

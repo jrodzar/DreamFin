@@ -1,0 +1,634 @@
+{
+ "Items": [
+  {
+   "BackdropImageTags": [
+    "2f1e72968a171128d21ea5cd34bf8fac"
+   ],
+   "ChannelId": null,
+   "CommunityRating": 6.3,
+   "Container": "mkv",
+   "DateCreated": "2020-09-11T09:19:22.0000000Z",
+   "GenreItems": [
+    {
+     "Id": "eef0c80132f29250b2e462f884a7a04c",
+     "Name": "Acción"
+    },
+    {
+     "Id": "b09ddbd498f4d9908e44376762b2d3e8",
+     "Name": "Terror"
+    },
+    {
+     "Id": "8199e032a96e168bb81b2def8b2eda31",
+     "Name": "Suspense"
+    }
+   ],
+   "Genres": [
+    "Acción",
+    "Terror",
+    "Suspense"
+   ],
+   "HasSubtitles": true,
+   "Id": "e7d68c0b873b0cba3671768671187d1f",
+   "ImageBlurHashes": {
+    "Backdrop": {
+     "2f1e72968a171128d21ea5cd34bf8fac": "WGB|8E_3I9WAR4xt=^VsIpX9R5aJDhMxXTkCjERP%%%gxYs:ozkC"
+    },
+    "Logo": {
+     "9b52a3833e2875171cccefd3d999c1fe": "OHN^oAIU~qIUtRxu~q?vRjIUWBD%IUD%IUf6RjWBxuWBM{"
+    },
+    "Primary": {
+     "98e57e6f61b6a2ee61df8df8a18e6c80": "dU9ugl$ZMaNNsFxsR*Iqs%WBM~R*xbjZWBaxR.t7oxRj"
+    },
+    "Thumb": {
+     "5acc142803c5e8a12c727f063f311b5a": "WC8}S-%i9Gj^e.NGO_bxxvX9RkkD0Lbd%hR-kWoMw|t7S6a~t7WV"
+    }
+   },
+   "ImageTags": {
+    "Logo": "9b52a3833e2875171cccefd3d999c1fe",
+    "Primary": "98e57e6f61b6a2ee61df8df8a18e6c80",
+    "Thumb": "5acc142803c5e8a12c727f063f311b5a"
+   },
+   "IsFolder": false,
+   "LocationType": "FileSystem",
+   "MediaSources": [
+    {
+     "Bitrate": 2256047,
+     "Container": "mkv",
+     "DefaultAudioStreamIndex": 1,
+     "DefaultSubtitleStreamIndex": 5,
+     "ETag": "432298649db0df17c3088a396af7d6d7",
+     "Formats": [],
+     "GenPtsInput": false,
+     "HasSegments": false,
+     "Id": "e7d68c0b873b0cba3671768671187d1f",
+     "IgnoreDts": false,
+     "IgnoreIndex": false,
+     "IsInfiniteStream": false,
+     "IsRemote": false,
+     "MediaAttachments": [],
+     "MediaStreams": [
+      {
+       "AspectRatio": "2.40:1",
+       "AudioSpatialFormat": "None",
+       "AverageFrameRate": 23.976025,
+       "BitDepth": 10,
+       "BitRate": 1813802,
+       "Codec": "hevc",
+       "DisplayTitle": "1080p HEVC SDR",
+       "Height": 800,
+       "Index": 0,
+       "IsAVC": false,
+       "IsAnamorphic": false,
+       "IsDefault": true,
+       "IsExternal": false,
+       "IsForced": false,
+       "IsHearingImpaired": false,
+       "IsInterlaced": false,
+       "IsTextSubtitleStream": false,
+       "Level": 120,
+       "PixelFormat": "yuv420p10le",
+       "Profile": "Main 10",
+       "RealFrameRate": 23.976025,
+       "RefFrames": 1,
+       "ReferenceFrameRate": 23.976025,
+       "SupportsExternalStream": false,
+       "TimeBase": "1/1000",
+       "Type": "Video",
+       "VideoRange": "SDR",
+       "VideoRangeType": "SDR",
+       "Width": 1920
+      },
+      {
+       "AudioSpatialFormat": "None",
+       "BitRate": 79168,
+       "ChannelLayout": "stereo",
+       "Channels": 2,
+       "Codec": "aac",
+       "DisplayTitle": "Spanish - AAC - Stereo",
+       "Index": 1,
+       "IsAVC": false,
+       "IsDefault": false,
+       "IsExternal": false,
+       "IsForced": false,
+       "IsHearingImpaired": false,
+       "IsInterlaced": false,
+       "IsTextSubtitleStream": false,
+       "Language": "spa",
+       "Level": 0,
+       "LocalizedDefault": "Predeterminado",
+       "LocalizedExternal": "Externo",
+       "Profile": "LC",
+       "SampleRate": 48000,
+       "SupportsExternalStream": false,
+       "TimeBase": "1/1000",
+       "Type": "Audio",
+       "VideoRange": "Unknown",
+       "VideoRangeType": "Unknown"
+      },
+      {
+       "AudioSpatialFormat": "None",
+       "BitRate": 75077,
+       "ChannelLayout": "stereo",
+       "Channels": 2,
+       "Codec": "aac",
+       "DisplayTitle": "Korean - AAC - Stereo",
+       "Index": 2,
+       "IsAVC": false,
+       "IsDefault": false,
+       "IsExternal": false,
+       "IsForced": false,
+       "IsHearingImpaired": false,
+       "IsInterlaced": false,
+       "IsTextSubtitleStream": false,
+       "Language": "kor",
+       "Level": 0,
+       "LocalizedDefault": "Predeterminado",
+       "LocalizedExternal": "Externo",
+       "Profile": "LC",
+       "SampleRate": 48000,
+       "SupportsExternalStream": false,
+       "TimeBase": "1/1000",
+       "Type": "Audio",
+       "VideoRange": "Unknown",
+       "VideoRangeType": "Unknown"
+      },
+      {
+       "AudioSpatialFormat": "None",
+       "BitRate": 96000,
+       "ChannelLayout": "stereo",
+       "Channels": 2,
+       "Codec": "eac3",
+       "DisplayTitle": "Spanish - Dolby Digital+ - Stereo",
+       "Index": 3,
+       "IsAVC": false,
+       "IsDefault": false,
+       "IsExternal": false,
+       "IsForced": false,
+       "IsHearingImpaired": false,
+       "IsInterlaced": false,
+       "IsTextSubtitleStream": false,
+       "Language": "spa",
+       "Level": 0,
+       "LocalizedDefault": "Predeterminado",
+       "LocalizedExternal": "Externo",
+       "SampleRate": 48000,
+       "SupportsExternalStream": false,
+       "TimeBase": "1/1000",
+       "Type": "Audio",
+       "VideoRange": "Unknown",
+       "VideoRangeType": "Unknown"
+      },
+      {
+       "AudioSpatialFormat": "None",
+       "BitRate": 192000,
+       "ChannelLayout": "5.1",
+       "Channels": 6,
+       "Codec": "eac3",
+       "DisplayTitle": "Korean - Dolby Digital+ - 5.1",
+       "Index": 4,
+       "IsAVC": false,
+       "IsDefault": false,
+       "IsExternal": false,
+       "IsForced": false,
+       "IsHearingImpaired": false,
+       "IsInterlaced": false,
+       "IsTextSubtitleStream": false,
+       "Language": "kor",
+       "Level": 0,
+       "LocalizedDefault": "Predeterminado",
+       "LocalizedExternal": "Externo",
+       "SampleRate": 48000,
+       "SupportsExternalStream": false,
+       "TimeBase": "1/1000",
+       "Type": "Audio",
+       "VideoRange": "Unknown",
+       "VideoRangeType": "Unknown"
+      },
+      {
+       "AudioSpatialFormat": "None",
+       "Codec": "subrip",
+       "DisplayTitle": "Forzados - Spanish - SUBRIP",
+       "Height": 0,
+       "Index": 5,
+       "IsAVC": false,
+       "IsDefault": false,
+       "IsExternal": false,
+       "IsForced": true,
+       "IsHearingImpaired": false,
+       "IsInterlaced": false,
+       "IsTextSubtitleStream": true,
+       "Language": "spa",
+       "Level": 0,
+       "LocalizedDefault": "Predeterminado",
+       "LocalizedExternal": "Externo",
+       "LocalizedForced": "Forzado",
+       "LocalizedHearingImpaired": "Discapacidad Auditiva",
+       "LocalizedUndefined": "Indefinido",
+       "Score": 121221,
+       "SupportsExternalStream": true,
+       "TimeBase": "1/1000",
+       "Title": "Forzados",
+       "Type": "Subtitle",
+       "VideoRange": "Unknown",
+       "VideoRangeType": "Unknown",
+       "Width": 0
+      },
+      {
+       "AudioSpatialFormat": "None",
+       "Codec": "subrip",
+       "DisplayTitle": "European - Spanish - SUBRIP",
+       "Height": 0,
+       "Index": 6,
+       "IsAVC": false,
+       "IsDefault": false,
+       "IsExternal": false,
+       "IsForced": false,
+       "IsHearingImpaired": false,
+       "IsInterlaced": false,
+       "IsTextSubtitleStream": true,
+       "Language": "spa",
+       "Level": 0,
+       "LocalizedDefault": "Predeterminado",
+       "LocalizedExternal": "Externo",
+       "LocalizedForced": "Forzado",
+       "LocalizedHearingImpaired": "Discapacidad Auditiva",
+       "LocalizedUndefined": "Indefinido",
+       "SupportsExternalStream": true,
+       "TimeBase": "1/1000",
+       "Title": "European",
+       "Type": "Subtitle",
+       "VideoRange": "Unknown",
+       "VideoRangeType": "Unknown",
+       "Width": 0
+      },
+      {
+       "AudioSpatialFormat": "None",
+       "Codec": "subrip",
+       "DisplayTitle": "English - SUBRIP",
+       "Height": 0,
+       "Index": 7,
+       "IsAVC": false,
+       "IsDefault": false,
+       "IsExternal": false,
+       "IsForced": false,
+       "IsHearingImpaired": false,
+       "IsInterlaced": false,
+       "IsTextSubtitleStream": true,
+       "Language": "eng",
+       "Level": 0,
+       "LocalizedDefault": "Predeterminado",
+       "LocalizedExternal": "Externo",
+       "LocalizedForced": "Forzado",
+       "LocalizedHearingImpaired": "Discapacidad Auditiva",
+       "LocalizedUndefined": "Indefinido",
+       "SupportsExternalStream": true,
+       "TimeBase": "1/1000",
+       "Type": "Subtitle",
+       "VideoRange": "Unknown",
+       "VideoRangeType": "Unknown",
+       "Width": 0
+      }
+     ],
+     "Name": "#Vivo (#Saraitda) (2020) - [x265 1080p]",
+     "Path": "/multimedia/PELIS/#Vivo (#Saraitda) (2020)/#Vivo (#Saraitda) (2020) - [x265 1080p].mkv",
+     "Protocol": "File",
+     "ReadAtNativeFramerate": false,
+     "RequiredHttpHeaders": {},
+     "RequiresClosing": false,
+     "RequiresLooping": false,
+     "RequiresOpening": false,
+     "RunTimeTicks": 59121280000,
+     "Size": 1340429116,
+     "SupportsDirectPlay": true,
+     "SupportsDirectStream": true,
+     "SupportsProbing": true,
+     "SupportsTranscoding": true,
+     "TranscodingSubProtocol": "http",
+     "Type": "Default",
+     "UseMostCompatibleTranscodingProfile": false,
+     "VideoType": "VideoFile"
+    }
+   ],
+   "MediaType": "Video",
+   "Name": "#Vivo",
+   "OfficialRating": "ES-16",
+   "Overview": "La rápida propagación de una infección desconocida provoca el caos absoluto en una ciudad. Sin embargo, un ciudadano que vive completamente solo logra permanecer al margen de ella. Esta es su historia.",
+   "People": [
+    {
+     "Id": "ed06edb336ad7c62e320f639f98118e5",
+     "ImageBlurHashes": {
+      "Primary": {
+       "a157a04549e62094a047ed55542bac95": "dTFY7E%20gEMS5WC-os:IpWCs9ofNHR*%2xaxuoeWBay"
+      }
+     },
+     "Name": "Lee Chae-kyung",
+     "PrimaryImageTag": "a157a04549e62094a047ed55542bac95",
+     "Role": "Masked Man’s Wife",
+     "Type": "Actor"
+    },
+    {
+     "Id": "a70eef2e6f5f7f2ceb072a783a2ac0be",
+     "ImageBlurHashes": {
+      "Primary": {
+       "75e26f3414efd5b5749476cedc0cef17": "dLFXr0^g-;9[~WI.X9Io9]E3ad-VNGr^V?-pOAS5E1og"
+      }
+     },
+     "Name": "Jang Ji-gun",
+     "PrimaryImageTag": "75e26f3414efd5b5749476cedc0cef17",
+     "Role": "Ramen Commercial Model",
+     "Type": "Actor"
+    },
+    {
+     "Id": "b6e2d92cd17dc858545645a8c1f143e8",
+     "ImageBlurHashes": {
+      "Primary": {
+       "6cf1f18693f0c133c5eb7d447d98c71f": "dhKwe0?a.9N{~q%N%Mt757kCs9ad%gM{xuWC?bR*t7s:"
+      }
+     },
+     "Name": "Yoo Yeon",
+     "PrimaryImageTag": "6cf1f18693f0c133c5eb7d447d98c71f",
+     "Role": "Sweater Middle-Aged Woman",
+     "Type": "Actor"
+    },
+    {
+     "Id": "0bc58cd41846e0b3473ab72da0e0ff3e",
+     "ImageBlurHashes": {
+      "Primary": {}
+     },
+     "Name": "Yoo Ah-in",
+     "Role": "Oh Joon-woo",
+     "Type": "Actor"
+    }
+   ],
+   "PremiereDate": "2020-06-24T00:00:00.0000000Z",
+   "ProductionYear": 2020,
+   "RunTimeTicks": 59121280000,
+   "ServerId": "dbc3bcfa250443c08044a27bc7e74553",
+   "Studios": [
+    {
+     "Id": "9ce46fa00024c4f1582d2324013f6f2f",
+     "Name": "Lotte Entertainment"
+    },
+    {
+     "Id": "ea8742e224c04c23c0396b440bc492cb",
+     "Name": "Zip Cinema"
+    },
+    {
+     "Id": "0bdc3d933e36c9be86108eca8d5184e1",
+     "Name": "Perspective Pictures"
+    },
+    {
+     "Id": "411cb7d6c12c8bf0d3c1caed22120c6f",
+     "Name": "Netflix"
+    }
+   ],
+   "Taglines": [
+    "Debes sobrevivir"
+   ],
+   "Type": "Movie",
+   "UserData": {
+    "IsFavorite": false,
+    "ItemId": "e7d68c0b873b0cba3671768671187d1f",
+    "Key": "e7d68c0b-873b-0cba-3671-768671187d1f",
+    "PlayCount": 0,
+    "PlaybackPositionTicks": 0,
+    "Played": false
+   },
+   "VideoType": "VideoFile"
+  },
+  {
+   "BackdropImageTags": [],
+   "ChannelId": null,
+   "CommunityRating": 5.2,
+   "Container": "mkv",
+   "DateCreated": "2024-11-05T18:54:19.0000000Z",
+   "GenreItems": [
+    {
+     "Id": "12ebade2b01dcef59c05cc48faaf2b15",
+     "Name": "Comedia"
+    }
+   ],
+   "Genres": [
+    "Comedia"
+   ],
+   "HasSubtitles": true,
+   "Id": "a998373c443850d4d9a8d79e04683b03",
+   "ImageBlurHashes": {
+    "Primary": {
+     "fba74014ddc4bed0f081ef9c4cc16729": "dXHB0M-og4-n?ug3Nyxt1iS$NLNxESof$$NH9$R,$~n%"
+    },
+    "Thumb": {
+     "ee502cdc97e18382625b00327ee5cc63": "WJH1GAyV_2R60zvhcD=yt7J7wKEfEMbaw{oyt6xG={WVxtxGSgof"
+    }
+   },
+   "ImageTags": {
+    "Primary": "fba74014ddc4bed0f081ef9c4cc16729",
+    "Thumb": "ee502cdc97e18382625b00327ee5cc63"
+   },
+   "IsFolder": false,
+   "LocationType": "FileSystem",
+   "MediaSources": [
+    {
+     "Bitrate": 3332281,
+     "Container": "mkv",
+     "DefaultAudioStreamIndex": 1,
+     "ETag": "4cac968b4d4d09bb7a793e3cada07596",
+     "Formats": [],
+     "GenPtsInput": false,
+     "HasSegments": false,
+     "Id": "a998373c443850d4d9a8d79e04683b03",
+     "IgnoreDts": false,
+     "IgnoreIndex": false,
+     "IsInfiniteStream": false,
+     "IsRemote": false,
+     "MediaAttachments": [],
+     "MediaStreams": [
+      {
+       "AspectRatio": "2:1",
+       "AudioSpatialFormat": "None",
+       "AverageFrameRate": 25,
+       "BitDepth": 8,
+       "BitRate": 3167742,
+       "Codec": "h264",
+       "DisplayTitle": "1080p H264 SDR",
+       "Height": 960,
+       "Index": 0,
+       "IsAVC": true,
+       "IsAnamorphic": false,
+       "IsDefault": true,
+       "IsExternal": false,
+       "IsForced": false,
+       "IsHearingImpaired": false,
+       "IsInterlaced": false,
+       "IsTextSubtitleStream": false,
+       "Level": 40,
+       "NalLengthSize": "4",
+       "PixelFormat": "yuv420p",
+       "Profile": "High",
+       "RealFrameRate": 25,
+       "RefFrames": 1,
+       "ReferenceFrameRate": 25,
+       "SupportsExternalStream": false,
+       "TimeBase": "1/1000",
+       "Type": "Video",
+       "VideoRange": "SDR",
+       "VideoRangeType": "SDR",
+       "Width": 1920
+      },
+      {
+       "AudioSpatialFormat": "None",
+       "BitRate": 164539,
+       "ChannelLayout": "5.1",
+       "Channels": 6,
+       "Codec": "aac",
+       "DisplayTitle": "Spanish - HE-AAC - 5.1",
+       "Index": 1,
+       "IsAVC": false,
+       "IsDefault": false,
+       "IsExternal": false,
+       "IsForced": false,
+       "IsHearingImpaired": false,
+       "IsInterlaced": false,
+       "IsTextSubtitleStream": false,
+       "Language": "spa",
+       "Level": 0,
+       "LocalizedDefault": "Predeterminado",
+       "LocalizedExternal": "Externo",
+       "Profile": "HE-AAC",
+       "SampleRate": 48000,
+       "SupportsExternalStream": false,
+       "TimeBase": "1/1000",
+       "Type": "Audio",
+       "VideoRange": "Unknown",
+       "VideoRangeType": "Unknown"
+      },
+      {
+       "AudioSpatialFormat": "None",
+       "Codec": "subrip",
+       "DisplayTitle": "Spanish - SUBRIP",
+       "Height": 0,
+       "Index": 2,
+       "IsAVC": false,
+       "IsDefault": false,
+       "IsExternal": false,
+       "IsForced": false,
+       "IsHearingImpaired": false,
+       "IsInterlaced": false,
+       "IsTextSubtitleStream": true,
+       "Language": "spa",
+       "Level": 0,
+       "LocalizedDefault": "Predeterminado",
+       "LocalizedExternal": "Externo",
+       "LocalizedForced": "Forzado",
+       "LocalizedHearingImpaired": "Discapacidad Auditiva",
+       "LocalizedUndefined": "Indefinido",
+       "SupportsExternalStream": true,
+       "TimeBase": "1/1000",
+       "Type": "Subtitle",
+       "VideoRange": "Unknown",
+       "VideoRangeType": "Unknown",
+       "Width": 0
+      }
+     ],
+     "Name": "+Cuñados (2024) - [FullHD 1080p x264]",
+     "Path": "/multimedia/PEL·LIS/+Cuñados (2024)/+Cuñados (2024) - [FullHD 1080p x264].mkv",
+     "Protocol": "File",
+     "ReadAtNativeFramerate": false,
+     "RequiredHttpHeaders": {},
+     "RequiresClosing": false,
+     "RequiresLooping": false,
+     "RequiresOpening": false,
+     "RunTimeTicks": 51985469999,
+     "Size": 2058457178,
+     "SupportsDirectPlay": true,
+     "SupportsDirectStream": true,
+     "SupportsProbing": true,
+     "SupportsTranscoding": true,
+     "TranscodingSubProtocol": "http",
+     "Type": "Default",
+     "UseMostCompatibleTranscodingProfile": false,
+     "VideoType": "VideoFile"
+    }
+   ],
+   "MediaType": "Video",
+   "Name": "+Cuñados",
+   "OfficialRating": "ES-12",
+   "Overview": "Esta nueva aventura de los cuñados arranca con la aparición de un cadáver justo en el medio del puente internacional de Tui. Este hecho viene de lo ocurrido hace unos días… Llega el Carnaval y la familia Ribeiro se prepara para disfrutar de las fiestas favoritas de todo buen ourensano. Han pasado dos años desde la detención de Alicia Zamora y su socio portugués. Los cuñados han montado un puesto de pulpo en Ourense, la manera perfecta para blanquear el dinero del motín que les cayó del cielo (literalmente). Entre una cosa y otra, Modesto se ha convertido en un cuñado más de la familia. La aparición en Ourense de Andreia Nunes (la pareja del portugués detenido) en busca de venganza, complicará las cosas para los cuñados, metiéndolos en un nuevo enredo que convertirá este Carnaval en un auténtico baile de máscaras.",
+   "People": [
+    {
+     "Id": "8da67187e73dd28867894e86066de793",
+     "ImageBlurHashes": {
+      "Primary": {
+       "05fd908756190bd42569566271d5da59": "dsKBE:xu_3-;~Wt7WBt7-oaxaeoet7oKRjWBozf6RjWB"
+      }
+     },
+     "Name": "Xosé A. Touriñán",
+     "PrimaryImageTag": "05fd908756190bd42569566271d5da59",
+     "Role": "Sabonis",
+     "Type": "Actor"
+    },
+    {
+     "Id": "f678f6b0d0f07ddad50d69415b1eeb52",
+     "ImageBlurHashes": {
+      "Primary": {
+       "f84693d40b47934074061ede36f7b54a": "dWH1rbxZ?voz~VjZofj[OrWqRPof?bfk%2t7xuWVV@s."
+      }
+     },
+     "Name": "Miguel de Lira",
+     "PrimaryImageTag": "f84693d40b47934074061ede36f7b54a",
+     "Role": "Eduardo",
+     "Type": "Actor"
+    },
+    {
+     "Id": "a5438ab4ce66acd403f93fef436550dc",
+     "ImageBlurHashes": {
+      "Primary": {
+       "d819381ab68439d179b8258574b3efb5": "dFBfnR-o0hR.=qs,9aRjOsR+t6of57NHxtj[IpR*s.jZ"
+      }
+     },
+     "Name": "Federico Pérez Rey",
+     "PrimaryImageTag": "d819381ab68439d179b8258574b3efb5",
+     "Role": "Modesto",
+     "Type": "Actor"
+    },
+    {
+     "Id": "b07d6bc4c51b7ea2605a9b083e5246f8",
+     "ImageBlurHashes": {
+      "Primary": {
+       "2630bfb8b96066f5feb142875f79b3ef": "dYDvAq~W%go}xaxaofNGtRofa#ayxut7t7bIWBRjRjWA"
+      }
+     },
+     "Name": "Eva Fernández",
+     "PrimaryImageTag": "2630bfb8b96066f5feb142875f79b3ef",
+     "Role": "Mati Padrón",
+     "Type": "Actor"
+    }
+   ],
+   "PremiereDate": "2024-04-19T00:00:00.0000000Z",
+   "ProductionYear": 2024,
+   "RunTimeTicks": 51985469999,
+   "ServerId": "dbc3bcfa250443c08044a27bc7e74553",
+   "Studios": [
+    {
+     "Id": "038420763a41655e73ce357e37b49b11",
+     "Name": "Portocabo"
+    }
+   ],
+   "Taglines": [
+    "Una comedia criminalmente divertida"
+   ],
+   "Type": "Movie",
+   "UserData": {
+    "IsFavorite": false,
+    "ItemId": "a998373c443850d4d9a8d79e04683b03",
+    "Key": "a998373c-4438-50d4-d9a8-d79e04683b03",
+    "PlayCount": 0,
+    "PlaybackPositionTicks": 0,
+    "Played": false
+   },
+   "VideoType": "VideoFile"
+  }
+ ],
+ "StartIndex": 0,
+ "TotalRecordCount": 5204
+}

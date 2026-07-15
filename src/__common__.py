@@ -67,6 +67,11 @@ except ImportError:
 # CONSTANTS
 #===============================================================================
 version = "0.1.0"
+
+# size literal baked into every image URL the backend hands out; the UI
+# swaps it for the real skin dimensions before downloading (posters,
+# backdrops, the player mini poster)
+IMAGE_SIZE_PLACEHOLDER = "&maxWidth=999&maxHeight=999"
 boxResoltion = None
 skinAuthors = ""
 skinResolution = "HD"
@@ -1023,48 +1028,6 @@ def closePlugin(session):
 #===========================================================================
 
 
-def getPlexHeader(g_sessionID, asDict=True):
-	printl2("", "__common__::getPlexHeader", "S")
-
-	boxData = getBoxInformation()
-	boxName = config.plugins.dreamfin.boxName.value
-
-	# why do we use ios!!!!! instead of enigma
-	# Unable to find client profile for device; platform=Enigma, platformVersion=oe20, device=Dreambox, model=500hd
-	# ERROR - [TranscodeUniversalRequest] Unable to find a matching profile
-
-	if asDict:
-		plexHeader = {'X-Plex-Platform': "iOS",
-					'X-Plex-Platform-Version': boxData[3],
-					'X-Plex-Provides': "player",
-					'X-Plex-Product': "DreamPlex",
-					'X-Plex-Version': getVersion(),
-					'X-Plex-Device': boxData[0],
-					'X-Plex-Device-Name': boxName,
-					'X-Plex-Model': boxData[1],
-					'X-Plex-Client-Identifier': g_sessionID,
-					'X-Plex-Client-Platform': "iOS"}
-	else:
-		plexHeader = []
-		plexHeader.append('X-Plex-Platform:iOS')  # + boxData[2]) # arch
-		plexHeader.append('X-Plex-Platform-Version:' + boxData[3])  # version
-		plexHeader.append('X-Plex-Provides:player')
-		plexHeader.append('X-Plex-Product:DreamPlex')
-		plexHeader.append('X-Plex-Version:' + getVersion())
-		plexHeader.append('X-Plex-Device:' + boxData[0])  # manu
-		plexHeader.append("X-Plex-Device-Name:" + boxName)
-		plexHeader.append("X-Plex-Model:" + boxData[1])  # model
-		plexHeader.append('X-Plex-Client-Identifier:' + g_sessionID)
-		plexHeader.append("X-Plex-Client-Platform:iOS")
-
-	printl2("", "__common__::getPlexHeader", "C")
-	return plexHeader
-
-#===========================================================================
-#
-#===========================================================================
-
-
 def getUserAgentHeader(asDict=True):
 	printl2("", "__common__::getUserAgentHeader", "S")
 
@@ -1139,50 +1102,3 @@ def millisToTime(t):
 	millis %= 1000
 	return {'hours': hours, 'minutes': minutes, 'seconds': seconds, 'milliseconds': millis}
 
-#===========================================================================
-#
-#===========================================================================
-
-
-def getXMLHeader():
-	#printl("", "getXMLHeader", "S")
-
-	#printl("", "getXMLHeader", "C")
-	return '<?xml version="1.0" encoding="utf-8"?>' + "\r\n"
-
-#===========================================================================
-#
-#===========================================================================
-
-
-def getOKMsg():
-	#printl("", "getOKMsg", "S")
-
-	#printl("", "getOKMsg", "C")
-	return getXMLHeader() + '<Response code="200" status="OK" />'
-
-#===========================================================================
-#
-#===========================================================================
-
-
-def getPlexHeaders():
-	#printl("", "getPlexHeaders", "S")
-
-	plexHeader = {
-		"Content-type": "application/x-www-form-urlencoded",
-		"X-Plex-Version": getVersion(),
-		"X-Plex-Client-Identifier": getUUID(),
-		"X-Plex-Provides": "player",
-		"X-Plex-Product": "DreamPlex",
-		"X-Plex-Device-Name": config.plugins.dreamfin.boxName.value,
-		"X-Plex-Platform": "Enigma2",
-		"X-Plex-Model": "Enigma2",
-		"X-Plex-Device": "stb",
-	}
-
-	# if settings['myplex_user']:
-	# plexHeader["X-Plex-Username"] = settings['myplex_user']
-
-	#printl("", "getPlexHeaders", "C")
-	return plexHeader

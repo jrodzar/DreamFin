@@ -65,7 +65,7 @@ from .DPH_Singleton import Singleton
 from .DPH_ScreenHelper import DPH_ScreenHelper, DPH_MultiColorFunctions, DPH_Screen, DPH_Filter
 from .DP_ViewFactory import getNoneDirectoryElements, getDefaultDirectoryElementsList, getGuiElements
 
-from .__common__ import printl2 as printl, loadPicture, durationToTime, getLiveTv, encodeThat, checkXmlFile, getXmlContent, getSkinResolution, runInThread, fireAndForget
+from .__common__ import printl2 as printl, loadPicture, durationToTime, getLiveTv, encodeThat, checkXmlFile, getXmlContent, getSkinResolution, runInThread, fireAndForget, IMAGE_SIZE_PLACEHOLDER
 from .__plugin__ import Plugin
 from .__init__ import _, defaultSkinsFolderPath  # _ is translation
 
@@ -2624,7 +2624,7 @@ class DP_View(DPH_Screen, DPH_ScreenHelper, DPH_MultiColorFunctions, DPH_Filter)
 		if "thumb" in self.details:
 			if self.details["thumb"] != "":
 				download_url = self.details["thumb"]
-				download_url = download_url.replace('&width=999&height=999', '&width=' + self.posterWidth + '&height=' + self.posterHeight)
+				download_url = download_url.replace(IMAGE_SIZE_PLACEHOLDER, '&maxWidth=' + self.posterWidth + '&maxHeight=' + self.posterHeight)
 				printl("download url: " + download_url, self, "D")
 				printl("starting download", self, "D")
 				authHeader = self.plexInstance.get_hTokenForServer(self.details["server"])
@@ -2655,7 +2655,7 @@ class DP_View(DPH_Screen, DPH_ScreenHelper, DPH_MultiColorFunctions, DPH_Filter)
 		if "art" in self.details:
 			if self.details["art"] != "":
 				download_url = self.details["art"]
-				download_url = download_url.replace('&width=999&height=999', '&width=' + self.backdropWidth + '&height=' + self.backdropHeight)
+				download_url = download_url.replace(IMAGE_SIZE_PLACEHOLDER, '&maxWidth=' + self.backdropWidth + '&maxHeight=' + self.backdropHeight)
 				printl("download url: " + download_url, self, "D")
 				printl("starting download", self, "D")
 				authHeader = self.plexInstance.get_hTokenForServer(self.details["server"])

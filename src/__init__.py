@@ -180,14 +180,14 @@ def initServerEntryConfig():
 	config.plugins.dreamfin.Entries[i].dns = ConfigText(default="my.dns.url", visible_width=50, fixed_size=False)
 	config.plugins.dreamfin.Entries[i].port = ConfigInteger(default=defaultPort, limits=(1, 65555))
 	config.plugins.dreamfin.Entries[i].playbackType = ConfigSelection(default="0", choices=[("0", _("Streamed")), ("1", _("Transcoded")), ("2", _("Direct Local"))])
-	config.plugins.dreamfin.Entries[i].localAuth = ConfigYesNo()
-	config.plugins.dreamfin.Entries[i].machineIdentifier = ConfigText(visible_width=50, fixed_size=False)
 	config.plugins.dreamfin.Entries[i].loadExtraData = ConfigSelection(default="0", choices=[("0", "None"), ("1", "Plex Pass"), ("2", "YTTrailer")])
 
 	# EMBY/JELLYFIN
 	config.plugins.dreamfin.Entries[i].serverType = ConfigSelection(default="auto", choices=[("auto", _("Auto")), ("emby", "Emby"), ("jellyfin", "Jellyfin")])
 	config.plugins.dreamfin.Entries[i].username = ConfigText(visible_width=50, fixed_size=False)
 	config.plugins.dreamfin.Entries[i].password = ConfigText(visible_width=50, fixed_size=False)
+	# manually entered API key, wins over username/password
+	config.plugins.dreamfin.Entries[i].accessToken = ConfigText(visible_width=50, fixed_size=False)
 	# session token + user id cached from the last successful login
 	config.plugins.dreamfin.Entries[i].accessTokenCache = ConfigText(visible_width=50, fixed_size=False)
 	config.plugins.dreamfin.Entries[i].userIdCache = ConfigText(visible_width=50, fixed_size=False)
@@ -207,41 +207,6 @@ def initServerEntryConfig():
 	printl("dns: " + str(config.plugins.dreamfin.Entries[i].dns.value), "__init__::initServerEntryConfig", "D")
 	printl("port: " + str(config.plugins.dreamfin.Entries[i].port.value), "__init__::initServerEntryConfig", "D")
 	printl("playbackType: " + str(config.plugins.dreamfin.Entries[i].playbackType.value), "__init__::initServerEntryConfig", "D")
-
-	# plex.tv
-	config.plugins.dreamfin.Entries[i].myplexUrl = ConfigText(default="plex.tv", visible_width=50, fixed_size=False)
-	config.plugins.dreamfin.Entries[i].myplexUsername = ConfigText(visible_width=50, fixed_size=False)
-	config.plugins.dreamfin.Entries[i].myplexId = ConfigInteger(default=0, limits=(1, 999999999999))
-	config.plugins.dreamfin.Entries[i].myplexPassword = ConfigText(visible_width=50, fixed_size=False)
-	config.plugins.dreamfin.Entries[i].myplexPinProtect = ConfigYesNo()
-	config.plugins.dreamfin.Entries[i].myplexPin = ConfigPIN(default=0000)
-	config.plugins.dreamfin.Entries[i].myplexToken = ConfigText(visible_width=50, fixed_size=False)
-	config.plugins.dreamfin.Entries[i].myplexLocalToken = ConfigText(visible_width=50, fixed_size=False)
-	# manually entered X-Plex-Token, wins over any other token source
-	config.plugins.dreamfin.Entries[i].accessToken = ConfigText(visible_width=50, fixed_size=False)
-	config.plugins.dreamfin.Entries[i].myplexTokenUsername = ConfigText(visible_width=50, fixed_size=False)
-	config.plugins.dreamfin.Entries[i].myplexHomeUsers = ConfigYesNo()
-	config.plugins.dreamfin.Entries[i].protectSettings = ConfigYesNo()
-	config.plugins.dreamfin.Entries[i].settingsPin = ConfigPIN(default=0000)
-	config.plugins.dreamfin.Entries[i].myplexCurrentHomeUser = ConfigText(visible_width=50, fixed_size=False)
-	config.plugins.dreamfin.Entries[i].myplexCurrentHomeUserPin = ConfigText(visible_width=4)
-	config.plugins.dreamfin.Entries[i].myplexCurrentHomeUserAccessToken = ConfigText(visible_width=4)
-	config.plugins.dreamfin.Entries[i].myplexCurrentHomeUserId = ConfigInteger(default=0, limits=(1, 999999999999))
-
-	printl("=== plex.tv ===", "__init__::initServerEntryConfig", "D")
-	printl("plex.tvUrl: " + str(config.plugins.dreamfin.Entries[i].myplexUrl.value), "__init__::initServerEntryConfig", "D")
-	printl("plex.tvUsername: " + str(config.plugins.dreamfin.Entries[i].myplexUsername.value), "__init__::initServerEntryConfig", "D", True, 8)
-	printl("plex.tvId: " + str(config.plugins.dreamfin.Entries[i].myplexId.value), "__init__::initServerEntryConfig", "D", True, 8)
-	printl("plex.tvPassword: " + str(config.plugins.dreamfin.Entries[i].myplexPassword.value), "__init__::initServerEntryConfig", "D", True, 6)
-	printl("plex.tvPinProtect: " + str(config.plugins.dreamfin.Entries[i].myplexPinProtect.value), "__init__::initServerEntryConfig", "D")
-	printl("plex.tvPin: " + str(config.plugins.dreamfin.Entries[i].myplexPin.value), "__init__::initServerEntryConfig", "D")
-	printl("plex.tvToken: " + str(config.plugins.dreamfin.Entries[i].myplexToken.value), "__init__::initServerEntryConfig", "D", True, 8)
-	printl("plex.tvTokenUsername: " + str(config.plugins.dreamfin.Entries[i].myplexTokenUsername.value), "__init__::initServerEntryConfig", "D")
-	printl("plex.tvHomeUsers: " + str(config.plugins.dreamfin.Entries[i].myplexHomeUsers.value), "__init__::initServerEntryConfig", "D")
-	printl("plex.tvCurrentHomeUser: " + str(config.plugins.dreamfin.Entries[i].myplexCurrentHomeUser.value), "__init__::initServerEntryConfig", "D")
-	printl("plex.tvCurrentHomeUserPin: " + str(config.plugins.dreamfin.Entries[i].myplexCurrentHomeUserPin.value), "__init__::initServerEntryConfig", "D")
-	printl("protectSettings: " + str(config.plugins.dreamfin.Entries[i].protectSettings.value), "__init__::initServerEntryConfig", "D")
-	printl("settingsPin: " + str(config.plugins.dreamfin.Entries[i].settingsPin.value), "__init__::initServerEntryConfig", "D")
 
 	# STREAMED
 	# no options at the moment
@@ -288,11 +253,6 @@ def initServerEntryConfig():
 	printl("wol: " + str(config.plugins.dreamfin.Entries[i].wol.value), "__init__::initServerEntryConfig", "D")
 	printl("wol_mac: " + str(config.plugins.dreamfin.Entries[i].wol_mac.value), "__init__::initServerEntryConfig", "D")
 	printl("wol_delay: " + str(config.plugins.dreamfin.Entries[i].wol_delay.value), "__init__::initServerEntryConfig", "D")
-
-	printl("=== SYNC ===", "__init__::initServerEntryConfig", "D")
-	config.plugins.dreamfin.Entries[i].syncMovies = ConfigYesNo(default=True)
-	config.plugins.dreamfin.Entries[i].syncShows = ConfigYesNo(default=True)
-	config.plugins.dreamfin.Entries[i].syncMusic = ConfigYesNo(default=True)
 
 	printl("", "__init__::initServerEntryConfig", "C")
 	return config.plugins.dreamfin.Entries[i]

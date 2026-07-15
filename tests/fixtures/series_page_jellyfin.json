@@ -1,0 +1,139 @@
+{
+ "Items": [
+  {
+   "AirDays": [
+    "Wednesday"
+   ],
+   "AirTime": "03:00",
+   "BackdropImageTags": [
+    "64ee2ee05b7c5e41979f07f04d5911e3"
+   ],
+   "ChannelId": null,
+   "ChildCount": 1,
+   "CommunityRating": 6.2,
+   "DateCreated": "2021-10-21T18:21:15.0000000Z",
+   "DisplayOrder": "aired",
+   "EndDate": "2021-10-13T00:00:00.0000000Z",
+   "GenreItems": [
+    {
+     "Id": "ab34417ccb60e729542a0a2bb99d52e6",
+     "Name": "Familia"
+    },
+    {
+     "Id": "12ebade2b01dcef59c05cc48faaf2b15",
+     "Name": "Comedia"
+    }
+   ],
+   "Genres": [
+    "Familia",
+    "Comedia"
+   ],
+   "Id": "f23ce29a10417b6ddfb37992b0b65e94",
+   "ImageBlurHashes": {
+    "Backdrop": {
+     "64ee2ee05b7c5e41979f07f04d5911e3": "WDCQ#-H?I+LgHXv{:]TennOZO5#PDOcFyXDimk?HcrbwrYVsozNF"
+    },
+    "Banner": {
+     "feaa9e824a35906f21db96a2ce032d1f": "HJCZ37I:0grXm*-;0foz-V%gt7RjRjV@jcR*Rjsp"
+    },
+    "Logo": {
+     "0b70a4af8510107d642a8c0fcb4137ed": "OzKV28ofrrj[~qoz?btRayWBfkjaj[aeWBj[V@WBtRj[bH"
+    },
+    "Primary": {
+     "7bc91cc3eb80e6ceb7dd8ad485bbb175": "dRG*]7?GIAnkI;adxZf60fNGNbR*^+bb9GRiIUoexZaK"
+    },
+    "Thumb": {
+     "026fc692dcd42bb20780f2f7cda63da8": "NG9aagVhIA%OIVs@*8D$Va%MM{WAtlIVRhx@jbjZ"
+    }
+   },
+   "ImageTags": {
+    "Banner": "feaa9e824a35906f21db96a2ce032d1f",
+    "Logo": "0b70a4af8510107d642a8c0fcb4137ed",
+    "Primary": "7bc91cc3eb80e6ceb7dd8ad485bbb175",
+    "Thumb": "026fc692dcd42bb20780f2f7cda63da8"
+   },
+   "IsFolder": true,
+   "LocationType": "FileSystem",
+   "MediaType": "Unknown",
+   "Name": "Al otro lado del instituto",
+   "OfficialRating": "TV-PG",
+   "Overview": "Una serie que narra historias increíbles que nos harán reflexionar sobre una realidad que está al otro lado de la que conocemos. Cada episodio les presenta a los espectadores un nuevo elenco de personajes que han de adentrarse en una sorprendente aventura de autodescubrimiento en un mundo sobrenatural de brujas, alienígenas, fantasmas y universos alternativos.",
+   "People": [
+    {
+     "Id": "166a2fba4dbb48878afde7dc5652d8cc",
+     "ImageBlurHashes": {
+      "Primary": {
+       "265ca3e6ab7afc67033535ade5f6579e": "dGLV~+={5Q-RXnxt.Tx]pxW=%3xu%LRj?b%LJDIpoz%L"
+      }
+     },
+     "Name": "Mckenna Grace",
+     "PrimaryImageTag": "265ca3e6ab7afc67033535ade5f6579e",
+     "Role": "Veronica",
+     "Type": "Actor"
+    },
+    {
+     "Id": "9adb9f75ed68853ba17f8d2f4245bdc6",
+     "ImageBlurHashes": {
+      "Primary": {
+       "44895b2821f370203e5a6a97edc75422": "dIHUwe~W%KD%#$r=%fx[?aoz?a-pKPNHs.-n9GD*%1?G"
+      }
+     },
+     "Name": "Jy Prishkulnik",
+     "PrimaryImageTag": "44895b2821f370203e5a6a97edc75422",
+     "Role": "Luna",
+     "Type": "Actor"
+    },
+    {
+     "Id": "d96b0ddd90f28bc8df355266792e559b",
+     "ImageBlurHashes": {
+      "Primary": {
+       "692d0cb03a3cfd125e87b680a3a3bbc4": "dQI}hp-=_N_2^iR4t-J:}=R+%1$~TfS$jFt7g4xZofxu"
+      }
+     },
+     "Name": "Rachel Marsh",
+     "PrimaryImageTag": "692d0cb03a3cfd125e87b680a3a3bbc4",
+     "Role": "Fiona",
+     "Type": "Actor"
+    },
+    {
+     "Id": "bff1293aab7a1a860549c4b5b1841133",
+     "ImageBlurHashes": {
+      "Primary": {
+       "0896bd5c134009a186888dc64a7c2194": "dZEerq%20fIo9ZRk-pt7JBWVxFoKjFf6kCkC%2j[NGay"
+      }
+     },
+     "Name": "Gabriel Bateman",
+     "PrimaryImageTag": "0896bd5c134009a186888dc64a7c2194",
+     "Role": "Jack",
+     "Type": "Actor"
+    }
+   ],
+   "PremiereDate": "2021-10-13T00:00:00.0000000Z",
+   "ProductionYear": 2021,
+   "RecursiveItemCount": 8,
+   "RunTimeTicks": 0,
+   "ServerId": "dbc3bcfa250443c08044a27bc7e74553",
+   "Status": "Continuing",
+   "Studios": [
+    {
+     "Id": "20d264313828d2206d85c42b68e2f024",
+     "Name": "Disney+"
+    }
+   ],
+   "Taglines": [],
+   "Type": "Series",
+   "UserData": {
+    "IsFavorite": false,
+    "ItemId": "f23ce29a10417b6ddfb37992b0b65e94",
+    "Key": "f23ce29a-1041-7b6d-dfb3-7992b0b65e94",
+    "PlayCount": 0,
+    "PlaybackPositionTicks": 0,
+    "Played": false,
+    "PlayedPercentage": 0,
+    "UnplayedItemCount": 8
+   }
+  }
+ ],
+ "StartIndex": 0,
+ "TotalRecordCount": 122
+}

@@ -41,7 +41,7 @@ else:
 
 from Components.config import config
 
-from .__common__ import printl2 as printl, getUUID, getVersion
+from .__common__ import printl2 as printl, getUUID, getVersion, IMAGE_SIZE_PLACEHOLDER
 from .__plugin__ import Plugin, getPlugin
 from .__init__ import _  # _ is translation
 
@@ -49,14 +49,36 @@ from .__init__ import _  # _ is translation
 # CONSTANTS
 #===============================================================================
 
-# fields requested with every item listing; superset of what
-# itemToEntryData()/buildMediaDataArr() read
-DEFAULT_ITEM_FIELDS = ("Overview,Genres,People,Studios,MediaSources,"
+# fields requested with every item LISTING. Deliberately without People:
+# Jellyfin 10.11 spends ~60ms per item resolving cast/crew, which turns a
+# 200-item page into a 13s answer (measured against the real server);
+# without People the same page takes 0.36s. Lists therefore show no
+# director/cast; the per-item detail fetch below carries them instead.
+DEFAULT_ITEM_FIELDS = ("Overview,Genres,Studios,MediaSources,"
 					"DateCreated,PremiereDate,ProductionYear,"
 					"RecursiveItemCount,ChildCount,Taglines")
 
+# fields for single-item detail requests (selection refresh, pre-playback)
+DETAIL_ITEM_FIELDS = DEFAULT_ITEM_FIELDS + ",People"
+
 # ports that imply TLS when no scheme information exists in the config
 HTTPS_PORTS = (443, 8920)
+
+# Emby item Type -> the type literals the inherited UI switches on
+ITEM_TYPE_MAP = {
+	"Movie": "movie",
+	"Series": "show",
+	"Season": "season",
+	"Episode": "episode",
+	"MusicArtist": "artist",
+	"MusicAlbum": "album",
+	"Audio": "track",
+	"Video": "clip",
+	"MusicVideo": "clip",
+	"BoxSet": "Folder",
+	"Folder": "Folder",
+	"CollectionFolder": "Folder",
+}
 
 REQUEST_TIMEOUT = 8
 CONNECT_ATTEMPTS = 2
@@ -951,6 +973,482 @@ class EmbyLibrary(object):
 
 		printl("", self, "C")
 		return fullList
+
+	#===============================================================================
+	# ITEM PARSING - the golden rule lives here: every entryData value the
+	# UI can see leaves this section as a native str (utf-8 bytes on py2)
+	#===============================================================================
+
+	def itemToEntryData(self, item):
+		"""Map one Emby/Jellyfin item onto the entryData dictionary shape
+		the inherited UI reads. Caller adds server/viewModes/tagType."""
+		userData = item.get("UserData") or {}
+
+		entryData = {
+			"type": ITEM_TYPE_MAP.get(item.get("Type"), jsonToStr(item.get("Type"), "Folder")),
+			"key": jsonToStr(item.get("Id")),
+			"ratingKey": jsonToStr(item.get("Id")),
+			"title": jsonToStr(item.get("Name"), "no Title"),
+			"summary": jsonToStr(item.get("Overview")),
+			"year": jsonToStr(item.get("ProductionYear")),
+			"studio": self._firstStudio(item),
+			"contentRating": jsonToStr(item.get("OfficialRating")),
+			"rating": self._communityRating(item),
+			"duration": jsonToStr(ticksToMs(item["RunTimeTicks"])) if item.get("RunTimeTicks") else "",
+			"viewCount": self._viewCount(userData),
+			"viewOffset": jsonToStr(ticksToMs(userData["PlaybackPositionTicks"])) if userData.get("PlaybackPositionTicks") else "0",
+			"genre": self._joinNames(item.get("Genres")),
+			"director": self._joinPeople(item, "Director"),
+			"cast": self._joinPeople(item, "Actor"),
+			"writer": self._joinPeople(item, "Writer"),
+			"country": self._joinNames(item.get("ProductionLocations")),
+		}
+
+		taglines = item.get("Taglines")
+		if taglines:
+			entryData["tagline"] = jsonToStr(taglines[0])
+
+		if item.get("IndexNumber") is not None:
+			entryData["index"] = jsonToStr(item.get("IndexNumber"))
+		if item.get("ParentIndexNumber") is not None:
+			entryData["parentIndex"] = jsonToStr(item.get("ParentIndexNumber"))
+
+		# show/season episode counters; the UI does int() arithmetic on them
+		if item.get("RecursiveItemCount") is not None:
+			leafCount = int(item["RecursiveItemCount"])
+			entryData["leafCount"] = jsonToStr(leafCount)
+			unplayed = userData.get("UnplayedItemCount")
+			if unplayed is not None:
+				entryData["viewedLeafCount"] = jsonToStr(max(0, leafCount - int(unplayed)))
+			else:
+				entryData["viewedLeafCount"] = entryData["leafCount"] if userData.get("Played") else "0"
+
+		return entryData
+
+	#===============================================================================
+	#
+	#===============================================================================
+	def buildMediaDataArr(self, item):
+		"""MediaSources[] -> the mediaDataArr shape the UI and the version
+		selector consume. All values are strings; sizes/bitrates numeric-ish
+		strings; durations in milliseconds."""
+		mediaDataArr = []
+
+		for source in item.get("MediaSources") or []:
+			videoStream = None
+			audioStream = None
+			for stream in source.get("MediaStreams") or []:
+				streamType = stream.get("Type")
+				if streamType == "Video" and videoStream is None:
+					videoStream = stream
+				elif streamType == "Audio" and audioStream is None:
+					audioStream = stream
+
+			defaultAudioIndex = source.get("DefaultAudioStreamIndex")
+			if defaultAudioIndex is not None:
+				for stream in source.get("MediaStreams") or []:
+					if stream.get("Type") == "Audio" and stream.get("Index") == defaultAudioIndex:
+						audioStream = stream
+						break
+
+			videoStream = videoStream or {}
+			audioStream = audioStream or {}
+
+			mediaData = {
+				"id": jsonToStr(source.get("Id")),
+				"videoCodec": jsonToStr(videoStream.get("Codec")),
+				"audioCodec": jsonToStr(audioStream.get("Codec")),
+				"audioChannels": jsonToStr(audioStream.get("Channels")),
+				"videoResolution": self._mapResolution(videoStream.get("Width"), videoStream.get("Height")),
+				"aspectRatio": self._mapAspect(videoStream.get("AspectRatio")),
+				"bitrate": jsonToStr(source.get("Bitrate")),
+				"videoFrameRate": jsonToStr(videoStream.get("RealFrameRate") or videoStream.get("AverageFrameRate")),
+				"container": jsonToStr(source.get("Container")),
+			}
+
+			part = {
+				"id": jsonToStr(source.get("Id")),
+				"key": jsonToStr(source.get("Id")),
+				"file": jsonToStr(source.get("Path")),
+				"container": jsonToStr(source.get("Container")),
+				"size": jsonToStr(source.get("Size")),
+				"duration": jsonToStr(ticksToMs(source["RunTimeTicks"])) if source.get("RunTimeTicks") else "",
+			}
+			mediaData["Parts"] = [part]
+
+			mediaDataArr.append(mediaData)
+
+		return mediaDataArr
+
+	#===============================================================================
+	#
+	#===============================================================================
+	@staticmethod
+	def _mapResolution(width, height):
+		"""Width/Height -> the four buckets the skin has icons for."""
+		try:
+			width = int(width or 0)
+			height = int(height or 0)
+		except (TypeError, ValueError):
+			return "SD"
+		if height >= 2000 or width >= 3600:
+			return "4K"
+		if height >= 1000 or width >= 1900:
+			return "1080"
+		if height >= 700 or width >= 1260:
+			return "720"
+		return "SD"
+
+	#===============================================================================
+	#
+	#===============================================================================
+	@staticmethod
+	def _mapAspect(value):
+		"""AspectRatio ('2.40:1', '16:9', '1.78', 2.35, None) -> nearest of
+		the three literals the skin has icons for."""
+		if value in (None, ""):
+			return ""
+		try:
+			if isinstance(value, (int, float)):
+				ratio = float(value)
+			else:
+				text = jsonToStr(value)
+				if ":" in text:
+					left, right = text.split(":", 1)
+					ratio = float(left) / float(right)
+				else:
+					ratio = float(text)
+		except (TypeError, ValueError, ZeroDivisionError):
+			return ""
+
+		best = min((1.33, 1.78, 2.35), key=lambda candidate: abs(candidate - ratio))
+		return "%.2f" % best
+
+	#===============================================================================
+	#
+	#===============================================================================
+	def _joinNames(self, values):
+		if not values:
+			return ""
+		return " / ".join(jsonToStr(value) for value in values if value)
+
+	def _joinPeople(self, item, personType):
+		names = []
+		for person in item.get("People") or []:
+			if person.get("Type") == personType and person.get("Name"):
+				names.append(jsonToStr(person.get("Name")))
+		return " / ".join(names)
+
+	def _firstStudio(self, item):
+		for studio in item.get("Studios") or []:
+			if studio.get("Name"):
+				return jsonToStr(studio.get("Name"))
+		return ""
+
+	def _communityRating(self, item):
+		rating = item.get("CommunityRating")
+		if rating is None:
+			return ""
+		try:
+			return "%.1f" % float(rating)
+		except (TypeError, ValueError):
+			return jsonToStr(rating)
+
+	def _viewCount(self, userData):
+		playCount = userData.get("PlayCount")
+		if playCount is None:
+			playCount = 1 if userData.get("Played") else 0
+		return jsonToStr(playCount)
+
+	#===============================================================================
+	# IMAGES
+	#===============================================================================
+
+	def getImageUrl(self, itemId, imageType="Primary", tag=None):
+		"""Server-side resized image URL. The size literal is the shared
+		placeholder the UI substitutes with the real skin dimensions."""
+		url = self.getContentUrl("/Items/%s/Images/%s?%s" % (jsonToStr(itemId), imageType, IMAGE_SIZE_PLACEHOLDER.lstrip("&")))
+		if tag:
+			url += "&tag=" + jsonToStr(tag)
+		if self.g_accessToken:
+			url += "&api_key=" + self.g_accessToken
+		return url
+
+	#===============================================================================
+	#
+	#===============================================================================
+	def _attachImages(self, entryData, item, switchMedias=False):
+		"""thumb/art like the Plex backend: '' when the artwork does not
+		exist (the UI routes '' into its no-picture path)."""
+		imageTags = item.get("ImageTags") or {}
+
+		primary = ""
+		if imageTags.get("Primary"):
+			primary = self.getImageUrl(item.get("Id"), "Primary", imageTags.get("Primary"))
+		elif item.get("SeriesPrimaryImageTag") and item.get("SeriesId"):
+			primary = self.getImageUrl(item.get("SeriesId"), "Primary", item.get("SeriesPrimaryImageTag"))
+
+		backdrop = ""
+		backdropTags = item.get("BackdropImageTags") or []
+		if backdropTags:
+			backdrop = self.getImageUrl(item.get("Id"), "Backdrop/0", backdropTags[0])
+		elif item.get("ParentBackdropItemId"):
+			parentTags = item.get("ParentBackdropImageTags") or []
+			backdrop = self.getImageUrl(item.get("ParentBackdropItemId"), "Backdrop/0",
+									parentTags[0] if parentTags else None)
+
+		if switchMedias:
+			# episodes: the list artwork is the series backdrop, the detail
+			# artwork is the episode still
+			entryData["thumb"] = backdrop
+			entryData["art"] = primary
+		else:
+			entryData["thumb"] = primary
+			entryData["art"] = backdrop
+
+		return entryData
+
+	#===============================================================================
+	# LIST ENTRIES
+	#===============================================================================
+
+	def getFullListEntry(self, entryData, nextUrl, viewState=None):
+		"""The 5-tuple every list row is made of."""
+		if "ratingKey" in entryData:
+			contextMenu = self.buildContextMenu(entryData["ratingKey"])
+		else:
+			contextMenu = None
+
+		title = entryData.get("title", "no Title")
+		return title, entryData, contextMenu, viewState, nextUrl
+
+	#===============================================================================
+	#
+	#===============================================================================
+	def buildContextMenu(self, itemId):
+		"""Same keys as the Plex backend produced. The URLs already point
+		at the Emby endpoints; phase 3 turns the GET call sites in
+		DP_View into backend method calls with the right HTTP verbs."""
+		return {
+			"itemId": jsonToStr(itemId),
+			"libraryRefreshURL": self.getContentUrl("/Items/%s/Refresh" % itemId),
+			"unwatchURL": self.getContentUrl("/Users/%s/PlayedItems/%s" % (self.g_userId, itemId)),
+			"watchedURL": self.getContentUrl("/Users/%s/PlayedItems/%s" % (self.g_userId, itemId)),
+			"deleteURL": self.getContentUrl("/Items/%s" % itemId),
+		}
+
+	#===============================================================================
+	#
+	#===============================================================================
+	def getViewStateForShowEntry(self, entryData):
+		if "viewedLeafCount" not in entryData or "leafCount" not in entryData:
+			return "unseen"
+		try:
+			viewed = int(entryData["viewedLeafCount"])
+			total = int(entryData["leafCount"])
+		except (TypeError, ValueError):
+			return "unseen"
+		if total > 0 and viewed >= total:
+			return "seen"
+		if viewed > 0:
+			return "started"
+		return "unseen"
+
+	def getViewStatefromViewCount(self, entryData):
+		viewCount = int(entryData.get("viewCount") or 0)
+		viewOffset = int(entryData.get("viewOffset") or 0)
+		if viewCount > 0:
+			return "seen"
+		if viewOffset > 0:
+			return "started"
+		return "unseen"
+
+	#===============================================================================
+	# NAVIGATION - every method returns (fullList, mediaContainer) like the
+	# Plex backend did; mediaContainer carries nothing the UI still reads
+	#===============================================================================
+
+	def _seasonsUrl(self, seriesId):
+		return self.getContentUrl("/Shows/%s/Seasons?UserId=%s&Fields=%s" % (jsonToStr(seriesId), self.g_userId, DEFAULT_ITEM_FIELDS))
+
+	def _episodesUrl(self, seriesId, seasonId):
+		return self.getContentUrl("/Shows/%s/Episodes?SeasonId=%s&UserId=%s&Fields=%s" % (jsonToStr(seriesId), jsonToStr(seasonId), self.g_userId, DEFAULT_ITEM_FIELDS))
+
+	def _albumsOfArtistUrl(self, artistId):
+		return self.getContentUrl("/Users/%s/Items?IncludeItemTypes=MusicAlbum&Recursive=true&AlbumArtistIds=%s&SortBy=SortName&SortOrder=Ascending&Fields=%s" % (self.g_userId, jsonToStr(artistId), DEFAULT_ITEM_FIELDS))
+
+	def _tracksOfAlbumUrl(self, albumId):
+		return self.getContentUrl("/Users/%s/Items?ParentId=%s&IncludeItemTypes=Audio&SortBy=IndexNumber&Fields=%s" % (self.g_userId, jsonToStr(albumId), DEFAULT_ITEM_FIELDS))
+
+	def _childrenUrl(self, itemId):
+		return self.getContentUrl("/Users/%s/Items?ParentId=%s&Fields=%s" % (self.g_userId, jsonToStr(itemId), DEFAULT_ITEM_FIELDS))
+
+	def _detailUrl(self, itemId):
+		return self.getContentUrl("/Users/%s/Items/%s?Fields=%s" % (self.g_userId, jsonToStr(itemId), DETAIL_ITEM_FIELDS))
+
+	#===============================================================================
+	#
+	#===============================================================================
+	def _itemsFromAnswer(self, answer):
+		"""Envelope dual parser: {Items: [...]} or the bare array some
+		endpoints (/Users/{id}/Items/Latest) return."""
+		if answer is None:
+			return None
+		if isinstance(answer, list):
+			return answer
+		if isinstance(answer, dict):
+			return answer.get("Items", [])
+		return []
+
+	#===============================================================================
+	#
+	#===============================================================================
+	def _browse(self, url, currentViewMode, defaultNextViewMode, defaultTagType, switchMedias=False):
+		"""Shared list builder. Playable items follow the requested view
+		modes; container items (series/seasons/albums/folders) get their
+		drill-in target derived from their own type, which is exactly how
+		mixed containers behaved on the Plex side."""
+		printl("url: " + str(url), self, "D")
+
+		if not self.ensureAuthenticated():
+			return [], {}
+
+		answer = self.getJsonPaged(url)
+		items = self._itemsFromAnswer(answer)
+		if items is None:
+			if not self.lastError:
+				self.lastError = _("No data in this section!")
+			return [], {}
+
+		fullList = []
+		for item in items:
+			itemType = item.get("Type")
+			entryData = self.itemToEntryData(item)
+			entryData["server"] = self.g_address
+			entryData["currentViewMode"] = currentViewMode
+
+			if itemType in ("Movie", "Episode", "Video", "MusicVideo"):
+				entryData["nextViewMode"] = "play"
+				entryData["tagType"] = defaultTagType if defaultTagType in ("Video", "Track") else "Video"
+				if itemType == "Episode" and entryData.get("index"):
+					entryData["title"] = entryData["index"] + ". " + entryData["title"]
+				entryData["mediaDataArr"] = self.buildMediaDataArr(item)
+				entryData["contentUrl"] = self._detailUrl(item.get("Id"))
+				self._attachImages(entryData, item, switchMedias=switchMedias or itemType == "Episode")
+				viewState = self.getViewStatefromViewCount(entryData)
+				nextUrl = self._detailUrl(item.get("Id"))
+
+			elif itemType == "Audio":
+				entryData["nextViewMode"] = "play"
+				entryData["tagType"] = "Track"
+				entryData["mediaDataArr"] = self.buildMediaDataArr(item)
+				entryData["contentUrl"] = self._detailUrl(item.get("Id"))
+				self._attachImages(entryData, item)
+				viewState = self.getViewStatefromViewCount(entryData)
+				nextUrl = self._detailUrl(item.get("Id"))
+
+			elif itemType == "Series":
+				entryData["nextViewMode"] = "ShowSeasons"
+				entryData["tagType"] = "Show"
+				entryData["type"] = "show"
+				self._attachImages(entryData, item)
+				viewState = self.getViewStateForShowEntry(entryData)
+				nextUrl = self._seasonsUrl(item.get("Id"))
+				entryData["contentUrl"] = nextUrl
+
+			elif itemType == "Season":
+				entryData["nextViewMode"] = "ShowEpisodes"
+				entryData["tagType"] = "Episodes"
+				self._attachImages(entryData, item)
+				viewState = self.getViewStateForShowEntry(entryData)
+				nextUrl = self._episodesUrl(item.get("SeriesId"), item.get("Id"))
+				entryData["contentUrl"] = nextUrl
+
+			elif itemType == "MusicArtist":
+				entryData["nextViewMode"] = "ShowAlbums"
+				entryData["tagType"] = "Directory"
+				self._attachImages(entryData, item)
+				viewState = None
+				nextUrl = self._albumsOfArtistUrl(item.get("Id"))
+				entryData["contentUrl"] = nextUrl
+
+			elif itemType == "MusicAlbum":
+				entryData["nextViewMode"] = "ShowTracks"
+				entryData["tagType"] = "Directory"
+				self._attachImages(entryData, item)
+				viewState = None
+				nextUrl = self._tracksOfAlbumUrl(item.get("Id"))
+				entryData["contentUrl"] = nextUrl
+
+			elif itemType in ("Folder", "BoxSet", "CollectionFolder"):
+				entryData["nextViewMode"] = "mixed"
+				entryData["tagType"] = "Directory"
+				entryData["type"] = "Folder"
+				self._attachImages(entryData, item)
+				viewState = None
+				nextUrl = self._childrenUrl(item.get("Id"))
+				entryData["contentUrl"] = nextUrl
+
+			else:
+				printl("skipping unsupported item type: " + str(itemType), self, "D")
+				continue
+
+			fullList.append(self.getFullListEntry(entryData, nextUrl, viewState))
+
+		if not fullList and not self.lastError:
+			self.lastError = _("No data in this section!")
+
+		mediaContainer = {"size": jsonToStr(len(fullList))}
+		return fullList, mediaContainer
+
+	#===============================================================================
+	#
+	#===============================================================================
+	def getMoviesFromSection(self, url):
+		return self._browse(url, currentViewMode="ShowMovies", defaultNextViewMode="play", defaultTagType="Video")
+
+	def getMixedContentFromSection(self, url, fromRemotePlayer=False):
+		return self._browse(url, currentViewMode="ShowMovies", defaultNextViewMode="play", defaultTagType="Video")
+
+	def getShowsFromSection(self, url):
+		return self._browse(url, currentViewMode="ShowShows", defaultNextViewMode="ShowSeasons", defaultTagType="Show")
+
+	def getSeasonsOfShow(self, url):
+		return self._browse(url, currentViewMode="ShowSeasons", defaultNextViewMode="ShowEpisodes", defaultTagType="Episodes")
+
+	def getEpisodesOfSeason(self, url, directMode=False):
+		currentViewMode = "ShowEpisodesDirect" if directMode else "ShowEpisodes"
+		return self._browse(url, currentViewMode=currentViewMode, defaultNextViewMode="play", defaultTagType="Video", switchMedias=True)
+
+	def getMusicByArtist(self, url):
+		return self._browse(url, currentViewMode="ShowArtists", defaultNextViewMode="ShowAlbums", defaultTagType="Directory")
+
+	def getMusicByAlbum(self, url):
+		return self._browse(url, currentViewMode="ShowAlbums", defaultNextViewMode="ShowTracks", defaultTagType="Directory")
+
+	def getMusicTracks(self, url):
+		return self._browse(url, currentViewMode="ShowTracks", defaultNextViewMode="play", defaultTagType="Track")
+
+	#===============================================================================
+	# PLAYBACK SURFACE - real implementations arrive in phases 3/4; these
+	# keep the UI alive (message instead of a green screen) until then
+	#===============================================================================
+
+	def getMediaOptionsToPlay(self, myId, vids, override=False, myType="Video", loadExtraData=False):
+		self.lastError = _("Playback arrives in a later phase of the port.")
+		return 0, [], self.g_address
+
+	def playLibraryMedia(self, myId, url, isExtraData=False):
+		self.lastError = _("Playback arrives in a later phase of the port.")
+		return None
+
+	#===============================================================================
+	#
+	#===============================================================================
+	def get_hTokenForServer(self, server=None):
+		"""Image/download auth travels as api_key inside the URLs the
+		backend hands out, so no extra header is needed."""
+		return {}
 
 	#===============================================================================
 	# MISC SURFACE THE UI RELIES ON

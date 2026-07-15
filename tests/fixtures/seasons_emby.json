@@ -1,0 +1,78 @@
+{
+ "Items": [
+  {
+   "BackdropImageTags": [],
+   "ChildCount": 8,
+   "DateCreated": "2021-10-21T16:21:23.0000000Z",
+   "GenreItems": [],
+   "Genres": [],
+   "Id": "129111",
+   "ImageTags": {
+    "Primary": "00a3fa13aa74c4fdb38f487ed5cafb88"
+   },
+   "IndexNumber": 1,
+   "IsFolder": true,
+   "Name": "Temporada 1",
+   "ParentBackdropImageTags": [
+    "95cbb93dea6ed24da48105bf1b382da5"
+   ],
+   "ParentBackdropItemId": "129110",
+   "ParentLogoImageTag": "09f6565f9768a06144773f255c4ab667",
+   "ParentLogoItemId": "129110",
+   "ParentThumbImageTag": "4b1f8f5922d20058a87122e888fa90a8",
+   "ParentThumbItemId": "129110",
+   "People": [
+    {
+     "Id": "249477",
+     "Name": "Seth Grahame-Smith",
+     "PrimaryImageTag": "e927694b23bfecb810c6a085a4cf763d",
+     "Type": "Writer"
+    },
+    {
+     "Id": "36793",
+     "Name": "R.L. Stine",
+     "PrimaryImageTag": "f2a6b5fd3d60f2992958e066f38faf25",
+     "Type": "Writer"
+    },
+    {
+     "Id": "249477",
+     "Name": "Seth Grahame-Smith",
+     "PrimaryImageTag": "e927694b23bfecb810c6a085a4cf763d",
+     "Role": "Producer",
+     "Type": "Producer"
+    },
+    {
+     "Id": "249478",
+     "Name": "Aaron Schmidt",
+     "Role": "Executive Producer",
+     "Type": "Producer"
+    },
+    {
+     "Id": "26108",
+     "Name": "David Katzenberg",
+     "PrimaryImageTag": "b6355ecea13089bdcdc78deb0777c061",
+     "Role": "Producer",
+     "Type": "Producer"
+    }
+   ],
+   "PremiereDate": "2021-10-12T22:00:00.0000000Z",
+   "ProductionYear": 2021,
+   "RecursiveItemCount": 8,
+   "SeriesId": "129110",
+   "SeriesName": "Al otro lado del instituto",
+   "SeriesPrimaryImageTag": "fc2d9d0ac2d3835be5c46937b6b7bd3b",
+   "ServerId": "db3c63e39b9c4fa6bca65c62102e40e9",
+   "Studios": [],
+   "Taglines": [],
+   "Type": "Season",
+   "UserData": {
+    "IsFavorite": false,
+    "PlayCount": 0,
+    "PlaybackPositionTicks": 0,
+    "Played": false,
+    "UnplayedItemCount": 8
+   }
+  }
+ ],
+ "TotalRecordCount": 1
+}

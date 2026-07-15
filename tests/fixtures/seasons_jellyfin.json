@@ -1,0 +1,128 @@
+{
+ "Items": [
+  {
+   "BackdropImageTags": [],
+   "ChannelId": null,
+   "ChildCount": 8,
+   "DateCreated": "2021-10-21T18:21:23.0000000Z",
+   "GenreItems": [],
+   "Genres": [],
+   "Id": "770567e3f5f0f436ce02b44870815994",
+   "ImageBlurHashes": {
+    "Backdrop": {
+     "64ee2ee05b7c5e41979f07f04d5911e3": "WDCQ#-H?I+LgHXv{:]TennOZO5#PDOcFyXDimk?HcrbwrYVsozNF"
+    },
+    "Logo": {
+     "0b70a4af8510107d642a8c0fcb4137ed": "OzKV28ofrrj[~qoz?btRayWBfkjaj[aeWBj[V@WBtRj[bH"
+    },
+    "Primary": {
+     "7bc91cc3eb80e6ceb7dd8ad485bbb175": "dRG*]7?GIAnkI;adxZf60fNGNbR*^+bb9GRiIUoexZaK",
+     "7d1e9a40734a1f0c91d8dfc83661c455": "dGE.kS?b0LxZ$vV@M}xs0JIUt7t5={a~R+n#IUbH?Hxu"
+    },
+    "Thumb": {
+     "026fc692dcd42bb20780f2f7cda63da8": "NG9aagVhIA%OIVs@*8D$Va%MM{WAtlIVRhx@jbjZ"
+    }
+   },
+   "ImageTags": {
+    "Primary": "7d1e9a40734a1f0c91d8dfc83661c455"
+   },
+   "IndexNumber": 1,
+   "IsFolder": true,
+   "LocationType": "FileSystem",
+   "MediaType": "Unknown",
+   "Name": "Temporada 1",
+   "ParentBackdropImageTags": [
+    "64ee2ee05b7c5e41979f07f04d5911e3"
+   ],
+   "ParentBackdropItemId": "f23ce29a10417b6ddfb37992b0b65e94",
+   "ParentLogoImageTag": "0b70a4af8510107d642a8c0fcb4137ed",
+   "ParentLogoItemId": "f23ce29a10417b6ddfb37992b0b65e94",
+   "ParentThumbImageTag": "026fc692dcd42bb20780f2f7cda63da8",
+   "ParentThumbItemId": "f23ce29a10417b6ddfb37992b0b65e94",
+   "People": [
+    {
+     "Id": "075525917a22c6735323f0df6830d8cf",
+     "ImageBlurHashes": {
+      "Primary": {
+       "72f892f34a656754cd5d183e1d28f580": "dSGbn^_30fE2~q%M.Sx^tmt7-;%3.TxuMwV@Xmofs:of"
+      }
+     },
+     "Name": "Seth Grahame-Smith",
+     "PrimaryImageTag": "72f892f34a656754cd5d183e1d28f580",
+     "Role": "Writer",
+     "Type": "Writer"
+    },
+    {
+     "Id": "a742397649a146d487b3f0e343595733",
+     "ImageBlurHashes": {
+      "Primary": {
+       "7ceecf1b8f11df7b81a6772d19d9885e": "dbD8nHxa0yI:-VoeIpR*ELWB$*ofIpWVt7j[R*jZs:j["
+      }
+     },
+     "Name": "R.L. Stine",
+     "PrimaryImageTag": "7ceecf1b8f11df7b81a6772d19d9885e",
+     "Role": "Book",
+     "Type": "Writer"
+    },
+    {
+     "Id": "075525917a22c6735323f0df6830d8cf",
+     "ImageBlurHashes": {
+      "Primary": {
+       "72f892f34a656754cd5d183e1d28f580": "dSGbn^_30fE2~q%M.Sx^tmt7-;%3.TxuMwV@Xmofs:of"
+      }
+     },
+     "Name": "Seth Grahame-Smith",
+     "PrimaryImageTag": "72f892f34a656754cd5d183e1d28f580",
+     "Role": "Producer",
+     "Type": "Producer"
+    },
+    {
+     "Id": "d4f4d2ec2a9fbcde0dde71946a96d07d",
+     "ImageBlurHashes": {
+      "Primary": {
+       "63f94585cd2fcc1be113dd557e5eb02d": "dPHUj{0L9b?FtRIpxtxtM{xtoft5x]RjxtxtR-n~-.s:"
+      }
+     },
+     "Name": "Aaron Schmidt",
+     "PrimaryImageTag": "63f94585cd2fcc1be113dd557e5eb02d",
+     "Role": "Executive Producer",
+     "Type": "Producer"
+    },
+    {
+     "Id": "aa81d63589a2d8651ca8a514395ccc87",
+     "ImageBlurHashes": {
+      "Primary": {
+       "81618c203fe7c285855fd50d84657e11": "dSDlH1%M0fM{wGRPI@xuI=t7%1RiI=ayxCWCIoWB%2t7"
+      }
+     },
+     "Name": "David Katzenberg",
+     "PrimaryImageTag": "81618c203fe7c285855fd50d84657e11",
+     "Role": "Producer",
+     "Type": "Producer"
+    }
+   ],
+   "PremiereDate": "2021-10-13T00:00:00.0000000Z",
+   "ProductionYear": 2021,
+   "RecursiveItemCount": 8,
+   "SeriesId": "f23ce29a10417b6ddfb37992b0b65e94",
+   "SeriesName": "Al otro lado del instituto",
+   "SeriesPrimaryImageTag": "7bc91cc3eb80e6ceb7dd8ad485bbb175",
+   "ServerId": "dbc3bcfa250443c08044a27bc7e74553",
+   "Studios": [],
+   "Taglines": [],
+   "Type": "Season",
+   "UserData": {
+    "IsFavorite": false,
+    "ItemId": "770567e3f5f0f436ce02b44870815994",
+    "Key": "382152001",
+    "PlayCount": 0,
+    "PlaybackPositionTicks": 0,
+    "Played": false,
+    "PlayedPercentage": 0,
+    "UnplayedItemCount": 8
+   }
+  }
+ ],
+ "StartIndex": 0,
+ "TotalRecordCount": 1
+}

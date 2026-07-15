@@ -64,7 +64,7 @@ from .DPH_Singleton import Singleton
 #from .DP_Summary import DreamplexPlayerSummary
 from .DPH_ScreenHelper import DPH_ScreenHelper
 
-from .__common__ import printl2 as printl, convertSize, encodeThat, runInThread, fireAndForget
+from .__common__ import printl2 as printl, convertSize, encodeThat, runInThread, fireAndForget, IMAGE_SIZE_PLACEHOLDER
 from .__init__ import _  # _ is translation
 
 
@@ -1789,7 +1789,7 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 		else:
 			download_url = self.selection[1]["thumb"]
 
-		download_url = download_url.replace('&width=999&height=999', '&width=' + self.width + '&height=' + self.height)
+		download_url = download_url.replace(IMAGE_SIZE_PLACEHOLDER, '&maxWidth=' + self.width + '&maxHeight=' + self.height)
 
 		printl("download url: " + download_url, self, "D")
 		printl("what poster: " + self.whatPoster, self, "D")

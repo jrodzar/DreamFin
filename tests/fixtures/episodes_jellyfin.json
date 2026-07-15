@@ -1,0 +1,672 @@
+{
+ "Items": [
+  {
+   "BackdropImageTags": [],
+   "ChannelId": null,
+   "CommunityRating": 6.6,
+   "Container": "mkv",
+   "DateCreated": "2023-06-01T03:48:45.0000000Z",
+   "GenreItems": [
+    {
+     "Id": "08d31605d366d63a7a924f944b4417f1",
+     "Name": "Comedy"
+    },
+    {
+     "Id": "090eac6e9de4fe1fbc194e5b96691277",
+     "Name": "Drama"
+    },
+    {
+     "Id": "a30dcc65be22eb3c21c03f7c1c7a57d1",
+     "Name": "Fantasy"
+    }
+   ],
+   "Genres": [
+    "Comedy",
+    "Drama",
+    "Fantasy"
+   ],
+   "HasSubtitles": true,
+   "Id": "08585659ec831bdd2a23af7950fc891e",
+   "ImageBlurHashes": {
+    "Backdrop": {
+     "64ee2ee05b7c5e41979f07f04d5911e3": "WDCQ#-H?I+LgHXv{:]TennOZO5#PDOcFyXDimk?HcrbwrYVsozNF"
+    },
+    "Logo": {
+     "0b70a4af8510107d642a8c0fcb4137ed": "OzKV28ofrrj[~qoz?btRayWBfkjaj[aeWBj[V@WBtRj[bH"
+    },
+    "Primary": {
+     "1d8146697c610b7868772bb8bf13485e": "NAGbSDmixs?c}%?w0gE8o~4nO_$eIWM}Wr9F.9Mw",
+     "7bc91cc3eb80e6ceb7dd8ad485bbb175": "dRG*]7?GIAnkI;adxZf60fNGNbR*^+bb9GRiIUoexZaK"
+    },
+    "Thumb": {
+     "026fc692dcd42bb20780f2f7cda63da8": "NG9aagVhIA%OIVs@*8D$Va%MM{WAtlIVRhx@jbjZ"
+    }
+   },
+   "ImageTags": {
+    "Primary": "1d8146697c610b7868772bb8bf13485e"
+   },
+   "IndexNumber": 1,
+   "IsFolder": false,
+   "LocationType": "FileSystem",
+   "MediaSources": [
+    {
+     "Bitrate": 2455337,
+     "Container": "mkv",
+     "DefaultAudioStreamIndex": 1,
+     "DefaultSubtitleStreamIndex": 3,
+     "ETag": "f51fe9822ec59db63063a0911ff28051",
+     "Formats": [],
+     "GenPtsInput": false,
+     "HasSegments": false,
+     "Id": "08585659ec831bdd2a23af7950fc891e",
+     "IgnoreDts": false,
+     "IgnoreIndex": false,
+     "IsInfiniteStream": false,
+     "IsRemote": false,
+     "MediaAttachments": [],
+     "MediaStreams": [
+      {
+       "AspectRatio": "16:9",
+       "AudioSpatialFormat": "None",
+       "AverageFrameRate": 23.809525,
+       "BitDepth": 8,
+       "BitRate": 2007337,
+       "Codec": "hevc",
+       "DisplayTitle": "1080p HEVC SDR",
+       "Height": 1080,
+       "Index": 0,
+       "IsAVC": false,
+       "IsAnamorphic": false,
+       "IsDefault": true,
+       "IsExternal": false,
+       "IsForced": false,
+       "IsHearingImpaired": false,
+       "IsInterlaced": false,
+       "IsTextSubtitleStream": false,
+       "Level": 120,
+       "PixelFormat": "yuv420p",
+       "Profile": "Main",
+       "RealFrameRate": 23.809525,
+       "RefFrames": 1,
+       "ReferenceFrameRate": 23.809525,
+       "SupportsExternalStream": false,
+       "TimeBase": "1/1000",
+       "Type": "Video",
+       "VideoRange": "SDR",
+       "VideoRangeType": "SDR",
+       "Width": 1920
+      },
+      {
+       "AudioSpatialFormat": "None",
+       "BitRate": 256000,
+       "ChannelLayout": "5.1",
+       "Channels": 6,
+       "Codec": "eac3",
+       "DisplayTitle": "Spanish - Dolby Digital+ - 5.1",
+       "Index": 1,
+       "IsAVC": false,
+       "IsDefault": false,
+       "IsExternal": false,
+       "IsForced": false,
+       "IsHearingImpaired": false,
+       "IsInterlaced": false,
+       "IsTextSubtitleStream": false,
+       "Language": "spa",
+       "Level": 0,
+       "LocalizedDefault": "Predeterminado",
+       "LocalizedExternal": "Externo",
+       "SampleRate": 48000,
+       "SupportsExternalStream": false,
+       "TimeBase": "1/1000",
+       "Type": "Audio",
+       "VideoRange": "Unknown",
+       "VideoRangeType": "Unknown"
+      },
+      {
+       "AudioSpatialFormat": "None",
+       "BitRate": 192000,
+       "ChannelLayout": "5.1",
+       "Channels": 6,
+       "Codec": "eac3",
+       "DisplayTitle": "Inglés - English - Dolby Digital+ - 5.1",
+       "Index": 2,
+       "IsAVC": false,
+       "IsDefault": false,
+       "IsExternal": false,
+       "IsForced": false,
+       "IsHearingImpaired": false,
+       "IsInterlaced": false,
+       "IsTextSubtitleStream": false,
+       "Language": "eng",
+       "Level": 0,
+       "LocalizedDefault": "Predeterminado",
+       "LocalizedExternal": "Externo",
+       "SampleRate": 48000,
+       "SupportsExternalStream": false,
+       "TimeBase": "1/1000",
+       "Title": "Inglés",
+       "Type": "Audio",
+       "VideoRange": "Unknown",
+       "VideoRangeType": "Unknown"
+      },
+      {
+       "AudioSpatialFormat": "None",
+       "Codec": "subrip",
+       "DisplayTitle": "Castellano [Forzados] - Spanish - SUBRIP",
+       "Height": 0,
+       "Index": 3,
+       "IsAVC": false,
+       "IsDefault": false,
+       "IsExternal": false,
+       "IsForced": true,
+       "IsHearingImpaired": false,
+       "IsInterlaced": false,
+       "IsTextSubtitleStream": true,
+       "Language": "spa",
+       "Level": 0,
+       "LocalizedDefault": "Predeterminado",
+       "LocalizedExternal": "Externo",
+       "LocalizedForced": "Forzado",
+       "LocalizedHearingImpaired": "Discapacidad Auditiva",
+       "LocalizedUndefined": "Indefinido",
+       "Score": 121221,
+       "SupportsExternalStream": true,
+       "TimeBase": "1/1000",
+       "Title": "Castellano [Forzados]",
+       "Type": "Subtitle",
+       "VideoRange": "Unknown",
+       "VideoRangeType": "Unknown",
+       "Width": 0
+      },
+      {
+       "AudioSpatialFormat": "None",
+       "Codec": "subrip",
+       "DisplayTitle": "Castellano [Completos] - Spanish - SUBRIP",
+       "Height": 0,
+       "Index": 4,
+       "IsAVC": false,
+       "IsDefault": false,
+       "IsExternal": false,
+       "IsForced": false,
+       "IsHearingImpaired": false,
+       "IsInterlaced": false,
+       "IsTextSubtitleStream": true,
+       "Language": "spa",
+       "Level": 0,
+       "LocalizedDefault": "Predeterminado",
+       "LocalizedExternal": "Externo",
+       "LocalizedForced": "Forzado",
+       "LocalizedHearingImpaired": "Discapacidad Auditiva",
+       "LocalizedUndefined": "Indefinido",
+       "SupportsExternalStream": true,
+       "TimeBase": "1/1000",
+       "Title": "Castellano [Completos]",
+       "Type": "Subtitle",
+       "VideoRange": "Unknown",
+       "VideoRangeType": "Unknown",
+       "Width": 0
+      },
+      {
+       "AudioSpatialFormat": "None",
+       "Codec": "subrip",
+       "DisplayTitle": "Inglés [Para sordos] - English - SUBRIP",
+       "Height": 0,
+       "Index": 5,
+       "IsAVC": false,
+       "IsDefault": false,
+       "IsExternal": false,
+       "IsForced": false,
+       "IsHearingImpaired": false,
+       "IsInterlaced": false,
+       "IsTextSubtitleStream": true,
+       "Language": "eng",
+       "Level": 0,
+       "LocalizedDefault": "Predeterminado",
+       "LocalizedExternal": "Externo",
+       "LocalizedForced": "Forzado",
+       "LocalizedHearingImpaired": "Discapacidad Auditiva",
+       "LocalizedUndefined": "Indefinido",
+       "SupportsExternalStream": true,
+       "TimeBase": "1/1000",
+       "Title": "Inglés [Para sordos]",
+       "Type": "Subtitle",
+       "VideoRange": "Unknown",
+       "VideoRangeType": "Unknown",
+       "Width": 0
+      }
+     ],
+     "Name": "Al otro lado del instituto S01E01 - [FullHD 1080p x265]",
+     "Path": "/multimedia/SERIES INFANTILS I JUVENILS/Al otro lado del instituto/Season 01/Al otro lado del instituto S01E01/Al otro lado del instituto S01E01 - [FullHD 1080p x265].mkv",
+     "Protocol": "File",
+     "ReadAtNativeFramerate": false,
+     "RequiredHttpHeaders": {},
+     "RequiresClosing": false,
+     "RequiresLooping": false,
+     "RequiresOpening": false,
+     "RunTimeTicks": 18054720000,
+     "Size": 453024012,
+     "SupportsDirectPlay": true,
+     "SupportsDirectStream": true,
+     "SupportsProbing": true,
+     "SupportsTranscoding": true,
+     "TranscodingSubProtocol": "http",
+     "Type": "Default",
+     "UseMostCompatibleTranscodingProfile": false,
+     "VideoType": "VideoFile"
+    }
+   ],
+   "MediaType": "Video",
+   "Name": "Dejad a los niños en paz",
+   "Overview": "Mandan a una joven activista a un colegio de niñas conflictivas donde los modales ocultan secretos.",
+   "ParentBackdropImageTags": [
+    "64ee2ee05b7c5e41979f07f04d5911e3"
+   ],
+   "ParentBackdropItemId": "f23ce29a10417b6ddfb37992b0b65e94",
+   "ParentIndexNumber": 1,
+   "ParentLogoImageTag": "0b70a4af8510107d642a8c0fcb4137ed",
+   "ParentLogoItemId": "f23ce29a10417b6ddfb37992b0b65e94",
+   "ParentThumbImageTag": "026fc692dcd42bb20780f2f7cda63da8",
+   "ParentThumbItemId": "f23ce29a10417b6ddfb37992b0b65e94",
+   "People": [
+    {
+     "Id": "166a2fba4dbb48878afde7dc5652d8cc",
+     "ImageBlurHashes": {
+      "Primary": {
+       "265ca3e6ab7afc67033535ade5f6579e": "dGLV~+={5Q-RXnxt.Tx]pxW=%3xu%LRj?b%LJDIpoz%L"
+      }
+     },
+     "Name": "Mckenna Grace",
+     "PrimaryImageTag": "265ca3e6ab7afc67033535ade5f6579e",
+     "Role": "Veronica",
+     "Type": "GuestStar"
+    },
+    {
+     "Id": "6a18e9b0d35ac9ba5cc80bef74ccae82",
+     "ImageBlurHashes": {
+      "Primary": {
+       "b1c12032e59c3d377fa4233b1b1ff752": "dIC6AL~WpJtSb^%MtRW=ENNJ$%oM?b%gb_xu%g%g-:xu"
+      }
+     },
+     "Name": "Leeann Ross",
+     "PrimaryImageTag": "b1c12032e59c3d377fa4233b1b1ff752",
+     "Role": "Claire",
+     "Type": "GuestStar"
+    },
+    {
+     "Id": "d7279d22304c949ea0419cc87b69f304",
+     "ImageBlurHashes": {
+      "Primary": {
+       "501e12126afa347fe2b1551d4c6561dd": "dKIgy9^+O[?H.TI;x]-p?w?b^*t6T0Ri%2E1?coJR%M{"
+      }
+     },
+     "Name": "Nasim Pedrad",
+     "PrimaryImageTag": "501e12126afa347fe2b1551d4c6561dd",
+     "Role": "Miss Genevieve",
+     "Type": "GuestStar"
+    }
+   ],
+   "PremiereDate": "2021-10-13T00:00:00.0000000Z",
+   "ProductionYear": 2021,
+   "RunTimeTicks": 18054720000,
+   "SeasonId": "770567e3f5f0f436ce02b44870815994",
+   "SeasonName": "Temporada 1",
+   "SeriesId": "f23ce29a10417b6ddfb37992b0b65e94",
+   "SeriesName": "Al otro lado del instituto",
+   "SeriesPrimaryImageTag": "7bc91cc3eb80e6ceb7dd8ad485bbb175",
+   "ServerId": "dbc3bcfa250443c08044a27bc7e74553",
+   "Studios": [],
+   "Taglines": [],
+   "Type": "Episode",
+   "UserData": {
+    "IsFavorite": false,
+    "ItemId": "08585659ec831bdd2a23af7950fc891e",
+    "Key": "382152001001",
+    "PlayCount": 0,
+    "PlaybackPositionTicks": 0,
+    "Played": false
+   },
+   "VideoType": "VideoFile"
+  },
+  {
+   "BackdropImageTags": [],
+   "ChannelId": null,
+   "Container": "mkv",
+   "DateCreated": "2021-10-21T18:20:20.0000000Z",
+   "GenreItems": [
+    {
+     "Id": "08d31605d366d63a7a924f944b4417f1",
+     "Name": "Comedy"
+    },
+    {
+     "Id": "a30dcc65be22eb3c21c03f7c1c7a57d1",
+     "Name": "Fantasy"
+    },
+    {
+     "Id": "8b9bd9a3eddad02f2b759b4938fdd0b8",
+     "Name": "Horror"
+    }
+   ],
+   "Genres": [
+    "Comedy",
+    "Fantasy",
+    "Horror"
+   ],
+   "HasSubtitles": true,
+   "Id": "3013f55b7db1c92e1d70bae291d96145",
+   "ImageBlurHashes": {
+    "Backdrop": {
+     "64ee2ee05b7c5e41979f07f04d5911e3": "WDCQ#-H?I+LgHXv{:]TennOZO5#PDOcFyXDimk?HcrbwrYVsozNF"
+    },
+    "Logo": {
+     "0b70a4af8510107d642a8c0fcb4137ed": "OzKV28ofrrj[~qoz?btRayWBfkjaj[aeWBj[V@WBtRj[bH"
+    },
+    "Primary": {
+     "01999fb7d5f2e565624f5d7ae4df4525": "WKB4BgD*%IRkIV%f?@t8kWMyaMxa.6-:V@RkRkoc?tx[WURkV[oy",
+     "7bc91cc3eb80e6ceb7dd8ad485bbb175": "dRG*]7?GIAnkI;adxZf60fNGNbR*^+bb9GRiIUoexZaK"
+    },
+    "Thumb": {
+     "026fc692dcd42bb20780f2f7cda63da8": "NG9aagVhIA%OIVs@*8D$Va%MM{WAtlIVRhx@jbjZ"
+    }
+   },
+   "ImageTags": {
+    "Primary": "01999fb7d5f2e565624f5d7ae4df4525"
+   },
+   "IndexNumber": 2,
+   "IsFolder": false,
+   "LocationType": "FileSystem",
+   "MediaSources": [
+    {
+     "Bitrate": 2834917,
+     "Container": "mkv",
+     "DefaultAudioStreamIndex": 1,
+     "DefaultSubtitleStreamIndex": 3,
+     "ETag": "5fd0b149452b329ca15dc8283261a048",
+     "Formats": [],
+     "GenPtsInput": false,
+     "HasSegments": false,
+     "Id": "3013f55b7db1c92e1d70bae291d96145",
+     "IgnoreDts": false,
+     "IgnoreIndex": false,
+     "IsInfiniteStream": false,
+     "IsRemote": false,
+     "MediaAttachments": [],
+     "MediaStreams": [
+      {
+       "AspectRatio": "16:9",
+       "AudioSpatialFormat": "None",
+       "AverageFrameRate": 23.809525,
+       "BitDepth": 8,
+       "BitRate": 2386917,
+       "Codec": "hevc",
+       "DisplayTitle": "1080p HEVC SDR",
+       "Height": 1080,
+       "Index": 0,
+       "IsAVC": false,
+       "IsAnamorphic": false,
+       "IsDefault": true,
+       "IsExternal": false,
+       "IsForced": false,
+       "IsHearingImpaired": false,
+       "IsInterlaced": false,
+       "IsTextSubtitleStream": false,
+       "Level": 120,
+       "PixelFormat": "yuv420p",
+       "Profile": "Main",
+       "RealFrameRate": 23.809525,
+       "RefFrames": 1,
+       "ReferenceFrameRate": 23.809525,
+       "SupportsExternalStream": false,
+       "TimeBase": "1/1000",
+       "Type": "Video",
+       "VideoRange": "SDR",
+       "VideoRangeType": "SDR",
+       "Width": 1920
+      },
+      {
+       "AudioSpatialFormat": "None",
+       "BitRate": 256000,
+       "ChannelLayout": "5.1",
+       "Channels": 6,
+       "Codec": "eac3",
+       "DisplayTitle": "Castellano - Spanish - Dolby Digital+ - 5.1",
+       "Index": 1,
+       "IsAVC": false,
+       "IsDefault": false,
+       "IsExternal": false,
+       "IsForced": false,
+       "IsHearingImpaired": false,
+       "IsInterlaced": false,
+       "IsTextSubtitleStream": false,
+       "Language": "spa",
+       "Level": 0,
+       "LocalizedDefault": "Predeterminado",
+       "LocalizedExternal": "Externo",
+       "SampleRate": 48000,
+       "SupportsExternalStream": false,
+       "TimeBase": "1/1000",
+       "Title": "Castellano",
+       "Type": "Audio",
+       "VideoRange": "Unknown",
+       "VideoRangeType": "Unknown"
+      },
+      {
+       "AudioSpatialFormat": "None",
+       "BitRate": 192000,
+       "ChannelLayout": "5.1",
+       "Channels": 6,
+       "Codec": "eac3",
+       "DisplayTitle": "Inglés - English - Dolby Digital+ - 5.1",
+       "Index": 2,
+       "IsAVC": false,
+       "IsDefault": false,
+       "IsExternal": false,
+       "IsForced": false,
+       "IsHearingImpaired": false,
+       "IsInterlaced": false,
+       "IsTextSubtitleStream": false,
+       "Language": "eng",
+       "Level": 0,
+       "LocalizedDefault": "Predeterminado",
+       "LocalizedExternal": "Externo",
+       "SampleRate": 48000,
+       "SupportsExternalStream": false,
+       "TimeBase": "1/1000",
+       "Title": "Inglés",
+       "Type": "Audio",
+       "VideoRange": "Unknown",
+       "VideoRangeType": "Unknown"
+      },
+      {
+       "AudioSpatialFormat": "None",
+       "Codec": "subrip",
+       "DisplayTitle": "Castellano [Forzados] - Spanish - SUBRIP",
+       "Height": 0,
+       "Index": 3,
+       "IsAVC": false,
+       "IsDefault": false,
+       "IsExternal": false,
+       "IsForced": true,
+       "IsHearingImpaired": false,
+       "IsInterlaced": false,
+       "IsTextSubtitleStream": true,
+       "Language": "spa",
+       "Level": 0,
+       "LocalizedDefault": "Predeterminado",
+       "LocalizedExternal": "Externo",
+       "LocalizedForced": "Forzado",
+       "LocalizedHearingImpaired": "Discapacidad Auditiva",
+       "LocalizedUndefined": "Indefinido",
+       "Score": 121221,
+       "SupportsExternalStream": true,
+       "TimeBase": "1/1000",
+       "Title": "Castellano [Forzados]",
+       "Type": "Subtitle",
+       "VideoRange": "Unknown",
+       "VideoRangeType": "Unknown",
+       "Width": 0
+      },
+      {
+       "AudioSpatialFormat": "None",
+       "Codec": "subrip",
+       "DisplayTitle": "Castellano [Completos] - Spanish - SUBRIP",
+       "Height": 0,
+       "Index": 4,
+       "IsAVC": false,
+       "IsDefault": false,
+       "IsExternal": false,
+       "IsForced": false,
+       "IsHearingImpaired": false,
+       "IsInterlaced": false,
+       "IsTextSubtitleStream": true,
+       "Language": "spa",
+       "Level": 0,
+       "LocalizedDefault": "Predeterminado",
+       "LocalizedExternal": "Externo",
+       "LocalizedForced": "Forzado",
+       "LocalizedHearingImpaired": "Discapacidad Auditiva",
+       "LocalizedUndefined": "Indefinido",
+       "SupportsExternalStream": true,
+       "TimeBase": "1/1000",
+       "Title": "Castellano [Completos]",
+       "Type": "Subtitle",
+       "VideoRange": "Unknown",
+       "VideoRangeType": "Unknown",
+       "Width": 0
+      },
+      {
+       "AudioSpatialFormat": "None",
+       "Codec": "subrip",
+       "DisplayTitle": "Inglés [Para sordos] - English - SUBRIP",
+       "Height": 0,
+       "Index": 5,
+       "IsAVC": false,
+       "IsDefault": false,
+       "IsExternal": false,
+       "IsForced": false,
+       "IsHearingImpaired": false,
+       "IsInterlaced": false,
+       "IsTextSubtitleStream": true,
+       "Language": "eng",
+       "Level": 0,
+       "LocalizedDefault": "Predeterminado",
+       "LocalizedExternal": "Externo",
+       "LocalizedForced": "Forzado",
+       "LocalizedHearingImpaired": "Discapacidad Auditiva",
+       "LocalizedUndefined": "Indefinido",
+       "SupportsExternalStream": true,
+       "TimeBase": "1/1000",
+       "Title": "Inglés [Para sordos]",
+       "Type": "Subtitle",
+       "VideoRange": "Unknown",
+       "VideoRangeType": "Unknown",
+       "Width": 0
+      }
+     ],
+     "Name": "Al otro lado del instituto S01E02 - [FullHD 1080p x265]",
+     "Path": "/multimedia/SERIES INFANTILS I JUVENILS/Al otro lado del instituto/Season 01/Al otro lado del instituto S01E02/Al otro lado del instituto S01E02 - [FullHD 1080p x265].mkv",
+     "Protocol": "File",
+     "ReadAtNativeFramerate": false,
+     "RequiredHttpHeaders": {},
+     "RequiresClosing": false,
+     "RequiresLooping": false,
+     "RequiresOpening": false,
+     "RunTimeTicks": 16816640000,
+     "Size": 501749076,
+     "SupportsDirectPlay": true,
+     "SupportsDirectStream": true,
+     "SupportsProbing": true,
+     "SupportsTranscoding": true,
+     "TranscodingSubProtocol": "http",
+     "Type": "Default",
+     "UseMostCompatibleTranscodingProfile": false,
+     "VideoType": "VideoFile"
+    }
+   ],
+   "MediaType": "Video",
+   "Name": "Los padres son de Marte, los hijos son de Venus",
+   "Overview": "Dos mejores amigos descubren algo extraño sobre sus padres que les hace temer por sus vidas.",
+   "ParentBackdropImageTags": [
+    "64ee2ee05b7c5e41979f07f04d5911e3"
+   ],
+   "ParentBackdropItemId": "f23ce29a10417b6ddfb37992b0b65e94",
+   "ParentIndexNumber": 1,
+   "ParentLogoImageTag": "0b70a4af8510107d642a8c0fcb4137ed",
+   "ParentLogoItemId": "f23ce29a10417b6ddfb37992b0b65e94",
+   "ParentThumbImageTag": "026fc692dcd42bb20780f2f7cda63da8",
+   "ParentThumbItemId": "f23ce29a10417b6ddfb37992b0b65e94",
+   "People": [
+    {
+     "Id": "bff1293aab7a1a860549c4b5b1841133",
+     "ImageBlurHashes": {
+      "Primary": {
+       "0896bd5c134009a186888dc64a7c2194": "dZEerq%20fIo9ZRk-pt7JBWVxFoKjFf6kCkC%2j[NGay"
+      }
+     },
+     "Name": "Gabriel Bateman",
+     "PrimaryImageTag": "0896bd5c134009a186888dc64a7c2194",
+     "Role": "Jack",
+     "Type": "Actor"
+    },
+    {
+     "Id": "6ba61bd7d109cdb99a55b228f5d2069b",
+     "ImageBlurHashes": {
+      "Primary": {
+       "6d96d12e8a362d68f375313b493a944c": "dmLD.B?b?woztSRP%2R+EMM|V?xt?ct8%Lae%MRPR+t7"
+      }
+     },
+     "Name": "Arjun Athalye",
+     "PrimaryImageTag": "6d96d12e8a362d68f375313b493a944c",
+     "Role": "Ronald",
+     "Type": "Actor"
+    },
+    {
+     "Id": "3f22a6baf40b210e348e42a5df34cab7",
+     "ImageBlurHashes": {
+      "Primary": {
+       "9aa0d0c19ef05811196b7a92bd6ebe15": "dWK0.snO$_-o}P$$$_xDIVxtxuRQOYRkogW=xURkjFof"
+      }
+     },
+     "Name": "Tim Heidecker",
+     "PrimaryImageTag": "9aa0d0c19ef05811196b7a92bd6ebe15",
+     "Role": "Dale",
+     "Type": "Actor"
+    },
+    {
+     "Id": "e027ec35c78f3de7d145828446b670b6",
+     "ImageBlurHashes": {
+      "Primary": {
+       "d98539df621ea393d424282aa45c7f0c": "dSF|[4-U0fRj5lS2buR+R+jZwfs:R*kBs:R+IpWCt6j["
+      }
+     },
+     "Name": "Riki Lindhome",
+     "PrimaryImageTag": "d98539df621ea393d424282aa45c7f0c",
+     "Role": "Bonnie",
+     "Type": "Actor"
+    }
+   ],
+   "PremiereDate": "2021-10-13T00:00:00.0000000Z",
+   "ProductionYear": 2021,
+   "RunTimeTicks": 16816640000,
+   "SeasonId": "770567e3f5f0f436ce02b44870815994",
+   "SeasonName": "Temporada 1",
+   "SeriesId": "f23ce29a10417b6ddfb37992b0b65e94",
+   "SeriesName": "Al otro lado del instituto",
+   "SeriesPrimaryImageTag": "7bc91cc3eb80e6ceb7dd8ad485bbb175",
+   "ServerId": "dbc3bcfa250443c08044a27bc7e74553",
+   "Studios": [],
+   "Taglines": [],
+   "Type": "Episode",
+   "UserData": {
+    "IsFavorite": false,
+    "ItemId": "3013f55b7db1c92e1d70bae291d96145",
+    "Key": "382152001002",
+    "PlayCount": 0,
+    "PlaybackPositionTicks": 0,
+    "Played": false
+   },
+   "VideoType": "VideoFile"
+  }
+ ],
+ "StartIndex": 0,
+ "TotalRecordCount": 8
+}
