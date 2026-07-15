@@ -22,7 +22,27 @@ import sys
 REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, REPO_ROOT)
 
-CREDENTIALS = os.path.join(REPO_ROOT, "local", "servers.json")
+
+def find_credentials():
+	"""Locate servers.json across machines. Order:
+	1. $DREAMFIN_SERVERS (explicit override, any path)
+	2. the shared NAS project folder (credentials live here, off git)
+	3. local/servers.json in the repo (per-PC fallback)
+	See CLAUDE.md for the NAS layout.
+	"""
+	candidates = []
+	env = os.environ.get("DREAMFIN_SERVERS")
+	if env:
+		candidates.append(env)
+	candidates.append(r"<NAS-HUB>\servers.json")
+	candidates.append(os.path.join(REPO_ROOT, "local", "servers.json"))
+	for path in candidates:
+		if path and os.path.isfile(path):
+			return path
+	return candidates[-1]  # report the repo-local path in the "missing" message
+
+
+CREDENTIALS = find_credentials()
 
 from tests import helpers  # noqa: E402
 helpers.setup_environment()
@@ -66,6 +86,7 @@ def main():
 		say(u"missing %s - create it first (format documented in CLAUDE.md)" % CREDENTIALS)
 		return 2
 
+	say(u"using credentials: %s" % CREDENTIALS)
 	with io.open(CREDENTIALS, encoding="utf-8") as fd:
 		servers = json.load(fd)
 
