@@ -95,6 +95,10 @@ config.plugins.dreamfin.skinfolderpath = ConfigDirectory(default=defaultSkinsFol
 
 config.plugins.dreamfin.seekTime = ConfigInteger(default=5, limits=(1, 30))
 
+# accent color of the last entered server; decides which skin variant the
+# next plugin start loads (jellyfin lilac is the fresh-install default)
+config.plugins.dreamfin.lastAccent = ConfigSelection(default="jellyfin", choices=[("emby", "Emby"), ("jellyfin", "Jellyfin")])
+
 config.plugins.dreamfin.logfolderpath = ConfigDirectory(default=defaultLogFolderPath, visible_width=50)
 config.plugins.dreamfin.cachefolderpath = ConfigDirectory(default=defaultCacheFolderPath, visible_width=50)
 config.plugins.dreamfin.mediafolderpath = ConfigDirectory(default=defaultMediaFolderPath, visible_width=50)
@@ -162,9 +166,9 @@ def initServerEntryConfig():
 	config.plugins.dreamfin.Entries.append(ConfigSubsection())
 	i = len(config.plugins.dreamfin.Entries) - 1
 
-	defaultName = "PlexServer"
+	defaultName = "MediaServer"
 	defaultIp = [192, 168, 0, 1]
-	defaultPort = 32400
+	defaultPort = 8096
 
 	# SERVER SETTINGS
 	config.plugins.dreamfin.Entries[i].id = ConfigInteger(i)
@@ -179,6 +183,14 @@ def initServerEntryConfig():
 	config.plugins.dreamfin.Entries[i].localAuth = ConfigYesNo()
 	config.plugins.dreamfin.Entries[i].machineIdentifier = ConfigText(visible_width=50, fixed_size=False)
 	config.plugins.dreamfin.Entries[i].loadExtraData = ConfigSelection(default="0", choices=[("0", "None"), ("1", "Plex Pass"), ("2", "YTTrailer")])
+
+	# EMBY/JELLYFIN
+	config.plugins.dreamfin.Entries[i].serverType = ConfigSelection(default="auto", choices=[("auto", _("Auto")), ("emby", "Emby"), ("jellyfin", "Jellyfin")])
+	config.plugins.dreamfin.Entries[i].username = ConfigText(visible_width=50, fixed_size=False)
+	config.plugins.dreamfin.Entries[i].password = ConfigText(visible_width=50, fixed_size=False)
+	# session token + user id cached from the last successful login
+	config.plugins.dreamfin.Entries[i].accessTokenCache = ConfigText(visible_width=50, fixed_size=False)
+	config.plugins.dreamfin.Entries[i].userIdCache = ConfigText(visible_width=50, fixed_size=False)
 
 	config.plugins.dreamfin.Entries[i].srtRenamingForDirectLocal = ConfigYesNo()
 	config.plugins.dreamfin.Entries[i].subtitlesLanguage = ConfigText(default="de", visible_width=10, fixed_size=False)

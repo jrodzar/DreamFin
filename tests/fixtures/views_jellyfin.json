@@ -1,0 +1,143 @@
+{
+ "Items": [
+  {
+   "BackdropImageTags": [],
+   "CollectionType": "boxsets",
+   "Etag": "9976c566ff1e7445c3fe16d8b1160eda",
+   "Id": "21c4ba5a2c9cdfef8f23e1f8de88a256",
+   "ImageTags": {
+    "Primary": "0aa0a649719c6ccf6417bf9269e33f47"
+   },
+   "IsFolder": true,
+   "Name": "Colecciones",
+   "ParentId": "e9d5075a555c1cbc394eec4cef295274",
+   "PrimaryImageAspectRatio": 1.7777777777777777,
+   "ServerId": "jelly000000000000000000000000001",
+   "Type": "CollectionFolder",
+   "UserData": {
+    "IsFavorite": false,
+    "ItemId": "21c4ba5a2c9cdfef8f23e1f8de88a256",
+    "Key": "21c4ba5a-2c9c-dfef-8f23-e1f8de88a256",
+    "PlayCount": 0,
+    "PlaybackPositionTicks": 0,
+    "Played": false
+   }
+  },
+  {
+   "BackdropImageTags": [],
+   "Etag": "7e4a0cd9d69cb6c2f25768684557d20b",
+   "Id": "a4cd1150d4972a25aaa72680d9325829",
+   "ImageTags": {
+    "Primary": "b2bacad2f7d0c0ec47f99cc2f0004969"
+   },
+   "IsFolder": true,
+   "Name": "Documentals",
+   "ParentId": "e9d5075a555c1cbc394eec4cef295274",
+   "PrimaryImageAspectRatio": 1.7777777777777777,
+   "ServerId": "jelly000000000000000000000000001",
+   "Type": "CollectionFolder",
+   "UserData": {
+    "IsFavorite": false,
+    "ItemId": "a4cd1150d4972a25aaa72680d9325829",
+    "Key": "a4cd1150-d497-2a25-aaa7-2680d9325829",
+    "PlayCount": 0,
+    "PlaybackPositionTicks": 0,
+    "Played": false
+   }
+  },
+  {
+   "BackdropImageTags": [],
+   "CollectionType": "movies",
+   "Etag": "2b3b71ebc0802e636d40119147280790",
+   "Id": "b2e9c66bccb8e1fdd68836a24da6b16f",
+   "ImageTags": {
+    "Primary": "8f90187b548d5c1864385b8ef92cc642"
+   },
+   "IsFolder": true,
+   "Name": "Infantils",
+   "ParentId": "e9d5075a555c1cbc394eec4cef295274",
+   "PrimaryImageAspectRatio": 1.7777777777777777,
+   "ServerId": "jelly000000000000000000000000001",
+   "Type": "CollectionFolder",
+   "UserData": {
+    "IsFavorite": false,
+    "ItemId": "b2e9c66bccb8e1fdd68836a24da6b16f",
+    "Key": "b2e9c66b-ccb8-e1fd-d688-36a24da6b16f",
+    "PlayCount": 0,
+    "PlaybackPositionTicks": 0,
+    "Played": false
+   }
+  },
+  {
+   "BackdropImageTags": [],
+   "CollectionType": "movies",
+   "Etag": "c4bbc9c959f9904775d14e3a6a60918c",
+   "Id": "1ca037df57ef5221de3e798565aabd71",
+   "ImageTags": {
+    "Primary": "9d9b8d124b3704664fbbc1d93aa363d3"
+   },
+   "IsFolder": true,
+   "Name": "Pel·lícules",
+   "ParentId": "e9d5075a555c1cbc394eec4cef295274",
+   "PrimaryImageAspectRatio": 1.7777777777777777,
+   "ServerId": "jelly000000000000000000000000001",
+   "Type": "CollectionFolder",
+   "UserData": {
+    "IsFavorite": false,
+    "ItemId": "1ca037df57ef5221de3e798565aabd71",
+    "Key": "1ca037df-57ef-5221-de3e-798565aabd71",
+    "PlayCount": 0,
+    "PlaybackPositionTicks": 0,
+    "Played": false
+   }
+  },
+  {
+   "BackdropImageTags": [],
+   "CollectionType": "tvshows",
+   "Etag": "cde47195314be4599fa71793149f76c0",
+   "Id": "550b1d3653f6bd366a2746cb6e9f6c58",
+   "ImageTags": {
+    "Primary": "1c2b4806de5cfa2c8d4b8ff6838b24ec"
+   },
+   "IsFolder": true,
+   "Name": "Sèries",
+   "ParentId": "e9d5075a555c1cbc394eec4cef295274",
+   "PrimaryImageAspectRatio": 1.7777777777777777,
+   "ServerId": "jelly000000000000000000000000001",
+   "Type": "CollectionFolder",
+   "UserData": {
+    "IsFavorite": false,
+    "ItemId": "550b1d3653f6bd366a2746cb6e9f6c58",
+    "Key": "550b1d36-53f6-bd36-6a27-46cb6e9f6c58",
+    "PlayCount": 0,
+    "PlaybackPositionTicks": 0,
+    "Played": false
+   }
+  },
+  {
+   "BackdropImageTags": [],
+   "CollectionType": "tvshows",
+   "Etag": "b69873d08d517f813d3faffc97ab6c3d",
+   "Id": "a92968ac043c79b1e9b6d93774d3519b",
+   "ImageTags": {
+    "Primary": "6602f40ebed22c08989d906141db9d58"
+   },
+   "IsFolder": true,
+   "Name": "Sèries infantils i juvenils",
+   "ParentId": "e9d5075a555c1cbc394eec4cef295274",
+   "PrimaryImageAspectRatio": 1.7777777777777777,
+   "ServerId": "jelly000000000000000000000000001",
+   "Type": "CollectionFolder",
+   "UserData": {
+    "IsFavorite": false,
+    "ItemId": "a92968ac043c79b1e9b6d93774d3519b",
+    "Key": "a92968ac-043c-79b1-e9b6-d93774d3519b",
+    "PlayCount": 0,
+    "PlaybackPositionTicks": 0,
+    "Played": false
+   }
+  }
+ ],
+ "StartIndex": 0,
+ "TotalRecordCount": 6
+}

@@ -1,0 +1,977 @@
+# -*- coding: utf-8 -*-
+"""
+DreamFin - Emby/Jellyfin backend
+
+Derived from DreamPlex (DP_PlexLibrary.py) by DonDavici, 2012 and
+jbleyel 2021 - https://github.com/oe-alliance/DreamPlex
+
+This module replaces the Plex backend with an Emby/Jellyfin one while
+producing exactly the same data shapes the inherited UI consumes:
+menu 4-tuples, list 5-tuples and string-typed entryData dictionaries.
+
+DreamFin is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 2 of the License, or
+(at your option) any later version.
+
+DreamFin is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+"""
+#===============================================================================
+# IMPORT
+#===============================================================================
+import json
+import socket
+import ssl
+import sys
+import traceback
+
+from six import PY2
+
+if PY2:
+	from httplib import HTTPConnection, HTTPSConnection
+	from urlparse import urljoin, urlparse
+	_textType = unicode  # noqa: F821
+else:
+	from http.client import HTTPConnection, HTTPSConnection
+	from urllib.parse import urljoin, urlparse
+	_textType = str
+
+from Components.config import config
+
+from .__common__ import printl2 as printl, getUUID, getVersion
+from .__plugin__ import Plugin, getPlugin
+from .__init__ import _  # _ is translation
+
+#===============================================================================
+# CONSTANTS
+#===============================================================================
+
+# fields requested with every item listing; superset of what
+# itemToEntryData()/buildMediaDataArr() read
+DEFAULT_ITEM_FIELDS = ("Overview,Genres,People,Studios,MediaSources,"
+					"DateCreated,PremiereDate,ProductionYear,"
+					"RecursiveItemCount,ChildCount,Taglines")
+
+# ports that imply TLS when no scheme information exists in the config
+HTTPS_PORTS = (443, 8920)
+
+REQUEST_TIMEOUT = 8
+CONNECT_ATTEMPTS = 2
+MAX_REDIRECTS = 3
+
+# ticks are 100 ns units: 10**4 ticks per millisecond
+TICKS_PER_MS = 10000
+
+
+def ticksToMs(ticks):
+	"""RunTimeTicks/PositionTicks (100 ns units) -> integer milliseconds."""
+	return int(ticks) // TICKS_PER_MS
+
+
+def msToTicks(ms):
+	"""Integer milliseconds -> ticks (100 ns units)."""
+	return int(ms) * TICKS_PER_MS
+
+
+def jsonToStr(value, default=""):
+	"""JSON scalar -> native str, utf-8 encoded on Python 2.
+
+	The inherited UI concatenates and int()s entryData values, so every
+	value crossing the JSON boundary must become a plain str exactly
+	here (py2 str() would ascii-encode unicode and blow up on the first
+	accented title).
+	"""
+	if value is None:
+		return default
+	if PY2 and isinstance(value, _textType):
+		return value.encode("utf-8")
+	return str(value)
+
+
+#===============================================================================
+#
+#===============================================================================
+
+
+class EmbyLibrary(object):
+	"""Backend for Emby and Jellyfin servers.
+
+	Plain object (not a Screen) with the same construction signature and
+	method surface as the PlexLibrary it replaces. All network I/O is
+	blocking and therefore must be driven through runInThread/fireAndForget
+	by the UI - exactly how the UI already drives the Plex backend.
+	"""
+
+	def __init__(self, session, serverConfig=None):
+		printl("", self, "S")
+
+		self.g_session = session
+		self.g_serverConfig = serverConfig
+		self.g_error = False
+		self.lastError = None
+		self.lastStatus = None
+
+		printl("running on " + str(sys.version_info), self, "I")
+
+		self.g_sessionID = getUUID()  # DeviceId reported to the server
+		self.g_useFilterSections = config.plugins.dreamfin.showFilter.value
+
+		# server settings
+		self.serverConfig_Name = str(self.g_serverConfig.name.value)
+		self.serverConfig_connectionType = str(self.g_serverConfig.connectionType.value)
+		self.serverConfig_port = str(self.g_serverConfig.port.value)
+		self.serverConfig_playbackType = self.g_serverConfig.playbackType.value
+
+		self.serverConfig_username = str(getattr(self.g_serverConfig, "username", _emptyConfig()).value)
+		self.serverConfig_password = str(getattr(self.g_serverConfig, "password", _emptyConfig()).value)
+		# manually entered API key, wins over username/password
+		self.serverConfig_accessToken = str(getattr(self.g_serverConfig, "accessToken", _emptyConfig()).value).strip()
+
+		# resolved at runtime by authenticate()/detectServerType()
+		self.g_accessToken = ""
+		self.g_userId = ""
+		self.g_serverType = str(getattr(self.g_serverConfig, "serverType", _emptyConfig("auto")).value) or "auto"
+
+		# host: keep the hostname for DNS entries (TLS SNI needs it -
+		# resolving to an IP here would break name-based virtual hosts)
+		if self.serverConfig_connectionType == "0":  # IP
+			self.g_host = "%d.%d.%d.%d" % tuple(self.g_serverConfig.ip.value)
+		else:  # DNS
+			self.g_host = str(self.g_serverConfig.dns.value)
+
+		if int(self.g_serverConfig.port.value) in HTTPS_PORTS:
+			self.http = "https"
+		else:
+			self.http = "http"
+
+		self.g_address = "%s:%s" % (self.g_host, self.serverConfig_port)
+
+		printl("using server: %s://%s (type %s)" % (self.http, self.g_address, self.g_serverType), self, "I")
+		printl("", self, "C")
+
+	#===============================================================================
+	# TRANSPORT
+	#===============================================================================
+
+	def buildAuthHeaders(self, withToken=True):
+		"""X-Emby-Authorization (+ Authorization twin) and X-Emby-Token.
+
+		The MediaBrowser header is understood by Emby 4.x and every
+		Jellyfin; newer Jellyfin (10.8+) documents plain Authorization,
+		so both spellings are always sent.
+		"""
+		boxName = str(config.plugins.dreamfin.boxName.value).replace('"', "")
+		token = self.g_accessToken if withToken else ""
+
+		mediaBrowser = 'MediaBrowser Client="DreamFin", Device="%s", DeviceId="%s", Version="%s"' % (
+			boxName, self.g_sessionID, getVersion())
+		if token:
+			mediaBrowser += ', Token="%s"' % token
+
+		headers = {
+			"X-Emby-Authorization": mediaBrowser,
+			"Authorization": mediaBrowser,
+			"Accept": "application/json",
+		}
+		if token:
+			headers["X-Emby-Token"] = token
+		return headers
+
+	#===============================================================================
+	#
+	#===============================================================================
+	def doRequest(self, url, myType="GET", extraHeaders=None, body=None):
+		"""Fetch url and return the payload bytes, or False on any error.
+
+		Follows up to MAX_REDIRECTS redirects, retries the connection
+		once on socket-level errors, never verifies TLS (local boxes
+		have no CA store for private servers) and stores the last HTTP
+		status in self.lastStatus for the 401 re-auth path.
+		"""
+		printl("", self, "S")
+		printl("url: " + str(url), self, "D")
+
+		currentUrl = url
+		redirectsLeft = MAX_REDIRECTS
+		self.lastStatus = None
+
+		if body is not None and not isinstance(body, bytes):
+			body = body.encode("utf-8")
+
+		try:
+			while True:
+				parsed = urlparse(currentUrl)
+				server = parsed.netloc
+				urlPath = parsed.path
+				if parsed.query:
+					urlPath += "?" + parsed.query
+
+				conn = None
+				data = None
+				for attempt in range(1, CONNECT_ATTEMPTS + 1):
+					if currentUrl.startswith("https"):
+						conn = HTTPSConnection(server, timeout=REQUEST_TIMEOUT, context=ssl._create_unverified_context())
+					else:
+						conn = HTTPConnection(server, timeout=REQUEST_TIMEOUT)
+
+					headers = self.buildAuthHeaders()
+					if body is not None:
+						headers["Content-Type"] = "application/json"
+					if extraHeaders:
+						headers.update(extraHeaders)
+
+					try:
+						conn.request(myType, urlPath, body=body, headers=headers)
+						data = conn.getresponse()
+						break
+					except (socket.timeout, socket.error) as msg:
+						printl("attempt %d/%d failed: %s" % (attempt, CONNECT_ATTEMPTS, str(msg)), self, "W")
+						try:
+							conn.close()
+						except Exception:
+							pass
+						if attempt >= CONNECT_ATTEMPTS:
+							raise
+
+				status = int(data.status)
+				self.lastStatus = status
+
+				if status in (301, 302, 303, 307, 308):
+					location = data.getheader("Location")
+					printl("status %d, following Location: %s" % (status, str(location)), self, "I")
+					conn.close()
+
+					if not location or redirectsLeft <= 0:
+						error = "HTTP redirect error: " + str(status) + " at " + str(currentUrl)
+						printl(error, self, "D")
+						self.lastError = error
+
+						printl("", self, "C")
+						return False
+
+					redirectsLeft -= 1
+					currentUrl = urljoin(currentUrl, location)
+
+					if status == 303:
+						myType = "GET"
+
+					continue
+
+				elif status >= 400:
+					error = "HTTP response error: " + str(data.status) + " " + str(data.reason)
+					printl(error, self, "D")
+					self.lastError = error
+					conn.close()
+
+					printl("", self, "C")
+					return False
+
+				else:
+					link = data.read()
+					conn.close()
+
+					printl("", self, "C")
+					return link
+
+		except socket.gaierror:
+			error = "Unable to lookup host: " + str(self.g_host) + "\nCheck host name is correct"
+			printl(error, self, "D")
+			self.lastError = error
+
+		except socket.timeout:
+			error = "Connection to " + str(self.g_host) + " timed out"
+			printl(error, self, "D")
+			self.lastError = error
+
+		except socket.error as msg:
+			error = "Unable to connect to " + str(self.g_host) + "\nReason: " + str(msg)
+			self.lastError = error
+			printl(error, self, "D")
+
+		except Exception as ex:
+			traceback.print_exc()
+			error = "Request error: " + str(ex)
+			printl(error, self, "D")
+			self.lastError = error
+
+		printl("", self, "C")
+		return False
+
+	#===============================================================================
+	#
+	#===============================================================================
+	def getJson(self, url, myType="GET", body=None, allowAuthRetry=True):
+		"""JSON request against the server; returns dict/list or None.
+
+		Ensures authentication first and re-authenticates exactly once
+		when a cached/expired token answers 401.
+		"""
+		if not self.ensureAuthenticated():
+			return None
+
+		payload = self.doRequest(url, myType=myType, body=body)
+
+		if payload is False and self.lastStatus == 401 and allowAuthRetry:
+			printl("401 from server, re-authenticating once", self, "I")
+			if self.authenticate(force=True):
+				payload = self.doRequest(url, myType=myType, body=body)
+
+		if payload is False:
+			return None
+
+		if not payload:
+			# some POST/DELETE endpoints answer 204 with an empty body
+			return {}
+
+		try:
+			return json.loads(payload.decode("utf-8"))
+		except (ValueError, UnicodeDecodeError) as ex:
+			error = "No parseable JSON payload from " + str(url)
+			printl(error + " (" + str(ex) + ")", self, "W")
+			self.lastError = error
+			return None
+
+	#===============================================================================
+	#
+	#===============================================================================
+	def getJsonPaged(self, url, pageSize=200):
+		"""Fetch an Items envelope page by page (StartIndex/Limit query
+		parameters) and merge all Items into one envelope. Endpoints that
+		ignore paging (no TotalRecordCount) are handled with one request."""
+		printl("url: " + str(url), self, "D")
+
+		merged = None
+		start = 0
+		separator = "&" if "?" in url else "?"
+
+		while True:
+			pagedUrl = "%s%sStartIndex=%d&Limit=%d" % (url, separator, start, pageSize)
+			envelope = self.getJson(pagedUrl)
+
+			if envelope is None:
+				break
+
+			if not isinstance(envelope, dict) or "Items" not in envelope:
+				# bare array or unexpected shape: nothing to page
+				if merged is None:
+					merged = envelope
+				break
+
+			if merged is None:
+				merged = envelope
+			else:
+				merged["Items"].extend(envelope["Items"])
+
+			totalSize = envelope.get("TotalRecordCount")
+			if totalSize is None:
+				break
+
+			start += pageSize
+			if not envelope["Items"] or start >= int(totalSize):
+				break
+
+		if isinstance(merged, dict) and "Items" in merged:
+			printl("merged %d items" % len(merged["Items"]), self, "D")
+		return merged
+
+	#===============================================================================
+	# AUTH + SERVER TYPE
+	#===============================================================================
+
+	def ensureAuthenticated(self):
+		if self.g_accessToken and self.g_userId:
+			return True
+		return self.authenticate()
+
+	#===============================================================================
+	#
+	#===============================================================================
+	def authenticate(self, force=False):
+		"""Resolve an access token + user id for this server.
+
+		Priority: manual API key from the config, then cached token from
+		an earlier login, then POST /Users/AuthenticateByName. Fills the
+		accessTokenCache/userIdCache config so later plugin starts skip
+		the login roundtrip.
+		"""
+		printl("", self, "S")
+
+		# 1) manual API key wins over everything
+		if self.serverConfig_accessToken:
+			self.g_accessToken = self.serverConfig_accessToken
+			if not self.g_userId:
+				cachedUserId = str(getattr(self.g_serverConfig, "userIdCache", _emptyConfig()).value)
+				if cachedUserId and not force:
+					self.g_userId = cachedUserId
+				else:
+					self.g_userId = self._firstUserIdForApiKey()
+					if self.g_userId:
+						self._saveTokenCache(userId=self.g_userId)
+			ok = bool(self.g_accessToken and self.g_userId)
+			if not ok:
+				self.lastError = _("Could not resolve a user for the configured API key.")
+				self.g_accessToken = ""
+			printl("", self, "C")
+			return ok
+
+		# 2) cached token from an earlier username/password login
+		if not force:
+			cachedToken = str(getattr(self.g_serverConfig, "accessTokenCache", _emptyConfig()).value)
+			cachedUserId = str(getattr(self.g_serverConfig, "userIdCache", _emptyConfig()).value)
+			if cachedToken and cachedUserId:
+				self.g_accessToken = cachedToken
+				self.g_userId = cachedUserId
+				printl("using cached access token", self, "D")
+				printl("", self, "C")
+				return True
+
+		# 3) fresh login
+		if not self.serverConfig_username:
+			self.lastError = _("No username or API key configured for this server.")
+			printl("", self, "C")
+			return False
+
+		self.g_accessToken = ""
+		self.g_userId = ""
+
+		url = self.getContentUrl("/Users/AuthenticateByName")
+		body = json.dumps({"Username": self.serverConfig_username, "Pw": self.serverConfig_password})
+		payload = self.doRequest(url, myType="POST", body=body)
+
+		if payload is False:
+			if self.lastStatus == 401:
+				self.lastError = _("Login failed: wrong username or password.")
+			elif not self.lastError:
+				self.lastError = _("Login failed.")
+			printl("", self, "C")
+			return False
+
+		try:
+			answer = json.loads(payload.decode("utf-8"))
+			self.g_accessToken = str(answer["AccessToken"])
+			self.g_userId = str(answer["User"]["Id"])
+		except (ValueError, KeyError, TypeError, UnicodeDecodeError) as ex:
+			self.lastError = _("Login failed: unexpected answer from server.")
+			printl("auth parse error: " + str(ex), self, "W")
+			printl("", self, "C")
+			return False
+
+		self._saveTokenCache(token=self.g_accessToken, userId=self.g_userId)
+
+		printl("authenticated as userId " + self.g_userId, self, "I")
+		printl("", self, "C")
+		return True
+
+	#===============================================================================
+	#
+	#===============================================================================
+	def _firstUserIdForApiKey(self):
+		"""API keys are not user-scoped; resolve a user id via /Users."""
+		payload = self.doRequest(self.getContentUrl("/Users"))
+		if payload is False:
+			return ""
+		try:
+			users = json.loads(payload.decode("utf-8"))
+			if isinstance(users, dict):  # defensive: some proxies wrap it
+				users = users.get("Items", [])
+			if users:
+				return str(users[0]["Id"])
+		except (ValueError, KeyError, TypeError, UnicodeDecodeError) as ex:
+			printl("could not parse /Users: " + str(ex), self, "W")
+		return ""
+
+	#===============================================================================
+	#
+	#===============================================================================
+	def _saveTokenCache(self, token=None, userId=None):
+		try:
+			if token is not None and hasattr(self.g_serverConfig, "accessTokenCache"):
+				self.g_serverConfig.accessTokenCache.value = token
+				self.g_serverConfig.accessTokenCache.save()
+			if userId is not None and hasattr(self.g_serverConfig, "userIdCache"):
+				self.g_serverConfig.userIdCache.value = userId
+				self.g_serverConfig.userIdCache.save()
+		except Exception as ex:
+			# a failed cache write must never break the session itself
+			printl("could not persist token cache: " + str(ex), self, "W")
+
+	#===============================================================================
+	#
+	#===============================================================================
+	def detectServerType(self):
+		"""Ask /System/Info/Public (no auth needed) whether this is Emby
+		or Jellyfin. Only runs when the config says 'auto'; updates the
+		global lastAccent so the next plugin start loads matching colors."""
+		printl("", self, "S")
+
+		if self.g_serverType in ("emby", "jellyfin"):
+			self._updateAccent(self.g_serverType)
+			printl("", self, "C")
+			return self.g_serverType
+
+		payload = self.doRequest(self.getContentUrl("/System/Info/Public"))
+		detected = "emby"
+		if payload is not False:
+			try:
+				info = json.loads(payload.decode("utf-8"))
+				productName = str(info.get("ProductName", ""))
+				if "jellyfin" in productName.lower():
+					detected = "jellyfin"
+			except (ValueError, UnicodeDecodeError) as ex:
+				printl("could not parse /System/Info/Public: " + str(ex), self, "W")
+
+		self.g_serverType = detected
+		self._updateAccent(detected)
+
+		printl("detected server type: " + detected, self, "I")
+		printl("", self, "C")
+		return detected
+
+	#===============================================================================
+	#
+	#===============================================================================
+	def _updateAccent(self, serverType):
+		try:
+			accentConfig = getattr(config.plugins.dreamfin, "lastAccent", None)
+			if accentConfig is not None and accentConfig.value != serverType:
+				accentConfig.value = serverType
+				accentConfig.save()
+		except Exception as ex:
+			printl("could not persist accent: " + str(ex), self, "W")
+
+	#===============================================================================
+	#
+	#===============================================================================
+	def getServerType(self):
+		return self.g_serverType
+
+	#===============================================================================
+	# URL HELPERS
+	#===============================================================================
+
+	def getContentUrl(self, path):
+		return "%s://%s%s" % (self.http, self.g_address, path)
+
+	#===============================================================================
+	#
+	#===============================================================================
+	def buildItemsUrl(self, sectionId, includeItemTypes, extra=""):
+		"""The canonical 'all items of this section' listing URL."""
+		url = self.getContentUrl(
+			"/Users/%s/Items?ParentId=%s&Recursive=true&IncludeItemTypes=%s"
+			"&SortBy=SortName&SortOrder=Ascending&Fields=%s"
+			% (self.g_userId, sectionId, includeItemTypes, DEFAULT_ITEM_FIELDS))
+		if extra:
+			url += extra
+		return url
+
+	#===============================================================================
+	# LIBRARY ACCESS
+	#===============================================================================
+
+	def getSectionTypes(self):
+		printl("", self, "S")
+
+		fullList = []
+		entryData = {}
+		fullList.append((_("Movies"), Plugin.MENU_MOVIES, "movieEntry", entryData))
+		fullList.append((_("Tv Shows"), Plugin.MENU_TVSHOWS, "showEntry", entryData))
+		fullList.append((_("Music"), Plugin.MENU_MUSIC, "musicEntry", entryData))
+
+		printl("mainMenuList: " + str(fullList), self, "D")
+		printl("", self, "C")
+		return fullList
+
+	#===============================================================================
+	#
+	#===============================================================================
+	def getAllSections(self, myFilter=None, serverFilterActive=False):
+		"""User views -> section menu 4-tuples.
+
+		CollectionType movies/tvshows/music map onto the movie/show/artist
+		flows; views without a CollectionType (mixed folders) enter the
+		mixed browser directly. Everything else (boxsets, livetv,
+		playlists, photos) has no v1 flow and is skipped.
+		"""
+		printl("getAllSections", self, "S")
+		printl("myFilter: " + str(myFilter), self, "D")
+
+		if not self.ensureAuthenticated():
+			return []
+		self.detectServerType()
+
+		envelope = self.getJson(self.getContentUrl("/Users/%s/Views" % self.g_userId))
+		if envelope is None:
+			if not self.lastError:
+				self.lastError = _("No data in this section!")
+			printl("", self, "C")
+			return []
+
+		items = envelope.get("Items", []) if isinstance(envelope, dict) else []
+		fullList = []
+
+		for item in items:
+			collectionType = item.get("CollectionType")
+			sectionId = jsonToStr(item.get("Id"))
+			title = jsonToStr(item.get("Name"), "no Title")
+
+			entryData = {
+				"title": title,
+				"key": sectionId,
+				"section": sectionId,
+				"address": self.g_address,
+				"server": self.g_address,
+				"isSectionRoot": True,
+			}
+
+			if collectionType == "movies":
+				entryData["type"] = "movie"
+				entryData["contentUrl"] = self.buildItemsUrl(sectionId, "Movie")
+				if myFilter is not None and myFilter != "movies":
+					continue
+				if self.g_useFilterSections:
+					fullList.append((_(title), Plugin.MENU_FILTER, "movieEntry", entryData))
+				else:
+					fullList.append((_(title), getPlugin("movies", Plugin.MENU_MOVIES), "movieEntry", entryData))
+
+			elif collectionType == "tvshows":
+				entryData["type"] = "show"
+				entryData["contentUrl"] = self.buildItemsUrl(sectionId, "Series")
+				if myFilter is not None and myFilter != "tvshow":
+					continue
+				if self.g_useFilterSections:
+					fullList.append((_(title), Plugin.MENU_FILTER, "showEntry", entryData))
+				else:
+					fullList.append((_(title), getPlugin("tvshows", Plugin.MENU_TVSHOWS), "showEntry", entryData))
+
+			elif collectionType == "music":
+				entryData["type"] = "artist"
+				entryData["contentUrl"] = self.getContentUrl(
+					"/Artists/AlbumArtists?ParentId=%s&UserId=%s&SortBy=SortName&SortOrder=Ascending"
+					% (sectionId, self.g_userId))
+				if myFilter is not None and myFilter != "music":
+					continue
+				# music always uses the filter menu, exactly like the Plex flow
+				fullList.append((_(title), Plugin.MENU_FILTER, "musicEntry", entryData))
+
+			elif collectionType in (None, "", "homevideos"):
+				# mixed content folder: no filter menu, straight into the browser
+				if myFilter is not None:
+					continue
+				entryData["type"] = "movie"
+				entryData["currentViewMode"] = "movie"
+				entryData["nextViewMode"] = "mixed"
+				entryData["contentUrl"] = self.buildItemsUrl(sectionId, "Movie,Series,Video")
+				fullList.append((_(title), getPlugin("mixed", Plugin.MENU_MIXED), "mixedEntry", entryData))
+
+			else:
+				printl("skipping view '%s' with unsupported CollectionType %s" % (title, str(collectionType)), self, "D")
+				continue
+
+		# synthesized global entries on top, like Plex' On Deck/New
+		if myFilter is None and items:
+			continueWatching = {
+				"title": "Continue watching",
+				"type": "movie",
+				"currentViewMode": "movie",
+				"nextViewMode": "mixed",
+				"address": self.g_address,
+				"server": self.g_address,
+				"key": "onDeck",
+				"contentUrl": self.getContentUrl(
+					"/Users/%s/Items/Resume?Recursive=true&MediaTypes=Video&Fields=%s"
+					% (self.g_userId, DEFAULT_ITEM_FIELDS)),
+			}
+			fullList.insert(0, (_("Continue watching"), getPlugin("mixed", Plugin.MENU_MIXED), "mixedEntry", continueWatching))
+
+			recentlyAdded = {
+				"title": "Recently added",
+				"type": "movie",
+				"currentViewMode": "movie",
+				"nextViewMode": "mixed",
+				"address": self.g_address,
+				"server": self.g_address,
+				"key": "recentlyAdded",
+				"contentUrl": self.getContentUrl(
+					"/Users/%s/Items/Latest?Limit=60&Fields=%s"
+					% (self.g_userId, DEFAULT_ITEM_FIELDS)),
+			}
+			fullList.insert(1, (_("Recently added"), getPlugin("mixed", Plugin.MENU_MIXED), "mixedEntry", recentlyAdded))
+
+		if not fullList:
+			self.lastError = _("No data in this section!")
+
+		printl("", self, "C")
+		return fullList
+
+	#===============================================================================
+	#
+	#===============================================================================
+	def getSectionFilter(self, incomingEntryData):
+		"""Emby/Jellyfin have no legacy secondary navigation: the filter
+		menu of a section root is always synthesized locally, and the
+		genre/year/decade secondaries are resolved through /Genres and
+		/Years. Tuple shapes match the Plex synthesizer exactly."""
+		printl("", self, "S")
+		printl("incomingEntryData: " + str(incomingEntryData), self, "D")
+
+		key = incomingEntryData.get("key", "")
+
+		if key == "genre":
+			result = self._getGenreFilter(incomingEntryData)
+		elif key == "year":
+			result = self._getYearFilter(incomingEntryData, decades=False)
+		elif key == "decade":
+			result = self._getYearFilter(incomingEntryData, decades=True)
+		elif incomingEntryData.get("isSectionRoot", False):
+			result = self.getSynthesizedSectionFilter(incomingEntryData)
+		else:
+			printl("nothing to build a filter from: " + str(key), self, "W")
+			result = []
+
+		if not result and not self.lastError:
+			self.lastError = _("No data in this section!")
+
+		printl("", self, "C")
+		return result
+
+	#===============================================================================
+	#
+	#===============================================================================
+	def getSynthesizedSectionFilter(self, incomingEntryData):
+		"""Same menu, titles and key literals as the Plex synthesizer -
+		DP_LibShows routes by these exact key values - with the
+		contentUrl pointing at the equivalent Emby/Jellyfin request."""
+		printl("", self, "S")
+
+		sectionType = incomingEntryData.get("type")
+		sectionId = incomingEntryData.get("section") or incomingEntryData.get("key")
+
+		if sectionType == "movie":
+			plugin = getPlugin("movies", Plugin.MENU_MOVIES)
+			entryType = "movieEntry"
+			allUrl = self.buildItemsUrl(sectionId, "Movie")
+			menu = [
+				(_("All Movies"), "all", None, None,
+					allUrl),
+				(_("Unwatched"), "all?unwatched=1", None, None,
+					self.buildItemsUrl(sectionId, "Movie", "&Filters=IsUnplayed")),
+				(_("Recently Added"), "recentlyAdded", None, None,
+					self.buildItemsUrl(sectionId, "Movie", "&SortBy=DateCreated&SortOrder=Descending&Limit=100")),
+				(_("Recently Released"), "newest", None, None,
+					self.buildItemsUrl(sectionId, "Movie", "&SortBy=PremiereDate&SortOrder=Descending&Limit=100")),
+				(_("On Deck"), "onDeck", None, None,
+					self.getContentUrl("/Users/%s/Items/Resume?ParentId=%s&Recursive=true&MediaTypes=Video&Fields=%s"
+						% (self.g_userId, sectionId, DEFAULT_ITEM_FIELDS))),
+				(_("By Genre"), "genre", "secondary", None, None),
+				(_("By Year"), "year", "secondary", None, None),
+				(_("By Decade"), "decade", "secondary", None, None),
+				(_("Search..."), "search?type=1", "prompt", None,
+					self.buildItemsUrl(sectionId, "Movie")),
+			]
+
+		elif sectionType == "show" or sectionType == "episode":
+			plugin = getPlugin("tvshows", Plugin.MENU_TVSHOWS)
+			entryType = "showEntry"
+			menu = [
+				(_("All Shows"), "all", None, None,
+					self.buildItemsUrl(sectionId, "Series")),
+				(_("Unwatched"), "all?unwatched=1", None, None,
+					self.buildItemsUrl(sectionId, "Series", "&Filters=IsUnplayed")),
+				(_("Recently Added"), "recentlyAdded", None, None,
+					self.buildItemsUrl(sectionId, "Episode", "&SortBy=DateCreated&SortOrder=Descending&Limit=100")),
+				(_("On Deck"), "onDeck", None, None,
+					self.getContentUrl("/Shows/NextUp?ParentId=%s&UserId=%s&Fields=%s"
+						% (sectionId, self.g_userId, DEFAULT_ITEM_FIELDS))),
+				(_("By Genre"), "genre", "secondary", None, None),
+				(_("By Year"), "year", "secondary", None, None),
+				(_("Search..."), "search?type=2", "prompt", None,
+					self.buildItemsUrl(sectionId, "Series")),
+			]
+
+		elif sectionType == "artist":
+			plugin = getPlugin("music", Plugin.MENU_MUSIC)
+			entryType = "musicEntry"
+			menu = [
+				(_("All Artists"), "all", None, None,
+					self.getContentUrl("/Artists/AlbumArtists?ParentId=%s&UserId=%s&SortBy=SortName&SortOrder=Ascending"
+						% (sectionId, self.g_userId))),
+				(_("Recently Added"), "recentlyAdded", None,
+					{"nextViewMode": "ShowAlbums", "currentViewMode": "ShowAlbums"},
+					self.buildItemsUrl(sectionId, "MusicAlbum", "&SortBy=DateCreated&SortOrder=Descending&Limit=100")),
+				(_("By Genre"), "genre", "secondary", None, None),
+				(_("Search..."), "search?type=8", "prompt", None,
+					self.getContentUrl("/Artists/AlbumArtists?ParentId=%s&UserId=%s" % (sectionId, self.g_userId))),
+			]
+
+		else:
+			printl("unsupported section type: " + str(sectionType), self, "W")
+			printl("", self, "C")
+			return []
+
+		fullList = []
+		for title, key, kind, extraData, contentUrl in menu:
+			entryData = {
+				"title": title,
+				"key": key,
+				"type": sectionType,
+				"section": sectionId,
+				"address": self.g_address,
+				"server": self.g_address,
+				"hasSecondaryTag": kind == "secondary",
+				"hasPromptTag": kind == "prompt",
+				"synthesized": True,
+			}
+			if contentUrl:
+				entryData["contentUrl"] = contentUrl
+
+			if extraData:
+				entryData.update(extraData)
+
+			if kind == "secondary":
+				fullList.append((title, Plugin.MENU_FILTER, "showFilter", entryData))
+			else:
+				fullList.append((title, plugin, entryType, entryData))
+
+			printl("synthesized entryData: " + str(entryData), self, "D")
+
+		printl("", self, "C")
+		return fullList
+
+	#===============================================================================
+	#
+	#===============================================================================
+	def _sectionContentTarget(self, incomingEntryData):
+		"""(plugin, entryType, includeItemTypes) for a section type."""
+		sectionType = incomingEntryData.get("type")
+		if sectionType == "show" or sectionType == "episode":
+			return getPlugin("tvshows", Plugin.MENU_TVSHOWS), "showEntry", "Series"
+		if sectionType == "artist":
+			return getPlugin("music", Plugin.MENU_MUSIC), "musicEntry", "MusicAlbum"
+		return getPlugin("movies", Plugin.MENU_MOVIES), "movieEntry", "Movie"
+
+	#===============================================================================
+	#
+	#===============================================================================
+	def _getGenreFilter(self, incomingEntryData):
+		printl("", self, "S")
+
+		sectionId = incomingEntryData.get("section")
+		sectionType = incomingEntryData.get("type")
+		plugin, entryType, includeItemTypes = self._sectionContentTarget(incomingEntryData)
+
+		if sectionType == "artist":
+			genresPath = "/MusicGenres"
+		else:
+			genresPath = "/Genres"
+
+		url = self.getContentUrl("%s?ParentId=%s&UserId=%s&SortBy=SortName&SortOrder=Ascending"
+								% (genresPath, sectionId, self.g_userId))
+		envelope = self.getJsonPaged(url)
+		if envelope is None:
+			printl("", self, "C")
+			return []
+
+		fullList = []
+		for item in envelope.get("Items", []):
+			name = jsonToStr(item.get("Name"))
+			genreId = jsonToStr(item.get("Id"))
+			if not name or not genreId:
+				continue
+
+			entryData = dict(incomingEntryData)
+			entryData["title"] = name
+			entryData["key"] = "genre/" + genreId
+			entryData["hasSecondaryTag"] = False
+			entryData["hasPromptTag"] = False
+			if sectionType == "artist":
+				entryData["contentUrl"] = self.getContentUrl(
+					"/Artists/AlbumArtists?ParentId=%s&UserId=%s&GenreIds=%s&SortBy=SortName&SortOrder=Ascending"
+					% (sectionId, self.g_userId, genreId))
+			else:
+				entryData["contentUrl"] = self.buildItemsUrl(sectionId, includeItemTypes, "&GenreIds=" + genreId)
+
+			fullList.append((name, plugin, entryType, entryData))
+
+		printl("", self, "C")
+		return fullList
+
+	#===============================================================================
+	#
+	#===============================================================================
+	def _getYearFilter(self, incomingEntryData, decades=False):
+		printl("", self, "S")
+
+		sectionId = incomingEntryData.get("section")
+		plugin, entryType, includeItemTypes = self._sectionContentTarget(incomingEntryData)
+
+		url = self.getContentUrl("/Years?ParentId=%s&UserId=%s&SortBy=SortName&SortOrder=Descending"
+								% (sectionId, self.g_userId))
+		envelope = self.getJsonPaged(url)
+		if envelope is None:
+			printl("", self, "C")
+			return []
+
+		years = []
+		for item in envelope.get("Items", []):
+			try:
+				years.append(int(item.get("Name")))
+			except (TypeError, ValueError):
+				continue
+
+		fullList = []
+		if decades:
+			decadeMap = {}
+			for year in years:
+				decadeMap.setdefault((year // 10) * 10, []).append(year)
+
+			for decade in sorted(decadeMap.keys(), reverse=True):
+				title = "%ds" % decade
+				entryData = dict(incomingEntryData)
+				entryData["title"] = title
+				entryData["key"] = "decade/%d" % decade
+				entryData["hasSecondaryTag"] = False
+				entryData["hasPromptTag"] = False
+				yearsParam = ",".join(str(y) for y in sorted(decadeMap[decade]))
+				entryData["contentUrl"] = self.buildItemsUrl(sectionId, includeItemTypes, "&Years=" + yearsParam)
+				fullList.append((title, plugin, entryType, entryData))
+		else:
+			for year in sorted(years, reverse=True):
+				title = str(year)
+				entryData = dict(incomingEntryData)
+				entryData["title"] = title
+				entryData["key"] = "year/%d" % year
+				entryData["hasSecondaryTag"] = False
+				entryData["hasPromptTag"] = False
+				entryData["contentUrl"] = self.buildItemsUrl(sectionId, includeItemTypes, "&Years=%d" % year)
+				fullList.append((title, plugin, entryType, entryData))
+
+		printl("", self, "C")
+		return fullList
+
+	#===============================================================================
+	# MISC SURFACE THE UI RELIES ON
+	#===============================================================================
+
+	def getLastErrorMessage(self):
+		return self.lastError
+
+	def getServerConfig(self):
+		return self.g_serverConfig
+
+	def sessionID(self):
+		return self.g_sessionID
+
+	def getServerName(self):
+		return self.serverConfig_Name
+
+
+def _emptyConfig(default=""):
+	"""Stand-in for config attributes older entries do not have yet."""
+	class _Empty(object):
+		def __init__(self, value):
+			self.value = value
+	return _Empty(default)

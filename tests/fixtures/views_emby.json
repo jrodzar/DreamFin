@@ -1,0 +1,159 @@
+{
+ "Items": [
+  {
+   "BackdropImageTags": [],
+   "CollectionType": "boxsets",
+   "Etag": "aa0c2d20b421e36e628a9935e058bdda",
+   "Id": "40224",
+   "ImageTags": {
+    "Primary": "b27d71e944b6fc152763bb66fef968d8"
+   },
+   "IsFolder": true,
+   "Name": "Colecciones",
+   "ParentId": "2",
+   "PrimaryImageAspectRatio": 1.7777777777777777,
+   "ServerId": "emby0000000000000000000000000001",
+   "Type": "CollectionFolder",
+   "UserData": {
+    "IsFavorite": false,
+    "PlaybackPositionTicks": 0,
+    "Played": false
+   }
+  },
+  {
+   "BackdropImageTags": [],
+   "CollectionType": "movies",
+   "Etag": "966cd825139da8821d7453280ae5f9f4",
+   "Id": "40",
+   "ImageTags": {
+    "Primary": "809fe6cc5e21d206268f70d1566ddc20"
+   },
+   "IsFolder": true,
+   "Name": "Pel·lícules",
+   "ParentId": "2",
+   "PrimaryImageAspectRatio": 1.7777777777777777,
+   "ServerId": "emby0000000000000000000000000001",
+   "Type": "CollectionFolder",
+   "UserData": {
+    "IsFavorite": false,
+    "PlaybackPositionTicks": 0,
+    "Played": false
+   }
+  },
+  {
+   "BackdropImageTags": [],
+   "CollectionType": "tvshows",
+   "Etag": "4bd4b700915c26d94cc3260928a73752",
+   "Id": "54436",
+   "ImageTags": {
+    "Primary": "6cace9e1b971a68c95b4eefe0fd05526"
+   },
+   "IsFolder": true,
+   "Name": "Sèries",
+   "ParentId": "2",
+   "PrimaryImageAspectRatio": 1.7777777777777777,
+   "ServerId": "emby0000000000000000000000000001",
+   "Type": "CollectionFolder",
+   "UserData": {
+    "IsFavorite": false,
+    "PlaybackPositionTicks": 0,
+    "Played": false
+   }
+  },
+  {
+   "BackdropImageTags": [],
+   "Etag": "e3ff83e2d242011bd4dbbed29b16ce5e",
+   "Id": "110129",
+   "ImageTags": {
+    "Primary": "664b1aadc15323882fd41936cad65813"
+   },
+   "IsFolder": true,
+   "Name": "Documentals",
+   "ParentId": "2",
+   "PrimaryImageAspectRatio": 1.7777777777777777,
+   "ServerId": "emby0000000000000000000000000001",
+   "Type": "CollectionFolder",
+   "UserData": {
+    "IsFavorite": false,
+    "PlaybackPositionTicks": 0,
+    "Played": false
+   }
+  },
+  {
+   "BackdropImageTags": [],
+   "CollectionType": "movies",
+   "Etag": "003a52fad8c3b526b5e8fa5a67111e81",
+   "Id": "104533",
+   "ImageTags": {
+    "Primary": "57efa7f84576a65e773c3f18f3fa7c4d"
+   },
+   "IsFolder": true,
+   "Name": "Infantils",
+   "ParentId": "2",
+   "PrimaryImageAspectRatio": 1.7777777777777777,
+   "ServerId": "emby0000000000000000000000000001",
+   "Type": "CollectionFolder",
+   "UserData": {
+    "IsFavorite": false,
+    "PlaybackPositionTicks": 0,
+    "Played": false
+   }
+  },
+  {
+   "BackdropImageTags": [],
+   "CollectionType": "tvshows",
+   "Etag": "aa0c2d20b421e36e628a9935e058bdda",
+   "Id": "108193",
+   "ImageTags": {
+    "Primary": "2a782f097070dc01403c4beafa9a7327"
+   },
+   "IsFolder": true,
+   "Name": "Sèries infantils i juvenils",
+   "ParentId": "2",
+   "PrimaryImageAspectRatio": 1.7777777777777777,
+   "ServerId": "emby0000000000000000000000000001",
+   "Type": "CollectionFolder",
+   "UserData": {
+    "IsFavorite": false,
+    "PlaybackPositionTicks": 0,
+    "Played": false
+   }
+  },
+  {
+   "BackdropImageTags": [],
+   "CollectionType": "livetv",
+   "Etag": "affd56b35c498db909ade840dcd76777",
+   "Id": "3",
+   "ImageTags": {},
+   "IsFolder": true,
+   "Name": "TV en directo",
+   "ParentId": "1",
+   "ServerId": "emby0000000000000000000000000001",
+   "Type": "UserView",
+   "UserData": {
+    "IsFavorite": false,
+    "PlaybackPositionTicks": 0,
+    "Played": false
+   }
+  },
+  {
+   "BackdropImageTags": [],
+   "CollectionType": "playlists",
+   "Etag": "d8b36b86b3252cdf59150d00df3bb3ce",
+   "Id": "473248",
+   "ImageTags": {},
+   "IsFolder": true,
+   "Name": "Lista de reproducción",
+   "ParentId": "2",
+   "ServerId": "emby0000000000000000000000000001",
+   "Type": "CollectionFolder",
+   "UserData": {
+    "IsFavorite": false,
+    "PlaybackPositionTicks": 0,
+    "Played": false
+   }
+  }
+ ],
+ "StartIndex": 0,
+ "TotalRecordCount": 8
+}

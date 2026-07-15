@@ -1,0 +1,16 @@
+{
+ "AccessToken": "mock-access-token-jellyfin",
+ "ServerId": "jelly000000000000000000000000001",
+ "SessionInfo": {
+  "Id": "mock-session"
+ },
+ "User": {
+  "HasPassword": true,
+  "Id": "user0000000000000000000000000002",
+  "Name": "prova",
+  "Policy": {
+   "IsAdministrator": false
+  },
+  "ServerId": "jelly000000000000000000000000001"
+ }
+}
