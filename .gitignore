@@ -1,0 +1,10 @@
+*.pyc
+__pycache__/
+dist/
+.project
+.settings
+.pydevproject
+*.sln
+*.suo
+*.pyproj
+.idea
