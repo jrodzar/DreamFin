@@ -143,9 +143,17 @@ class TestBrowseMovies(unittest.TestCase):
 		fullList, _mc = lib.getMoviesFromSection(lib.getContentUrl(ITEMS_PATH))
 
 		entryData = fullList[0][1]
-		self.assertIn(IMAGE_SIZE_PLACEHOLDER.lstrip("&"), entryData["thumb"])
+		# the placeholder must be present VERBATIM (leading '&' included)
+		# so the UI's download_url.replace(IMAGE_SIZE_PLACEHOLDER, ...) hits
+		self.assertIn(IMAGE_SIZE_PLACEHOLDER, entryData["thumb"])
 		self.assertIn("api_key=", entryData["thumb"])
 		self.assertIn("/Images/Primary", entryData["thumb"])
+
+		# emulate DP_View.downloadPoster resizing to real skin dimensions
+		resized = entryData["thumb"].replace(IMAGE_SIZE_PLACEHOLDER, "&maxWidth=195&maxHeight=268")
+		self.assertNotEqual(resized, entryData["thumb"])  # the replace fired
+		self.assertIn("maxWidth=195&maxHeight=268", resized)
+		self.assertNotIn("maxWidth=999", resized)
 
 	def test_item_without_artwork_gets_empty_strings(self):
 		bare = {"Items": [{"Type": "Movie", "Id": "77", "Name": "NoArt",

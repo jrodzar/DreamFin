@@ -81,6 +81,10 @@ ITEM_TYPE_MAP = {
 }
 
 REQUEST_TIMEOUT = 8
+# item pages are heavy (MediaSources for up to 200 items) and a cold
+# server can need well over 8s for the very first page; the fetch runs
+# in a worker thread, so a larger cap does not freeze the GUI
+PAGED_REQUEST_TIMEOUT = 20
 CONNECT_ATTEMPTS = 2
 MAX_REDIRECTS = 3
 
@@ -205,7 +209,7 @@ class EmbyLibrary(object):
 	#===============================================================================
 	#
 	#===============================================================================
-	def doRequest(self, url, myType="GET", extraHeaders=None, body=None):
+	def doRequest(self, url, myType="GET", extraHeaders=None, body=None, timeout=None):
 		"""Fetch url and return the payload bytes, or False on any error.
 
 		Follows up to MAX_REDIRECTS redirects, retries the connection
@@ -216,6 +220,7 @@ class EmbyLibrary(object):
 		printl("", self, "S")
 		printl("url: " + str(url), self, "D")
 
+		requestTimeout = timeout or REQUEST_TIMEOUT
 		currentUrl = url
 		redirectsLeft = MAX_REDIRECTS
 		self.lastStatus = None
@@ -235,9 +240,9 @@ class EmbyLibrary(object):
 				data = None
 				for attempt in range(1, CONNECT_ATTEMPTS + 1):
 					if currentUrl.startswith("https"):
-						conn = HTTPSConnection(server, timeout=REQUEST_TIMEOUT, context=ssl._create_unverified_context())
+						conn = HTTPSConnection(server, timeout=requestTimeout, context=ssl._create_unverified_context())
 					else:
-						conn = HTTPConnection(server, timeout=REQUEST_TIMEOUT)
+						conn = HTTPConnection(server, timeout=requestTimeout)
 
 					headers = self.buildAuthHeaders()
 					if body is not None:
@@ -325,7 +330,7 @@ class EmbyLibrary(object):
 	#===============================================================================
 	#
 	#===============================================================================
-	def getJson(self, url, myType="GET", body=None, allowAuthRetry=True):
+	def getJson(self, url, myType="GET", body=None, allowAuthRetry=True, timeout=None):
 		"""JSON request against the server; returns dict/list or None.
 
 		Ensures authentication first and re-authenticates exactly once
@@ -334,12 +339,12 @@ class EmbyLibrary(object):
 		if not self.ensureAuthenticated():
 			return None
 
-		payload = self.doRequest(url, myType=myType, body=body)
+		payload = self.doRequest(url, myType=myType, body=body, timeout=timeout)
 
 		if payload is False and self.lastStatus == 401 and allowAuthRetry:
 			printl("401 from server, re-authenticating once", self, "I")
 			if self.authenticate(force=True):
-				payload = self.doRequest(url, myType=myType, body=body)
+				payload = self.doRequest(url, myType=myType, body=body, timeout=timeout)
 
 		if payload is False:
 			return None
@@ -371,7 +376,7 @@ class EmbyLibrary(object):
 
 		while True:
 			pagedUrl = "%s%sStartIndex=%d&Limit=%d" % (url, separator, start, pageSize)
-			envelope = self.getJson(pagedUrl)
+			envelope = self.getJson(pagedUrl, timeout=PAGED_REQUEST_TIMEOUT)
 
 			if envelope is None:
 				break
@@ -1165,13 +1170,21 @@ class EmbyLibrary(object):
 	#===============================================================================
 
 	def getImageUrl(self, itemId, imageType="Primary", tag=None):
-		"""Server-side resized image URL. The size literal is the shared
-		placeholder the UI substitutes with the real skin dimensions."""
-		url = self.getContentUrl("/Items/%s/Images/%s?%s" % (jsonToStr(itemId), imageType, IMAGE_SIZE_PLACEHOLDER.lstrip("&")))
+		"""Server-side resized image URL.
+
+		The size params are appended LAST, keeping IMAGE_SIZE_PLACEHOLDER
+		intact as a trailing '&maxWidth=...&maxHeight=...' substring: the
+		UI does download_url.replace(IMAGE_SIZE_PLACEHOLDER, real dims),
+		so the placeholder must appear verbatim (with its leading '&').
+		"""
+		url = self.getContentUrl("/Items/%s/Images/%s" % (jsonToStr(itemId), imageType))
+		params = []
 		if tag:
-			url += "&tag=" + jsonToStr(tag)
+			params.append("tag=" + jsonToStr(tag))
 		if self.g_accessToken:
-			url += "&api_key=" + self.g_accessToken
+			params.append("api_key=" + self.g_accessToken)
+		url += "?" + "&".join(params) if params else "?"
+		url += IMAGE_SIZE_PLACEHOLDER
 		return url
 
 	#===============================================================================

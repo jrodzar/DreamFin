@@ -54,7 +54,6 @@ try:
 except:
 	from urllib import quote_plus
 
-from twisted.web.client import downloadPage
 
 from .DP_Player import DP_Player
 from .DP_Settings import DPS_Settings
@@ -2539,16 +2538,16 @@ class DP_View(DPH_Screen, DPH_ScreenHelper, DPH_MultiColorFunctions, DPH_Filter)
 					self["poster"].instance.setPixmap(ptr)
 
 		elif self.usePicCache:
-			if fileExists(self.whatPoster):
+			# a 0-byte cache file (e.g. a missing /hdd mount) must not be
+			# served as a blank poster - treat it as a cache miss
+			if self.whatPoster is not None and fileExists(self.whatPoster) and os.path.getsize(self.whatPoster) > 0:
 
-				if self.whatPoster is not None:
+				self.EXpicloadPoster.startDecode(self.whatPoster, 0, 0, False)
 
-					self.EXpicloadPoster.startDecode(self.whatPoster, 0, 0, False)
+				ptr = self.EXpicloadPoster.getData()
 
-					ptr = self.EXpicloadPoster.getData()
-
-					if ptr is not None:
-						self["poster"].instance.setPixmap(ptr)
+				if ptr is not None:
+					self["poster"].instance.setPixmap(ptr)
 
 			else:
 				self.downloadPoster()
@@ -2575,16 +2574,15 @@ class DP_View(DPH_Screen, DPH_ScreenHelper, DPH_MultiColorFunctions, DPH_Filter)
 					self["backdrop"].instance.setPixmap(ptr)
 
 		elif self.usePicCache:
-			if fileExists(self.whatBackdrop):
+			# ignore a 0-byte cache file (see showPoster) and re-download
+			if self.whatBackdrop is not None and fileExists(self.whatBackdrop) and os.path.getsize(self.whatBackdrop) > 0:
 
-				if self.whatBackdrop is not None:
+				self.EXpicloadBackdrop.startDecode(self.whatBackdrop, 0, 0, False)
 
-					self.EXpicloadBackdrop.startDecode(self.whatBackdrop, 0, 0, False)
+				ptr = self.EXpicloadBackdrop.getData()
 
-					ptr = self.EXpicloadBackdrop.getData()
-
-					if ptr is not None:
-						self["backdrop"].instance.setPixmap(ptr)
+				if ptr is not None:
+					self["backdrop"].instance.setPixmap(ptr)
 
 			else:
 				self.downloadBackdrop()
@@ -2618,23 +2616,15 @@ class DP_View(DPH_Screen, DPH_ScreenHelper, DPH_MultiColorFunctions, DPH_Filter)
 		printl("", self, "S")
 		printl("self.posterWidth:" + str(self.posterWidth), self, "D")
 		printl("self.posterHeight:" + str(self.posterHeight), self, "D")
-		printl("self.poster_postfix:" + str(self.poster_postfix), self, "D")
-		printl("self.image_prefix:" + str(self.image_prefix), self, "D")
 
 		if "thumb" in self.details:
 			if self.details["thumb"] != "":
 				download_url = self.details["thumb"]
 				download_url = download_url.replace(IMAGE_SIZE_PLACEHOLDER, '&maxWidth=' + self.posterWidth + '&maxHeight=' + self.posterHeight)
 				printl("download url: " + download_url, self, "D")
-				printl("starting download", self, "D")
-				authHeader = self.plexInstance.get_hTokenForServer(self.details["server"])
-				printl("header: " + str(authHeader), self, "D")
-				if authHeader is None:  # unknown server -> no token, but never crash
-					authHeader = {}
-				download_url = str(download_url) if PY2 else str(download_url).encode("UTF-8")
-				if not PY2 and 'X-Plex-Token' in authHeader:
-					authHeader = {b'X-Plex-Token': authHeader["X-Plex-Token"].encode("UTF-8")}
-				downloadPage(download_url, self.whatPoster, headers=authHeader).addCallback(lambda _: self.showPoster(forceShow=True))
+				# the backend transport handles TLS/SNI; twisted's
+				# downloadPage cannot (hello Cloudflare handshake failure)
+				self._downloadImage(download_url, self.whatPoster, lambda: self.showPoster(forceShow=True))
 			else:
 				self.noPicData()
 		else:
@@ -2649,29 +2639,49 @@ class DP_View(DPH_Screen, DPH_ScreenHelper, DPH_MultiColorFunctions, DPH_Filter)
 		printl("", self, "S")
 		printl("self.backdropWidth:" + str(self.backdropWidth), self, "D")
 		printl("self.backdropHeight:" + str(self.backdropHeight), self, "D")
-		printl("self.backdrop_postfix:" + str(self.backdrop_postfix), self, "D")
-		printl("self.image_prefix:" + str(self.image_prefix), self, "D")
 
 		if "art" in self.details:
 			if self.details["art"] != "":
 				download_url = self.details["art"]
 				download_url = download_url.replace(IMAGE_SIZE_PLACEHOLDER, '&maxWidth=' + self.backdropWidth + '&maxHeight=' + self.backdropHeight)
 				printl("download url: " + download_url, self, "D")
-				printl("starting download", self, "D")
-				authHeader = self.plexInstance.get_hTokenForServer(self.details["server"])
-				printl("header: " + str(authHeader), self, "D")
-				if authHeader is None:  # unknown server -> no token, but never crash
-					authHeader = {}
-				download_url = str(download_url) if PY2 else str(download_url).encode("UTF-8")
-				if not PY2 and 'X-Plex-Token' in authHeader:
-					authHeader = {b'X-Plex-Token': authHeader["X-Plex-Token"].encode("UTF-8")}
-				downloadPage(download_url, self.whatBackdrop, headers=authHeader).addCallback(lambda _: self.showBackdrop(forceShow=True))
+				self._downloadImage(download_url, self.whatBackdrop, lambda: self.showBackdrop(forceShow=True))
 			else:
 				self.noPicData()
 		else:
 			self.noPicData()
 
 		printl("", self, "C")
+
+	#===========================================================================
+	#
+	#===========================================================================
+	def _downloadImage(self, url, targetPath, onReady):
+		"""Fetch an artwork URL through the backend transport (off the
+		main loop) and show it via onReady once the file is written.
+
+		Writes to a temp file and renames into place, so a failed or
+		partial download never leaves a 0-byte target that the picture
+		cache would later serve as a blank image.
+		"""
+		def work():
+			payload = Singleton().getBackendInstance().doRequest(url)
+			if not payload:
+				return False
+			tmpPath = targetPath + ".part"
+			fd = open(tmpPath, "wb")
+			try:
+				fd.write(payload)
+			finally:
+				fd.close()
+			os.rename(tmpPath, targetPath)
+			return True
+
+		def onDone(ok, error):
+			if ok and error is None:
+				onReady()
+
+		runInThread(work, onDone)
 
 	#==============================================================================
 	#

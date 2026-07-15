@@ -81,8 +81,11 @@ config.plugins.dreamfin.startWithFilterMode = ConfigYesNo()
 config.plugins.dreamfin.summerizeSections = ConfigYesNo(default=True)
 config.plugins.dreamfin.summerizeServers = ConfigYesNo(default=True)
 config.plugins.dreamfin.stopLiveTvOnStartup = ConfigYesNo()
-config.plugins.dreamfin.useCache = ConfigYesNo(default=True)
-config.plugins.dreamfin.usePicCache = ConfigYesNo(default=True)
+# both caches default off: against remote HTTPS servers the on-disk cache
+# is more trouble than it is worth (and needs a real /hdd mount, which the
+# box may not have - a missing mount left 0-byte poster files)
+config.plugins.dreamfin.useCache = ConfigYesNo(default=False)
+config.plugins.dreamfin.usePicCache = ConfigYesNo(default=False)
 config.plugins.dreamfin.useBackdropVideos = ConfigYesNo()
 config.plugins.dreamfin.showDetailsInList = ConfigYesNo()
 config.plugins.dreamfin.showDetailsInListDetailType = ConfigSelection(default="1", choices=[("1", "user"), ("2", "server")])
