@@ -8,3 +8,5 @@ dist/
 *.suo
 *.pyproj
 .idea
+# machine-local files (test server credentials, etc.) - never committed
+local/
