@@ -737,6 +737,12 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 
 		self.startTimelineWatcher()
 
+		# tell the server a playback session has started; the resume point is
+		# then kept by the periodic progress reports and the stop report. Never
+		# for extras/trailers, and never block the GUI waiting for the answer.
+		if not self.isExtraData:
+			fireAndForget(lambda: self.plexInstance.reportPlaybackStart(self.id, 0, False))
+
 		#mh
 		sesd = self.plexInstance.getSelectedEmbeddedSubtitleData()
 		printl("mh: g_SelectedEmbeddedSubtitleData=" + str(sesd), self, "D")
@@ -1404,34 +1410,21 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 				progress = 100
 				printl("End of file reached", self, "D")
 
-			# the reports below are sent while leaving the player: we do not
-			# need their answer, so never block the GUI waiting for them
+			# sent while leaving the player: we do not need the answer, so
+			# never block the GUI waiting for it
 			if self.timelineWatcher is not None:
 				self.timelineWatcher.stop()
 
-				urlPath = self.server + "/:/timeline?containerKey=/library/sections/onDeck&key=/library/metadata/" + self.id + "&ratingKey=" + self.id
-				urlPath += "&state=stopped&time=" + str(currentTime * 1000) + "&duration=" + str(totalTime * 1000)
-				fireAndForget(lambda url=urlPath: self.plexInstance.doRequest(url))
+			# report the final position so the server stores the resume point
+			# (Emby/Jellyfin apply their own min/max resume thresholds)
+			positionMs = currentTime * 1000
+			itemId = self.id
+			fireAndForget(lambda: self.plexInstance.reportStopped(itemId, positionMs))
 
-			#Legacy PMS Server server support before MultiUser version v0.9.8.0 and if we are not connected via plex.tv
-			else:
-
-				http = self.plexInstance.http
-
-				if currentTime < 30:
-					printl("Less that 30 seconds, will not set resume", self, "I")
-
-				#If we are less than 95% complete, store resume time
-				elif progress < 95:
-					printl("Less than 95% progress, will store resume time", self, "I")
-					progressUrl = http + "://" + self.server + "/:/progress?key=" + self.id + "&identifier=com.plexapp.plugins.library&time=" + str(currentTime * 1000)
-					fireAndForget(lambda url=progressUrl: self.plexInstance.doRequest(url))
-
-				#Otherwise, mark as watched
-				else:
-					printl("Movie marked as watched. Over 95% complete", self, "I")
-					scrobbleUrl = http + "://" + self.server + "/:/scrobble?key=" + self.id + "&identifier=com.plexapp.plugins.library"
-					fireAndForget(lambda url=scrobbleUrl: self.plexInstance.doRequest(url))
+			# at (or past) 95% -> mark the item watched
+			if progress >= 95:
+				printl("Over 95% complete, marking watched", self, "I")
+				fireAndForget(lambda: self.plexInstance.markWatched(itemId))
 
 		except:
 			printl("no progress data maybe playback never started, returning ...", self, "D")
@@ -1445,10 +1438,9 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 	def keepTranscoderAlive(self):
 		printl("", self, "S")
 
-		# periodic ping: must not stall playback if the server is slow
-		http = self.plexInstance.http
-		pingUrl = http + "://" + self.server + "/video/:/transcode/universal/ping?session=" + self.transcodingSession
-		fireAndForget(lambda url=pingUrl: self.plexInstance.doRequest(url))
+		# no separate transcoder ping on Emby/Jellyfin: the periodic progress
+		# report in updateTimeline() keeps the session (and any active
+		# transcode) alive. Kept as a no-op so the heartbeat callback is valid.
 
 		printl("", self, "C")
 
@@ -1459,13 +1451,7 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 		printl("", self, "S")
 
 		# sent while leaving playback: no answer needed, never block on it
-		http = self.plexInstance.http
-		if self.universalTranscoder:
-			stopUrl = http + "://" + self.server + "/video/:/transcode/universal/stop?session=" + self.transcodingSession
-		else:
-			stopUrl = http + "://" + self.server + "/video/:/transcode/segmented/stop?session=" + self.transcodingSession
-
-		fireAndForget(lambda url=stopUrl: self.plexInstance.doRequest(url))
+		fireAndForget(lambda: self.plexInstance.stopEncoding())
 
 		printl("", self, "C")
 
@@ -1531,30 +1517,14 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 
 		if self.multiUserServer:
 			try:
-				printl("currentTime: " + str(currentTime), self, "C")
-				printl("totalTime: " + str(totalTime), self, "C")
-
-				urlPath = self.server + "/:/timeline?containerKey=/library/sections/onDeck&key=/library/metadata/" + self.id + "&ratingKey=" + self.id
-
-				seekState = self.seekstate
-
-				# this runs on a timer WHILE playing: a slow server here would
-				# stutter the GUI on every tick, so fire it in the background
-				if seekState == self.SEEK_STATE_PAUSE:
-					printl("Movies PAUSED time: %s secs of %s @ %s%%" % (currentTime, totalTime, progress), self, "D")
-					urlPath += "&state=paused&time=" + str(currentTime * 1000) + "&duration=" + str(totalTime * 1000)
-					fireAndForget(lambda url=urlPath: self.plexInstance.doRequest(url))
-
-				elif seekState == self.SEEK_STATE_PLAY:
-					printl("Movies PLAYING time: %s secs of %s @ %s%%" % (currentTime, totalTime, progress), self, "D")
-					urlPath += "&state=playing&time=" + str(currentTime * 1000) + "&duration=" + str(totalTime * 1000)
-					fireAndForget(lambda url=urlPath: self.plexInstance.doRequest(url))
-
-				# todo add buffering here if needed
-					#urlPath += "&state=buffering&time=" + str(currentTime*1000)
-
-				# todo add stopped here if needed
-					#urlPath += "&state=stopped&time=" + str(currentTime*1000) + "&duration=" + str(totalTime*1000)
+				# runs on a timer WHILE playing: a slow server here would stutter
+				# the GUI on every tick, so fire it in the background. This
+				# periodic progress report doubles as the session keepalive.
+				positionMs = currentTime * 1000
+				isPaused = (self.seekstate == self.SEEK_STATE_PAUSE)
+				itemId = self.id
+				printl("progress %s secs of %s @ %s%% (paused=%s)" % (currentTime, totalTime, progress, isPaused), self, "D")
+				fireAndForget(lambda: self.plexInstance.reportProgress(itemId, positionMs, isPaused))
 
 			except Exception as e:
 				printl("exception: " + str(e), self, "E")
