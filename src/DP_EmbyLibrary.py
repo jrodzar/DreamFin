@@ -149,7 +149,8 @@ class EmbyLibrary(object):
 		self.serverConfig_Name = str(self.g_serverConfig.name.value)
 		self.serverConfig_connectionType = str(self.g_serverConfig.connectionType.value)
 		self.serverConfig_port = str(self.g_serverConfig.port.value)
-		self.serverConfig_playbackType = self.g_serverConfig.playbackType.value
+		self.serverConfig_playbackType = str(self.g_serverConfig.playbackType.value)
+		self.serverConfig_universalTranscoder = bool(getattr(self.g_serverConfig, "universalTranscoder", _emptyConfig(True)).value)
 
 		self.serverConfig_username = str(getattr(self.g_serverConfig, "username", _emptyConfig()).value)
 		self.serverConfig_password = str(getattr(self.g_serverConfig, "password", _emptyConfig()).value)
@@ -176,6 +177,21 @@ class EmbyLibrary(object):
 		self.g_address = "%s:%s" % (self.g_host, self.serverConfig_port)
 
 		printl("using server: %s://%s (type %s)" % (self.http, self.g_address, self.g_serverType), self, "I")
+
+		# playback state (phase 3): the Plex backend kept the picked media,
+		# server and version between the getMediaOptions -> mediaType ->
+		# playLibraryMedia round trips; the singleton lives across them here too
+		self.lastResponse = None
+		self.streams = None
+		self.server = self.g_address
+		self.g_selectedMediaIndex = None
+		self.g_stream = "1"
+		self.g_transcode = "false"
+		self.g_currentMediaSourceId = None
+		self.fallback = False
+		self.locations = ""
+		self.currentFile = ""
+
 		printl("", self, "C")
 
 	#===============================================================================
@@ -1028,6 +1044,12 @@ class EmbyLibrary(object):
 			else:
 				entryData["viewedLeafCount"] = entryData["leafCount"] if userData.get("Played") else "0"
 
+		# marker the show detail view checks ('theme' in self.details) to
+		# decide whether to fetch a series theme song; the real URL is
+		# resolved lazily by getThemeUrl(). Only series carry a theme.
+		if item.get("Type") == "Series":
+			entryData["theme"] = jsonToStr(item.get("Id"))
+
 		return entryData
 
 	#===============================================================================
@@ -1303,14 +1325,20 @@ class EmbyLibrary(object):
 	#
 	#===============================================================================
 	def _itemsFromAnswer(self, answer):
-		"""Envelope dual parser: {Items: [...]} or the bare array some
-		endpoints (/Users/{id}/Items/Latest) return."""
+		"""Envelope dual parser: {Items: [...]}, the bare array some
+		endpoints (/Users/{id}/Items/Latest) return, or a single item
+		object (/Users/{uid}/Items/{id}) wrapped into a one-element list
+		so the post-playback view refresh sees exactly one entry."""
 		if answer is None:
 			return None
 		if isinstance(answer, list):
 			return answer
 		if isinstance(answer, dict):
-			return answer.get("Items", [])
+			if "Items" in answer:
+				return answer.get("Items", [])
+			if "Id" in answer:
+				return [answer]
+			return []
 		return []
 
 	#===============================================================================
@@ -1443,16 +1471,296 @@ class EmbyLibrary(object):
 		return self._browse(url, currentViewMode="ShowTracks", defaultNextViewMode="play", defaultTagType="Track")
 
 	#===============================================================================
-	# PLAYBACK SURFACE - real implementations arrive in phases 3/4; these
-	# keep the UI alive (message instead of a green screen) until then
+	# PLAYBACK SURFACE (phase 3: direct play + progress + watched + resume)
+	# transcode(), local-file resolution and audio/subtitle preselection are
+	# phase 4; here every path plays the direct stream URL.
 	#===============================================================================
 
-	def getMediaOptionsToPlay(self, myId, vids, override=False, myType="Video", loadExtraData=False):
-		self.lastError = _("Playback arrives in a later phase of the port.")
-		return 0, [], self.g_address
+	def appendTokenToUrl(self, url):
+		"""Media players cannot send auth headers, so the token travels as
+		api_key inside the playback/theme URLs themselves."""
+		if not url or not self.g_accessToken or "api_key=" in url:
+			return url
+		separator = "&" if "?" in url else "?"
+		return url + separator + "api_key=" + self.g_accessToken
 
+	#===============================================================================
+	#
+	#===============================================================================
+	def getAudioSubtitlesMedia(self, server, myId, myType="Video", loadExtraData=False):
+		"""Fetch the item detail and build the 'streams' dict the player
+		reads: one 8-tuple part per MediaSource (= one version), plus the
+		videoData/mediaData the detail panel shows. Never raises."""
+		printl("myId: " + str(myId), self, "S")
+
+		empty = {
+			"partsCount": 0, "parts": [], "sourceIds": [],
+			"videoData": {"title": "", "tagline": "", "summary": "", "year": "",
+						"studio": "", "viewOffset": "0", "duration": "", "contentRating": ""},
+			"mediaData": {}, "contents": "", "audio": {}, "audioCount": 0,
+			"subtitle": {}, "subCount": 0, "external": {}, "subOffset": -1, "audioOffset": -1,
+		}
+
+		# tráilers/extras (loadExtraData) land in phase 4
+		if loadExtraData:
+			printl("", self, "C")
+			return empty
+
+		item = self.getJson(self._detailUrl(myId))
+		self.lastResponse = item
+		if not item or not isinstance(item, dict):
+			if not self.lastError:
+				self.lastError = _("No data in this section!")
+			printl("", self, "C")
+			return empty
+
+		entryData = self.itemToEntryData(item)
+		videoData = {
+			"title": entryData.get("title", ""),
+			"tagline": entryData.get("tagline", ""),
+			"summary": entryData.get("summary", ""),
+			"year": entryData.get("year", ""),
+			"studio": entryData.get("studio", ""),
+			"viewOffset": entryData.get("viewOffset", "0"),
+			"duration": entryData.get("duration", ""),
+			"contentRating": entryData.get("contentRating", ""),
+		}
+		mediaDataArr = self.buildMediaDataArr(item)
+		mediaData = mediaDataArr[0] if mediaDataArr else {}
+
+		parts = []
+		sourceIds = []
+		for index, source in enumerate(item.get("MediaSources") or []):
+			sourceId = jsonToStr(source.get("Id"))
+			videoResolution = ""
+			videoCodec = ""
+			for stream in source.get("MediaStreams") or []:
+				if stream.get("Type") == "Video":
+					videoResolution = self._mapResolution(stream.get("Width"), stream.get("Height"))
+					videoCodec = jsonToStr(stream.get("Codec"))
+					break
+			key = "/Videos/%s/stream?static=true&MediaSourceId=%s" % (jsonToStr(myId), sourceId)
+			part = (
+				key,
+				jsonToStr(source.get("Path")),
+				jsonToStr(source.get("Container")),
+				jsonToStr(source.get("Size")),
+				jsonToStr(ticksToMs(source["RunTimeTicks"])) if source.get("RunTimeTicks") else "",
+				videoResolution,
+				videoCodec,
+				index,  # mediaIndex -> setSelectedVersion -> MediaSources[index]
+			)
+			parts.append(part)
+			sourceIds.append(sourceId)
+
+		streams = dict(empty)
+		streams["partsCount"] = len(parts)
+		streams["parts"] = parts
+		streams["sourceIds"] = sourceIds
+		streams["videoData"] = videoData
+		streams["mediaData"] = mediaData
+		self.g_currentMediaSourceId = sourceIds[0] if sourceIds else jsonToStr(myId)
+
+		printl("parts: " + str(len(parts)), self, "C")
+		return streams
+
+	#===============================================================================
+	#
+	#===============================================================================
+	def _sourceIdForIndex(self, index):
+		if index is None or not self.streams:
+			return None
+		sourceIds = self.streams.get("sourceIds") or []
+		try:
+			return sourceIds[int(index)]
+		except (IndexError, TypeError, ValueError):
+			return None
+
+	def getMediaOptionsToPlay(self, myId, vids, override=False, myType="Video", loadExtraData=False):
+		"""(partsCount, parts, server) - one part per version. count>1 makes
+		the player raise the 'Select media to play' version dialog."""
+		self.g_selectedMediaIndex = None
+		self.server = self.g_address
+		self.streams = self.getAudioSubtitlesMedia(self.server, myId, myType, loadExtraData)
+		return self.streams["partsCount"], self.streams["parts"], self.server
+
+	def setSelectedVersion(self, mediaIndex):
+		"""Remember which MediaSource the version dialog picked."""
+		self.g_selectedMediaIndex = mediaIndex
+
+	def setPlaybackType(self, myType):
+		"""Streamed/Transcoded/Direct-Local flags. Phase 3 plays direct for
+		all three; transcode() and local resolution arrive in phase 4."""
+		myType = str(myType)
+		if myType == "1":  # Transcoded
+			self.g_transcode = "true"
+			self.g_stream = "1"
+		elif myType == "2":  # Direct Local
+			self.g_transcode = "false"
+			self.g_stream = "0"
+		else:  # "0" Streamed
+			self.g_transcode = "false"
+			self.g_stream = "1"
+
+	def mediaType(self, partData, server):
+		"""Turn the picked part into the absolute direct-stream URL. Direct
+		Local/SMB resolution is phase 4; here everything streams direct."""
+		self.fallback = False
+		self.locations = ""
+		self.currentFile = partData.get("file", "")
+		return "%s://%s%s" % (self.http, server, partData["key"])
+
+	#===============================================================================
+	#
+	#===============================================================================
 	def playLibraryMedia(self, myId, url, isExtraData=False):
-		self.lastError = _("Playback arrives in a later phase of the port.")
+		"""Build the playerData dict setPlayerData()/playSelectedMedia() read.
+		No network here (phase 3 direct play); the URL is already resolved."""
+		printl("myId: " + str(myId), self, "S")
+
+		if self.streams is None:
+			self.streams = self.getAudioSubtitlesMedia(self.server, myId, "Video", False)
+
+		videoData = self.streams.get("videoData", {})
+		try:
+			resume = int(videoData.get("viewOffset") or 0)  # milliseconds
+		except (TypeError, ValueError):
+			resume = 0
+
+		sourceId = self._sourceIdForIndex(self.g_selectedMediaIndex)
+		if not sourceId:
+			sourceIds = self.streams.get("sourceIds") or []
+			sourceId = sourceIds[0] if sourceIds else jsonToStr(myId)
+		self.g_currentMediaSourceId = sourceId
+
+		playerData = {
+			"playUrl": self.appendTokenToUrl(url),
+			"resumeStamp": resume,
+			"server": self.server,
+			"id": jsonToStr(myId),
+			"mediaSourceId": sourceId,
+			"multiUserServer": True,  # Emby/Jellyfin always expose /Sessions
+			"playbackType": self.serverConfig_playbackType,
+			"connectionType": self.serverConfig_connectionType,
+			"localAuth": False,
+			"transcodingSession": self.g_sessionID,
+			"universalTranscoder": self.serverConfig_universalTranscoder,
+			"videoData": videoData,
+			"mediaData": self.streams.get("mediaData", {}),
+			"fallback": self.fallback,
+			"locations": self.locations,
+			"currentFile": self.currentFile,
+			"subtitleFileTemp": None,
+			"usingExtForcedSubs": False,
+		}
+		printl("", self, "C")
+		return playerData
+
+	#===============================================================================
+	# PROGRESS / WATCHED REPORTING (POST bodies carry ticks = ms * 10000)
+	#===============================================================================
+
+	def _postJson(self, path, body):
+		"""POST a JSON body; True on any non-error answer (incl. 204)."""
+		answer = self.getJson(self.getContentUrl(path), myType="POST", body=json.dumps(body))
+		return answer is not None
+
+	def reportPlaybackStart(self, itemId, positionMs=0, isPaused=False, mediaSourceId=None):
+		body = {
+			"ItemId": jsonToStr(itemId),
+			"MediaSourceId": mediaSourceId or self.g_currentMediaSourceId or jsonToStr(itemId),
+			"PlaySessionId": self.g_sessionID,
+			"PositionTicks": msToTicks(positionMs),
+			"IsPaused": bool(isPaused),
+			"CanSeek": True,
+			"PlayMethod": "DirectStream",
+		}
+		return self._postJson("/Sessions/Playing", body)
+
+	def reportProgress(self, itemId, positionMs, isPaused=False, mediaSourceId=None):
+		body = {
+			"ItemId": jsonToStr(itemId),
+			"MediaSourceId": mediaSourceId or self.g_currentMediaSourceId or jsonToStr(itemId),
+			"PlaySessionId": self.g_sessionID,
+			"PositionTicks": msToTicks(positionMs),
+			"IsPaused": bool(isPaused),
+			"CanSeek": True,
+		}
+		return self._postJson("/Sessions/Playing/Progress", body)
+
+	def reportStopped(self, itemId, positionMs, mediaSourceId=None):
+		body = {
+			"ItemId": jsonToStr(itemId),
+			"MediaSourceId": mediaSourceId or self.g_currentMediaSourceId or jsonToStr(itemId),
+			"PlaySessionId": self.g_sessionID,
+			"PositionTicks": msToTicks(positionMs),
+		}
+		return self._postJson("/Sessions/Playing/Stopped", body)
+
+	#===============================================================================
+	# CONTEXT-MENU ACTIONS (the right HTTP verb is the whole point)
+	#===============================================================================
+
+	def markWatched(self, itemId):
+		url = self.getContentUrl("/Users/%s/PlayedItems/%s" % (self.g_userId, jsonToStr(itemId)))
+		return self.getJson(url, myType="POST") is not None
+
+	def markUnwatched(self, itemId):
+		url = self.getContentUrl("/Users/%s/PlayedItems/%s" % (self.g_userId, jsonToStr(itemId)))
+		return self.getJson(url, myType="DELETE") is not None
+
+	def refreshItem(self, itemId):
+		url = self.getContentUrl("/Items/%s/Refresh" % jsonToStr(itemId))
+		return self.getJson(url, myType="POST") is not None
+
+	def deleteItem(self, itemId):
+		url = self.getContentUrl("/Items/%s" % jsonToStr(itemId))
+		return self.getJson(url, myType="DELETE") is not None
+
+	#===============================================================================
+	#
+	#===============================================================================
+	def getItemUrl(self, itemId):
+		"""Single-item detail URL, for the post-playback view-state refresh."""
+		return self._detailUrl(itemId)
+
+	def getThemeUrl(self, itemId):
+		"""Series theme song stream URL (with api_key), or '' if none."""
+		answer = self.getJson(self.getContentUrl("/Items/%s/ThemeSongs" % jsonToStr(itemId)))
+		items = self._itemsFromAnswer(answer) or []
+		if not items:
+			return ""
+		themeId = jsonToStr(items[0].get("Id"))
+		if not themeId:
+			return ""
+		return self.appendTokenToUrl(self.getContentUrl("/Audio/%s/stream?static=true" % themeId))
+
+	#===============================================================================
+	# PHASE-4 SURFACE - defensive stubs so the audio button / transcode path
+	# do not crash the UI before phase 4 fills them in
+	#===============================================================================
+
+	def getSelectedEmbeddedSubtitleData(self):
+		return None
+
+	def getLastResponse(self):
+		return self.lastResponse or self.lastError
+
+	def stopEncoding(self):
+		# phase 3 plays direct and the periodic progress report is the
+		# keepalive; DELETE /Videos/ActiveEncodings lands in phase 4
+		return True
+
+	def getAudioById(self, server=None, itemId=None):
+		return []
+
+	def getSubtitleById(self, server=None, itemId=None):
+		return []
+
+	def setAudioById(self, *args):
+		return None
+
+	def setSubtitleById(self, *args):
 		return None
 
 	#===============================================================================
