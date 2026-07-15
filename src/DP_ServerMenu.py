@@ -101,7 +101,7 @@ class DPS_ServerMenu(DPH_Screen, DPH_HorizontalMenu, DPH_ScreenHelper, DPH_Filte
 		self.session = session
 
 		self.g_serverConfig = g_serverConfig
-		self.plexInstance = Singleton().getPlexInstance()
+		self.plexInstance = Singleton().getBackendInstance()
 		self.guiElements = getGuiElements()
 
 		self.initScreen("server_menu")
@@ -285,9 +285,9 @@ class DPS_ServerMenu(DPH_Screen, DPH_HorizontalMenu, DPH_ScreenHelper, DPH_Filte
 
 		if searchString is not None:
 			if "origContentUrl" in entryData[0]:
-				searchUrl = entryData[0]["origContentUrl"] + "&query=" + searchString
+				searchUrl = entryData[0]["origContentUrl"] + "&SearchTerm=" + searchString
 			else:
-				searchUrl = entryData[0]["contentUrl"] + "&query=" + searchString
+				searchUrl = entryData[0]["contentUrl"] + "&SearchTerm=" + searchString
 				entryData[0]["origContentUrl"] = entryData[0]["contentUrl"]
 
 			printl("searchUrl: " + str(searchUrl), self, "D")

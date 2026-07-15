@@ -40,11 +40,9 @@ from Screens.Screen import Screen
 from .__common__ import printl2 as printl
 from .__init__ import initServerEntryConfig, _  # _ is translation
 
-from .DP_PlexLibrary import PlexLibrary
 from .DP_Mappings import DPS_Mappings
 from .DPH_ScreenHelper import DPH_PlexScreen
 from .DP_ViewFactory import getGuiElements
-from .DPH_Singleton import Singleton
 #===============================================================================
 #
 #===============================================================================
@@ -103,9 +101,9 @@ class DPS_Server(Screen, DPH_PlexScreen):
 		self["header"].setText(_("Server List:"))
 
 		if self.skinResolution == "FHD":  # FHD is used for FULL HD Boxes with new framebuffer
-			self["columnHeader"].setText(_("Name                                         IP/plex.tv                                            Port/Email                                        Active"))
+			self["columnHeader"].setText(_("Name                                         IP/DNS                                                Port                                              Active"))
 		else:
-			self["columnHeader"].setText(_("Name                                         IP/plex.tv                                 Port/Email                                  Active"))
+			self["columnHeader"].setText(_("Name                                         IP/DNS                                     Port                                        Active"))
 
 		self["btn_redText"].setText(_("Delete"))
 		self["btn_greenText"].setText(_("Add"))
@@ -128,12 +126,11 @@ class DPS_Server(Screen, DPH_PlexScreen):
 
 			name = serverConfig.name.value
 
-			if serverConfig.connectionType.value == "2":
-				text1 = serverConfig.myplexUrl.value
-				text2 = serverConfig.myplexUsername.value
+			if serverConfig.connectionType.value == "1":
+				text1 = serverConfig.dns.value
 			else:
 				text1 = "%d.%d.%d.%d" % tuple(serverConfig.ip.value)
-				text2 = "%d" % serverConfig.port.value
+			text2 = "%d" % serverConfig.port.value
 
 			active = str(serverConfig.state.value)
 
@@ -256,7 +253,6 @@ class DPS_ServerConfig(ConfigListScreen, Screen, DPH_PlexScreen):
 			"cancel": self.keyCancel,
 		    "exit": self.keyCancel,
 			"yellow": self.keyYellow,
-			"blue": self.keyBlue,
 			"left": self.keyLeft,
 			"right": self.keyRight,
 		}, -2)
@@ -372,20 +368,16 @@ class DPS_ServerConfig(ConfigListScreen, Screen, DPH_PlexScreen):
 		##
 		self.cfglist.append(getConfigListEntry(_(" > Connection Type"), self.current.connectionType, _("Select your type how the box is reachable.")))
 
-		if self.current.connectionType.value == "0" or self.current.connectionType.value == "1":  # IP or DNS
-			self.cfglist.append(getConfigListEntry(_(" > Local Authentication"), self.current.localAuth, _("Use this if you secured your plex server in the settings.")))
-			if self.current.connectionType.value == "0":
-				self.addIpSettings()
-			else:
-				self.cfglist.append(getConfigListEntry(_(" >> DNS"), self.current.dns, _(" ")))
-				self.cfglist.append(getConfigListEntry(_(" >> Port"), self.current.port, _(" ")))
-			if getattr(self.current, "accessToken", None) is not None:
-				self.cfglist.append(getConfigListEntry(_(" > Access Token (optional)"), self.current.accessToken, _("X-Plex-Token used to authenticate against this server. Overrides local authentication and plex.tv tokens.")))
-			if self.current.localAuth.value:
-				self.addMyPlexSettings()
+		if self.current.connectionType.value == "0":  # IP
+			self.addIpSettings()
+		else:  # DNS
+			self.cfglist.append(getConfigListEntry(_(" >> DNS"), self.current.dns, _("Host name of your Emby/Jellyfin server, e.g. jellyfin.example.com")))
+			self.cfglist.append(getConfigListEntry(_(" >> Port"), self.current.port, _("8096 is the default port. 443 and 8920 imply https.")))
 
-		elif self.current.connectionType.value == "2":  # plex.tv
-			self.addMyPlexSettings()
+		self.cfglist.append(getConfigListEntry(_(" > Server Type"), self.current.serverType, _("Auto detects Emby vs Jellyfin on first contact and sets the color theme.")))
+		self.cfglist.append(getConfigListEntry(_(" > Username"), self.current.username, _("User to log in with. Not needed when an API key is set.")))
+		self.cfglist.append(getConfigListEntry(_(" > Password"), self.current.password, _("Stored as plain text in the enigma2 settings; prefer an API key if that worries you.")))
+		self.cfglist.append(getConfigListEntry(_(" > API key (optional)"), self.current.accessToken, _("Emby/Jellyfin API key. When set it wins over username/password.")))
 
 		##
 		self.cfglist.append(getConfigListEntry(_("Playback Settings ") + separator, config.plugins.dreamfin.about, _(" ")))
@@ -453,28 +445,6 @@ class DPS_ServerConfig(ConfigListScreen, Screen, DPH_PlexScreen):
 	#===========================================================================
 	#
 	#===========================================================================
-	def addMyPlexSettings(self):
-		printl("", self, "S")
-
-		self.cfglist.append(getConfigListEntry(_(" >> plex.tv URL"), self.current.myplexUrl, ''))
-		self.cfglist.append(getConfigListEntry(_(" >> plex.tv Username"), self.current.myplexUsername, ''))
-		self.cfglist.append(getConfigListEntry(_(" >> plex.tv Password"), self.current.myplexPassword, ''))
-
-		self.cfglist.append(getConfigListEntry(_(" >> plex.tv Home Users"), self.current.myplexHomeUsers, _("Use Home Users?")))
-		if self.current.myplexHomeUsers.value:
-			self.cfglist.append(getConfigListEntry(_(" >> Use Settings Protection"), self.current.protectSettings, _("Ask for pin?")))
-			if self.current.protectSettings.value:
-				self.cfglist.append(getConfigListEntry(_(" >> Settings Pincode"), self.current.settingsPin, _("Pincode for changing settings")))
-
-			self.cfglist.append(getConfigListEntry(_(" >> plex.tv Pin Protection"), self.current.myplexPinProtect, _("Use Pinprotection for switch back to plex.tv user?")))
-			if self.current.myplexPinProtect.value:
-				self.cfglist.append(getConfigListEntry(_(" >> plex.tv Pincode"), self.current.myplexPin, _("Pincode for switching back from any home user.")))
-
-		printl("", self, "C")
-
-	#===========================================================================
-	#
-	#===========================================================================
 	def updateHelp(self):
 		printl("", self, "S")
 
@@ -496,25 +466,14 @@ class DPS_ServerConfig(ConfigListScreen, Screen, DPH_PlexScreen):
 			self["btn_yellowText"].setText(_("Mappings"))
 			self["btn_yellowText"].show()
 			self["btn_yellow"].show()
-		elif self.current.localAuth.value:
-			self["btn_yellowText"].setText(_("get local auth Token"))
-			self["btn_yellowText"].show()
-			self["btn_yellow"].show()
 		else:
 			self["btn_yellowText"].hide()
 			self["btn_yellow"].hide()
 
 		self["btn_redText"].hide()
 		self["btn_red"].hide()
-
-		if (self.current.localAuth.value or self.current.connectionType.value == "2") and self.newmode == 0:
-			self["btn_blueText"].setText(_("(re)create plex.tv Token"))
-
-			self["btn_blueText"].show()
-			self["btn_blue"].show()
-		else:
-			self["btn_blueText"].hide()
-			self["btn_blue"].hide()
+		self["btn_blueText"].hide()
+		self["btn_blue"].hide()
 
 		printl("", self, "C")
 
@@ -550,40 +509,12 @@ class DPS_ServerConfig(ConfigListScreen, Screen, DPH_PlexScreen):
 			config.plugins.dreamfin.entriescount.value += 1
 			config.plugins.dreamfin.entriescount.save()
 
-		#if self.current.machineIdentifier.value == "":
-		from .DP_PlexLibrary import PlexLibrary
-		self.plexInstance = Singleton().getPlexInstance(PlexLibrary(self.session, self.current))
+		# connection or account details may have changed: drop the cached
+		# session so the next request logs in freshly against this config
+		self.current.accessTokenCache.value = ""
+		self.current.userIdCache.value = ""
 
-		machineIdentifiers = ""
-
-		if self.current.connectionType.value == "2":
-			xmlResponse = self.plexInstance.getSharedServerForPlexUser()
-			machineIdentifier = xmlResponse.get("machineIdentifier")
-			if machineIdentifier is not None:
-				machineIdentifiers += machineIdentifier
-
-			servers = xmlResponse.findall("Server")
-			for server in servers:
-				machineIdentifier = server.get("machineIdentifier")
-				if machineIdentifier is not None:
-					machineIdentifiers += ", " + machineIdentifier
-
-		else:
-			http = self.plexInstance.http
-			url = "%s://%s:%s" % (http, str(self.plexInstance.g_host), str(self.plexInstance.serverConfig_port))
-			xmlResponse = self.plexInstance.getXmlTreeFromUrl(url)
-			machineIdentifier = xmlResponse.get("machineIdentifier")
-
-			if machineIdentifier is not None:
-				machineIdentifiers += xmlResponse.get("machineIdentifier")
-
-		self.current.machineIdentifier.value = machineIdentifiers
-		printl("machineIdentifier: " + str(self.current.machineIdentifier.value), self, "D")
-
-		if self.current.connectionType.value == "2" or self.current.localAuth.value:
-			self.keyBlue()
-		else:
-			self.saveNow()
+		self.saveNow()
 
 		printl("", self, "C")
 
@@ -622,42 +553,7 @@ class DPS_ServerConfig(ConfigListScreen, Screen, DPH_PlexScreen):
 
 		if self.useMappings:
 			serverID = self.currentId
-			self.plexInstance = Singleton().getPlexInstance(PlexLibrary(self.session, self.current))
-			serverpaths = self.plexInstance.getServerSectionPaths()
+			serverpaths = []  # section paths for Direct Local come back in phase 2
 			self.session.open(DPS_Mappings, serverID, serverpaths)
-
-		elif self.current.localAuth.value:
-			# now that we know the server we establish global plexInstance
-			self.plexInstance = Singleton().getPlexInstance(PlexLibrary(self.session, self.current))
-
-			ipInConfig = "%d.%d.%d.%d" % tuple(self.current.ip.value)
-			token = self.plexInstance.getPlexUserTokenForLocalServerAuthentication(ipInConfig)
-
-			if token:
-				self.current.myplexLocalToken.value = token
-				self.current.myplexLocalToken.save()
-				self.session.open(MessageBox, (_("Local Token:") + "\n%s \n" + _("for the user:") + "\n%s") % (token, self.current.myplexTokenUsername.value), MessageBox.TYPE_INFO)
-			else:
-				response = self.plexInstance.getLastResponse()
-				self.session.open(MessageBox, (_("Error:") + "\n%s \n" + _("for the user:") + "\n%s") % (response, self.current.myplexTokenUsername.value), MessageBox.TYPE_INFO)
-
-		printl("", self, "C")
-
-	#===========================================================================
-	#
-	#===========================================================================
-	def keyBlue(self):
-		printl("", self, "S")
-
-		# now that we know the server we establish global plexInstance
-		self.plexInstance = Singleton().getPlexInstance(PlexLibrary(self.session, self.current))
-
-		token = self.plexInstance.getNewMyPlexToken()
-
-		if token:
-			self.session.openWithCallback(self.saveNow, MessageBox, (_("plex.tv Token:") + "\n%s \n" + _("for the user:") + "\n%s \n" + _("with the id:") + "\n%s") % (token, self.current.myplexTokenUsername.value, self.current.myplexId.value), MessageBox.TYPE_INFO)
-		else:
-			response = self.plexInstance.getLastResponse()
-			self.session.openWithCallback(self.saveNow, MessageBox, (_("Error:") + "\n%s \n" + _("for the user:") + "\n%s") % (response, self.current.myplexTokenUsername.value), MessageBox.TYPE_INFO)
 
 		printl("", self, "C")

@@ -259,33 +259,33 @@ class DP_LibMain(Screen):
 
 		# MUSIC
 		if nextViewMode == "artist":
-			library, mediaContainer = Singleton().getPlexInstance().getMusicByArtist(url)
+			library, mediaContainer = Singleton().getBackendInstance().getMusicByArtist(url)
 
 		elif nextViewMode == "ShowAlbums" or (currentViewMode == "ShowAlbums" and nextViewMode == "ShowDirectory"):
-			library, mediaContainer = Singleton().getPlexInstance().getMusicByAlbum(url)
+			library, mediaContainer = Singleton().getBackendInstance().getMusicByAlbum(url)
 
 		elif nextViewMode == "ShowTracks":
-			library, mediaContainer = Singleton().getPlexInstance().getMusicTracks(url)
+			library, mediaContainer = Singleton().getBackendInstance().getMusicTracks(url)
 
 		# MOVIES
 		elif nextViewMode == "movie" or (currentViewMode == "ShowMovies" and nextViewMode == "ShowDirectory"):
-			library, mediaContainer = Singleton().getPlexInstance().getMoviesFromSection(url)
+			library, mediaContainer = Singleton().getBackendInstance().getMoviesFromSection(url)
 
 		elif nextViewMode == "mixed":
-			library, mediaContainer = Singleton().getPlexInstance().getMixedContentFromSection(url)
+			library, mediaContainer = Singleton().getBackendInstance().getMixedContentFromSection(url)
 
 		# SHOWS
 		elif nextViewMode == "show":
-			library, mediaContainer = Singleton().getPlexInstance().getShowsFromSection(url)
+			library, mediaContainer = Singleton().getBackendInstance().getShowsFromSection(url)
 
 		elif nextViewMode == "ShowEpisodesDirect":
-			library, mediaContainer = Singleton().getPlexInstance().getEpisodesOfSeason(url, directMode=True)
+			library, mediaContainer = Singleton().getBackendInstance().getEpisodesOfSeason(url, directMode=True)
 
 		elif nextViewMode == "ShowSeasons":
-			library, mediaContainer = Singleton().getPlexInstance().getSeasonsOfShow(url)
+			library, mediaContainer = Singleton().getBackendInstance().getSeasonsOfShow(url)
 
 		elif nextViewMode == "ShowEpisodes":
-			library, mediaContainer = Singleton().getPlexInstance().getEpisodesOfSeason(url)
+			library, mediaContainer = Singleton().getBackendInstance().getEpisodesOfSeason(url)
 
 		printl("", self, "C")
 		return library, mediaContainer

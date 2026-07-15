@@ -175,7 +175,7 @@ def initServerEntryConfig():
 	config.plugins.dreamfin.Entries[i].state = ConfigYesNo(default=True)
 	config.plugins.dreamfin.Entries[i].autostart = ConfigYesNo()
 	config.plugins.dreamfin.Entries[i].name = ConfigText(default=defaultName, visible_width=50, fixed_size=False)
-	config.plugins.dreamfin.Entries[i].connectionType = ConfigSelection(default="0", choices=[("0", _("IP")), ("1", _("DNS")), ("2", _("plex.tv"))])
+	config.plugins.dreamfin.Entries[i].connectionType = ConfigSelection(default="1", choices=[("0", _("IP")), ("1", _("DNS"))])
 	config.plugins.dreamfin.Entries[i].ip = ConfigIP(default=defaultIp)
 	config.plugins.dreamfin.Entries[i].dns = ConfigText(default="my.dns.url", visible_width=50, fixed_size=False)
 	config.plugins.dreamfin.Entries[i].port = ConfigInteger(default=defaultPort, limits=(1, 65555))

@@ -32,7 +32,7 @@ from Components.config import config
 
 from Screens.MessageBox import MessageBox
 
-from .DP_PlexLibrary import PlexLibrary
+from .DP_EmbyLibrary import EmbyLibrary
 from .DP_SystemCheck import DPS_SystemCheck
 from .DP_Settings import DPS_Settings
 from .DP_Server import DPS_Server
@@ -176,8 +176,8 @@ class DPS_MainMenu(DPH_Screen, DPH_HorizontalMenu, DPH_ScreenHelper):
 					printl("found Plugin.MENU_SERVER", self, "D")
 
 					self.g_serverConfig = selection[3]
-					# now that we know the server we establish global plexInstance
-					self.plexInstance = Singleton().getPlexInstance(PlexLibrary(self.session, self.g_serverConfig))
+					# now that we know the server we establish the global backend instance
+					self.plexInstance = Singleton().getBackendInstance(EmbyLibrary(self.session, self.g_serverConfig))
 
 					# check if server is reachable
 					self.checkServerState()

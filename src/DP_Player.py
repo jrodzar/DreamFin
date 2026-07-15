@@ -206,7 +206,7 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 
 		self.libraryName = libraryName
 
-		self.plexInstance = Singleton().getPlexInstance()
+		self.plexInstance = Singleton().getBackendInstance()
 
 		self.initScreen(self.skinName)
 
@@ -367,7 +367,7 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 		# asking the server for the media options is a network round trip:
 		# keep it off the enigma2 main loop so the GUI cannot freeze
 		def work():
-			return Singleton().getPlexInstance().getMediaOptionsToPlay(self.media_id, server, False, myType=selection[1]['tagType'])
+			return Singleton().getBackendInstance().getMediaOptionsToPlay(self.media_id, server, False, myType=selection[1]['tagType'])
 
 		runInThread(work, self.onMediaOptionsReady)
 
@@ -404,7 +404,7 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 		self.dvdplayback = False
 
 		if not self.options:
-			response = Singleton().getPlexInstance().getLastResponse()
+			response = Singleton().getBackendInstance().getLastResponse()
 			self.session.open(MessageBox, (_("Error:") + "\n%s") % response, MessageBox.TYPE_INFO)
 		else:
 			if count > 1:
@@ -472,11 +472,11 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 		# remember which VERSION was picked so the transcoder serves it too
 		selectedOption = self.options[result]
 		if len(selectedOption) > 7 and selectedOption[7] is not None:
-			Singleton().getPlexInstance().setSelectedVersion(selectedOption[7])
+			Singleton().getBackendInstance().setSelectedVersion(selectedOption[7])
 
-		Singleton().getPlexInstance().setPlaybackType(str(self.playbackMode))
+		Singleton().getBackendInstance().setPlaybackType(str(self.playbackMode))
 
-		mediaFileUrl = Singleton().getPlexInstance().mediaType({'key': self.options[result][0], 'file': self.options[result][1]}, self.server)
+		mediaFileUrl = Singleton().getBackendInstance().mediaType({'key': self.options[result][0], 'file': self.options[result][1]}, self.server)
 		printl("We have selected media at " + mediaFileUrl, self, "I")
 
 		self.buildPlayerData(mediaFileUrl)
@@ -492,7 +492,7 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 		# playLibraryMedia talks to the server (and starting a transcode
 		# session can take seconds): off the main loop it goes
 		def work():
-			return Singleton().getPlexInstance().playLibraryMedia(self.media_id, mediaFileUrl, isExtraData=isExtraData)
+			return Singleton().getBackendInstance().playLibraryMedia(self.media_id, mediaFileUrl, isExtraData=isExtraData)
 
 		runInThread(work, self.onPlayerDataReady)
 
@@ -1755,7 +1755,7 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 		printl("", self, "S")
 
 		mediaPath = config.plugins.dreamfin.mediafolderpath.value
-		image_prefix = Singleton().getPlexInstance().getServerName().lower()
+		image_prefix = Singleton().getBackendInstance().getServerName().lower()
 
 		self.poster_postfix = "_poster_" + self.width + "x" + self.height + "_v2.jpg"
 

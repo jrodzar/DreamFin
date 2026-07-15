@@ -36,7 +36,7 @@ class Singleton(object):
 	singlton config object
 	"""
 	__we_are_one = {}
-	__plexInstance = ""
+	__backendInstance = ""
 	__logFileInstance = ""
 	__skinParamsInstance = ""
 
@@ -44,16 +44,16 @@ class Singleton(object):
 		#implement the borg patter (we are one)
 		self.__dict__ = self.__we_are_one
 
-	def getPlexInstance(self, value=None):
+	def getBackendInstance(self, value=None):
 		"""with value you can set the singleton content"""
 		if value:
 			#printl("generating Plex instance ...", self, "D")
-			self.__plexInstance = value
+			self.__backendInstance = value
 		else:
 			#printl("reusing Plex instance ...", self, "D")
 			pass
 
-		return self.__plexInstance
+		return self.__backendInstance
 
 	def getLogFileInstance(self, value=None):
 		"""with value you can set the singleton content"""

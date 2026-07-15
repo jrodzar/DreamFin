@@ -184,7 +184,7 @@ class DP_View(DPH_Screen, DPH_ScreenHelper, DPH_MultiColorFunctions, DPH_Filter)
 		self.stillPictureEnabledInView = self.viewParams["settings"]["backdropVideos"]
 		self.stillPictureEnabledInSettings = config.plugins.dreamfin.useBackdropVideos.value
 
-		self.plexInstance = Singleton().getPlexInstance()
+		self.plexInstance = Singleton().getBackendInstance()
 
 		self.libraryName = libraryName
 		self.loadLibrary = loadLibraryFnc
@@ -567,7 +567,7 @@ class DP_View(DPH_Screen, DPH_ScreenHelper, DPH_MultiColorFunctions, DPH_Filter)
 
 			# looking up the extras is a server round trip: off the main loop
 			def work():
-				return Singleton().getPlexInstance().getMediaOptionsToPlay(media_id, server, False, myType=selection[1]['tagType'], loadExtraData=True)
+				return Singleton().getBackendInstance().getMediaOptionsToPlay(media_id, server, False, myType=selection[1]['tagType'], loadExtraData=True)
 
 			def onDone(mediaOptions, error):
 				if error is not None or not mediaOptions:
@@ -706,7 +706,7 @@ class DP_View(DPH_Screen, DPH_ScreenHelper, DPH_MultiColorFunctions, DPH_Filter)
 				printl("", self, "C")
 				return
 
-			plexInstance = Singleton().getPlexInstance()
+			plexInstance = Singleton().getBackendInstance()
 			url = "%s://%s/library/metadata/%s" % (plexInstance.http, entryData["server"], entryData["ratingKey"])
 
 			# fetch off the main loop, then patch the row in the callback
@@ -1538,7 +1538,7 @@ class DP_View(DPH_Screen, DPH_ScreenHelper, DPH_MultiColorFunctions, DPH_Filter)
 					self.session.openWithCallback(self.myCallback, DP_Player, self.listViewList, currentIndex, self.libraryName, self.autoPlayMode, self.resumeMode, self.playbackMode, sessionData=self.sessionData)
 				else:
 					if self.serverConfig.useForcedSubtitles.value and self.serverConfig.playbackType.value == "2":
-						self.subtitleData = Singleton().getPlexInstance().getSelectedSubtitleDataById(entryData["server"], entryData["ratingKey"], True)  # mh : pass in forcedOnly
+						self.subtitleData = Singleton().getBackendInstance().getSelectedSubtitleDataById(entryData["server"], entryData["ratingKey"], True)  # mh : pass in forcedOnly
 						printl("mh: setting subtitleData=" + str(self.subtitleData), self, "D")
 
 					self.session.openWithCallback(self.myCallback, DP_Player, self.listViewList, currentIndex, self.libraryName, self.autoPlayMode, self.resumeMode, self.playbackMode, subtitleData=self.subtitleData)
@@ -2280,7 +2280,7 @@ class DP_View(DPH_Screen, DPH_ScreenHelper, DPH_MultiColorFunctions, DPH_Filter)
 			self.media_id = selection[1]['ratingKey']
 			self.server = selection[1]['server']
 
-			self.subtitlesList = Singleton().getPlexInstance().getSubtitlesById(self.server, self.media_id)
+			self.subtitlesList = Singleton().getBackendInstance().getSubtitlesById(self.server, self.media_id)
 
 		printl("", self, "C")
 
@@ -2346,7 +2346,7 @@ class DP_View(DPH_Screen, DPH_ScreenHelper, DPH_MultiColorFunctions, DPH_Filter)
 
 		functionList = []
 
-		audioList = Singleton().getPlexInstance().getAudioById(server, media_id)
+		audioList = Singleton().getBackendInstance().getAudioById(server, media_id)
 
 		for item in audioList:
 
@@ -2381,7 +2381,7 @@ class DP_View(DPH_Screen, DPH_ScreenHelper, DPH_MultiColorFunctions, DPH_Filter)
 
 		# tell the server in the background: the icon is patched locally
 		# anyway, so there is no reason to freeze the GUI for the answer
-		fireAndForget(lambda url=self.unseenUrl: Singleton().getPlexInstance().doRequest(url))
+		fireAndForget(lambda url=self.unseenUrl: Singleton().getBackendInstance().doRequest(url))
 
 		currentIndex = self["listview"].getIndex()
 		currentSelection = self["listview"].getCurrent()
@@ -2407,7 +2407,7 @@ class DP_View(DPH_Screen, DPH_ScreenHelper, DPH_MultiColorFunctions, DPH_Filter)
 
 		# tell the server in the background: the icon is patched locally
 		# anyway, so there is no reason to freeze the GUI for the answer
-		fireAndForget(lambda url=self.seenUrl: Singleton().getPlexInstance().doRequest(url))
+		fireAndForget(lambda url=self.seenUrl: Singleton().getBackendInstance().doRequest(url))
 
 		currentIndex = self["listview"].getIndex()
 		currentSelection = self["listview"].getCurrent()
@@ -2433,7 +2433,7 @@ class DP_View(DPH_Screen, DPH_ScreenHelper, DPH_MultiColorFunctions, DPH_Filter)
 
 		if not self.isFolder:
 			# the server rescans asynchronously anyway, we do not wait for it
-			fireAndForget(lambda url=self.refreshUrl: Singleton().getPlexInstance().doRequest(url))
+			fireAndForget(lambda url=self.refreshUrl: Singleton().getBackendInstance().doRequest(url))
 			self.getViewListData()
 
 		printl("", self, "C")
@@ -2461,7 +2461,7 @@ class DP_View(DPH_Screen, DPH_ScreenHelper, DPH_MultiColorFunctions, DPH_Filter)
 					printl("delete failed: " + str(error), self, "E")
 				self.getViewListData()
 
-			runInThread(lambda url=self.deleteUrl: Singleton().getPlexInstance().doRequest(url), onDeleted)
+			runInThread(lambda url=self.deleteUrl: Singleton().getBackendInstance().doRequest(url), onDeleted)
 		else:
 			self.session.open(MessageBox, _("Deleting aborted!"), MessageBox.TYPE_INFO)
 
@@ -2478,7 +2478,7 @@ class DP_View(DPH_Screen, DPH_ScreenHelper, DPH_MultiColorFunctions, DPH_Filter)
 
 		printl("choice" + str(choice), self, "D")
 
-		Singleton().getPlexInstance().setAudioById(choice[4], choice[3], choice[5])
+		Singleton().getBackendInstance().setAudioById(choice[4], choice[3], choice[5])
 
 		printl("", self, "C")
 
@@ -2493,7 +2493,7 @@ class DP_View(DPH_Screen, DPH_ScreenHelper, DPH_MultiColorFunctions, DPH_Filter)
 
 		printl("choice" + str(choice), self, "D")
 
-		Singleton().getPlexInstance().setSubtitleById(choice[4], choice[3], choice[5])
+		Singleton().getBackendInstance().setSubtitleById(choice[4], choice[3], choice[5])
 
 		printl("", self, "C")
 
@@ -2507,8 +2507,8 @@ class DP_View(DPH_Screen, DPH_ScreenHelper, DPH_MultiColorFunctions, DPH_Filter)
 			printl("start pĺaying theme", self, "D")
 			theme = self.details["theme"]
 			server = self.details["server"]
-			accessToken = Singleton().getPlexInstance().get_aTokenForServer(server)
-			http = Singleton().getPlexInstance().http
+			accessToken = Singleton().getBackendInstance().get_aTokenForServer(server)
+			http = Singleton().getBackendInstance().http
 			printl("theme: " + str(theme), self, "D")
 			url = "%s://%s%s%s" % (http, str(server), str(theme), str(accessToken))
 			sref = "4097:0:0:0:0:0:0:0:0:0:%s" % quote_plus(url)
