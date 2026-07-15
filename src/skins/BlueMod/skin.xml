@@ -253,7 +253,7 @@
     <!-- functions -->
     <widget name="btn_red" zPosition="6" position="100,687" size="12,17" alphatest="blend" />
     <widget name="btn_redText" position="120,677" zPosition="9" size="231,37" font="OpenSans;16" halign="left" valign="center" foregroundColor="grey" backgroundColor="background" transparent="1" />
-    <widget name="btn_green" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/DreamFin/skins/BlueMod/buttons/btn_green-fs8.png" zPosition="6" position="380,687" size="12,17" alphatest="blend" />
+    <widget name="btn_green" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/DreamFin/skins/default/buttons/btn_green-fs8.png" zPosition="6" position="380,687" size="12,17" alphatest="blend" />
     <widget name="btn_greenText" position="400,677" zPosition="9" size="231,37" font="OpenSans;16" halign="left" valign="center" foregroundColor="grey" backgroundColor="background" transparent="1" />
   </screen>
   <!--DPS_ServerMenu -->

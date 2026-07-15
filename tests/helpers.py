@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Bootstrap helpers for the offline DreamPlex test harness.
+"""Bootstrap helpers for the offline DreamFin test harness.
 
 ``setup_environment()`` puts the enigma2 stubs and the repository root on
 ``sys.path`` so the real plugin package (``src``) can be imported in a

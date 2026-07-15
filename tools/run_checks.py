@@ -2,9 +2,11 @@
 """Offline gate for the dual py2/py3 requirement.
 
 1. Byte-compiles every plugin module with the running interpreter.
-2. Scans the files this fork touches for syntax that Python 2.7
+2. Scans every plugin module for syntax that Python 2.7
    (OpenATV 6.4) cannot parse: f-strings, walrus, async/await,
    argument-less super(), nonlocal, ``yield from`` and annotations.
+3. Verifies every path referenced from the skins exists in the tree
+   (tools/check_skin_paths.py).
 
 Run with:  py -3 tools/run_checks.py
 """
@@ -19,14 +21,8 @@ import tempfile
 
 REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-# files this fork modifies and therefore must stay Python 2.7 compatible
-PY2_GUARDED_FILES = [
-	"src/DP_PlexLibrary.py",
-	"src/DP_Server.py",
-	"src/DP_View.py",
-	"src/__init__.py",
-	"src/__common__.py",
-]
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import check_skin_paths  # noqa: E402
 
 PY3_ONLY_PATTERNS = [
 	(re.compile(r"(?<![\w.\"'])[rbuRBU]{0,2}[fF][rbuRBU]{0,2}[\"']"), "f-string literal"),
@@ -59,7 +55,7 @@ def strip_comments_and_strings(line):
 
 def check_compile():
 	failures = []
-	tmpdir = tempfile.mkdtemp(prefix="dreamplex-compile-")
+	tmpdir = tempfile.mkdtemp(prefix="dreamfin-compile-")
 	count = 0
 	for path in iter_python_files():
 		count += 1
@@ -80,12 +76,20 @@ def check_compile():
 	return count, failures
 
 
+def iter_py2_guarded_files():
+	"""Every plugin module must stay Python 2.7 (OpenATV 6.4) compatible."""
+	srcRoot = os.path.join(REPO_ROOT, "src")
+	for root, dirs, files in os.walk(srcRoot):
+		dirs[:] = [d for d in dirs if d != "__pycache__"]
+		for name in sorted(files):
+			if name.endswith(".py"):
+				path = os.path.join(root, name)
+				yield path, os.path.relpath(path, REPO_ROOT).replace(os.sep, "/")
+
+
 def check_py2_syntax():
 	failures = []
-	for relative in PY2_GUARDED_FILES:
-		path = os.path.join(REPO_ROOT, relative.replace("/", os.sep))
-		if not os.path.exists(path):
-			continue
+	for path, relative in iter_py2_guarded_files():
 		fd = open(path, "rb")
 		try:
 			lines = fd.read().decode("utf-8", "replace").splitlines()
@@ -105,6 +109,8 @@ def main():
 
 	py2Failures = check_py2_syntax()
 
+	skinFailure = check_skin_paths.main([]) != 0
+
 	ok = True
 	if compileFailures:
 		ok = False
@@ -117,6 +123,9 @@ def main():
 		print("\nPY3-ONLY SYNTAX IN PY2-GUARDED FILES:")
 		for failure in py2Failures:
 			print("  " + failure)
+
+	if skinFailure:
+		ok = False
 
 	if ok:
 		print("all checks passed")
