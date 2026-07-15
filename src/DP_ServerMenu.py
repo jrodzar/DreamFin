@@ -312,7 +312,7 @@ class DPS_ServerMenu(DPH_Screen, DPH_HorizontalMenu, DPH_ScreenHelper, DPH_Filte
 			printl("we are a function ...", self, "D")
 			self.selectedEntry.fnc(self.session)
 
-		if config.plugins.dreamplex.showFilter.value:
+		if config.plugins.dreamfin.showFilter.value:
 			self.selectedEntry = Plugin.MENU_FILTER  # we overwrite this now to handle correct menu jumps with exit/cancel button
 
 		printl("", self, "C")
@@ -323,7 +323,7 @@ class DPS_ServerMenu(DPH_Screen, DPH_HorizontalMenu, DPH_ScreenHelper, DPH_Filte
 	def myCallback(self):
 		printl("", self, "S")
 
-		if not config.plugins.dreamplex.stopLiveTvOnStartup.value:
+		if not config.plugins.dreamfin.stopLiveTvOnStartup.value:
 			self.session.nav.playService(getLiveTv(), forceRestart=True)
 
 		printl("", self, "C")
@@ -437,7 +437,7 @@ class DPS_ServerMenu(DPH_Screen, DPH_HorizontalMenu, DPH_ScreenHelper, DPH_Filte
 		# the request can take seconds (or hang on an unreachable plex.tv):
 		# do it off the main loop so the GUI stays alive
 		def work():
-			if config.plugins.dreamplex.summerizeSections.value and filterBy is None:
+			if config.plugins.dreamfin.summerizeSections.value and filterBy is None:
 				return self.plexInstance.getSectionTypes()
 			return self.plexInstance.getAllSections(myFilter=filterBy, serverFilterActive=serverFilterActive)
 

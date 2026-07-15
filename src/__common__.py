@@ -66,7 +66,7 @@ except ImportError:
 #===============================================================================
 # CONSTANTS
 #===============================================================================
-version = "2.3.2"
+version = "0.1.0"
 boxResoltion = None
 skinAuthors = ""
 skinResolution = "HD"
@@ -100,7 +100,7 @@ def printl2(string, parent=None, dmode="U", obfuscate=False, steps=4):
 	@return: none
 	"""
 
-	debugMode = config.plugins.dreamplex.debugMode.value
+	debugMode = config.plugins.dreamfin.debugMode.value
 
 	if debugMode:
 
@@ -291,7 +291,7 @@ def getSkinResolution():
 
 def revokeCacheFiles():
 	printl2("", "__common__::revokeCacheFiles", "S")
-	cachePath = config.plugins.dreamplex.cachefolderpath.value
+	cachePath = config.plugins.dreamfin.cachefolderpath.value
 
 	try:
 		os.chdir(cachePath)
@@ -319,7 +319,7 @@ def writeToLog(dmode, out):
 	@param out: message string
 	@return: none
 	"""
-	if config.plugins.dreamplex.writeDebugFile.value:
+	if config.plugins.dreamfin.writeDebugFile.value:
 		try:
 			instance = Singleton()
 			if instance.getLogFileInstance() == "":
@@ -335,8 +335,8 @@ def writeToLog(dmode, out):
 			gLogFile.flush()
 
 		except Exception as ex:
-			config.plugins.dreamplex.writeDebugFile.value = False
-			config.plugins.dreamplex.debugMode.save()
+			config.plugins.dreamfin.writeDebugFile.value = False
+			config.plugins.dreamfin.debugMode.save()
 
 			printl2("Exception(" + str(type(ex)) + "): " + str(ex), "__common__::writeToLog", "E")
 
@@ -351,7 +351,7 @@ def openLogFile():
 	"""
 	#printl2("", "openLogFile", "S")
 
-	logDir = config.plugins.dreamplex.logfolderpath.value
+	logDir = config.plugins.dreamfin.logfolderpath.value
 
 	try:
 		if os.path.exists(logDir + "dreamplex_former.log"):
@@ -555,12 +555,12 @@ def checkPlexEnvironment():
 	"""
 	printl2("", "__common__::checkPlexEnvironment", "S")
 
-	playerTempFolder = config.plugins.dreamplex.playerTempPath.value
-	logFolder = config.plugins.dreamplex.logfolderpath.value
-	mediaFolder = config.plugins.dreamplex.mediafolderpath.value
-	configFolder = config.plugins.dreamplex.configfolderpath.value
-	cacheFolder = config.plugins.dreamplex.cachefolderpath.value
-	homeUsersFolder = config.plugins.dreamplex.configfolderpath.value
+	playerTempFolder = config.plugins.dreamfin.playerTempPath.value
+	logFolder = config.plugins.dreamfin.logfolderpath.value
+	mediaFolder = config.plugins.dreamfin.mediafolderpath.value
+	configFolder = config.plugins.dreamfin.configfolderpath.value
+	cacheFolder = config.plugins.dreamfin.cachefolderpath.value
+	homeUsersFolder = config.plugins.dreamfin.configfolderpath.value
 
 	checkDirectory(playerTempFolder)
 	checkDirectory(logFolder)
@@ -1027,7 +1027,7 @@ def getPlexHeader(g_sessionID, asDict=True):
 	printl2("", "__common__::getPlexHeader", "S")
 
 	boxData = getBoxInformation()
-	boxName = config.plugins.dreamplex.boxName.value
+	boxName = config.plugins.dreamfin.boxName.value
 
 	# why do we use ios!!!!! instead of enigma
 	# Unable to find client profile for device; platform=Enigma, platformVersion=oe20, device=Dreambox, model=500hd
@@ -1175,7 +1175,7 @@ def getPlexHeaders():
 		"X-Plex-Client-Identifier": getUUID(),
 		"X-Plex-Provides": "player",
 		"X-Plex-Product": "DreamPlex",
-		"X-Plex-Device-Name": config.plugins.dreamplex.boxName.value,
+		"X-Plex-Device-Name": config.plugins.dreamfin.boxName.value,
 		"X-Plex-Platform": "Enigma2",
 		"X-Plex-Model": "Enigma2",
 		"X-Plex-Device": "stb",

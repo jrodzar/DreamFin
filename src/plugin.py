@@ -72,9 +72,9 @@ def DPS_MainMenu(*args, **kwargs):
 #noinspection PyUnusedLocal
 
 
-def menu_dreamplex(menuid, **kwargs):
+def menu_dreamfin(menuid, **kwargs):
 	if menuid == "mainmenu":
-		return [(_("DreamPlex"), main, "dreamplex", 47)]
+		return [(_("DreamFin"), main, "dreamfin", 47)]
 	return []
 
 #===========================================================================
@@ -90,9 +90,9 @@ def Autostart(reason, session=None, **kwargs):
 		getUUID()
 
 	else:
-		config.plugins.dreamplex.entriescount.save()
-		config.plugins.dreamplex.Entries.save()
-		config.plugins.dreamplex.save()
+		config.plugins.dreamfin.entriescount.save()
+		config.plugins.dreamfin.Entries.save()
+		config.plugins.dreamfin.save()
 		configfile.save()
 
 #===========================================================================
@@ -120,13 +120,13 @@ def Plugins(**kwargs):
 	boxResolution = getBoxResolution()
 
 	if boxResolution == "FHD":
-		myList.append(PluginDescriptor(name="DreamPlex", description="plex client for enigma2", where=[PluginDescriptor.WHERE_PLUGINMENU], icon="pluginLogoHD.png", fnc=main))
+		myList.append(PluginDescriptor(name="DreamFin", description="Emby/Jellyfin client for enigma2", where=[PluginDescriptor.WHERE_PLUGINMENU], icon="pluginLogoHD.png", fnc=main))
 	else:
-		myList.append(PluginDescriptor(name="DreamPlex", description="plex client for enigma2", where=[PluginDescriptor.WHERE_PLUGINMENU], icon="pluginLogo.png", fnc=main))
+		myList.append(PluginDescriptor(name="DreamFin", description="Emby/Jellyfin client for enigma2", where=[PluginDescriptor.WHERE_PLUGINMENU], icon="pluginLogo.png", fnc=main))
 	myList.append(PluginDescriptor(where=PluginDescriptor.WHERE_AUTOSTART, fnc=Autostart))
 	myList.append(PluginDescriptor(where=PluginDescriptor.WHERE_SESSIONSTART, fnc=sessionStart))
 
-	if config.plugins.dreamplex.showInMainMenu.value:
-		myList.append(PluginDescriptor(name="DreamPlex", description=_("plex client for enigma2"), where=[PluginDescriptor.WHERE_MENU], fnc=menu_dreamplex))
+	if config.plugins.dreamfin.showInMainMenu.value:
+		myList.append(PluginDescriptor(name="DreamFin", description=_("Emby/Jellyfin client for enigma2"), where=[PluginDescriptor.WHERE_MENU], fnc=menu_dreamfin))
 
 	return myList

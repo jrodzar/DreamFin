@@ -119,81 +119,81 @@ class DPS_Settings(Screen, ConfigListScreen, HelpableScreen, DPH_PlexScreen):
 		self.cfglist = []
 
 		# GENERAL SETTINGS
-		self.cfglist.append(getConfigListEntry(_("General Settings ") + separator, config.plugins.dreamplex.about, _(" ")))
-		self.cfglist.append(getConfigListEntry(_("> Boxname"), config.plugins.dreamplex.boxName, _("Enter the name of your box, e.g. Livingroom.")))
-		self.cfglist.append(getConfigListEntry(_("> Used Skin"), config.plugins.dreamplex.skin, _("If you change the skin you have to restart at least the GUI!")))
-		self.cfglist.append(getConfigListEntry(_("> Show Plugin in Main Menu"), config.plugins.dreamplex.showInMainMenu, _("Use this to start the plugin direct in the main menu.")))
-		self.cfglist.append(getConfigListEntry(_("> Use Cache for Sections"), config.plugins.dreamplex.useCache, _("Save plex server answers in cache to speed up a bit.")))
-		self.cfglist.append(getConfigListEntry(_("> Use Picture Cache"), config.plugins.dreamplex.usePicCache, _("Use this only if you do have enough space on your hdd drive or flash.")))
-		self.cfglist.append(getConfigListEntry(_("> Show Player Poster on external LCD"), config.plugins.dreamplex.lcd4linux, _("e.g. lcd4linux")))
+		self.cfglist.append(getConfigListEntry(_("General Settings ") + separator, config.plugins.dreamfin.about, _(" ")))
+		self.cfglist.append(getConfigListEntry(_("> Boxname"), config.plugins.dreamfin.boxName, _("Enter the name of your box, e.g. Livingroom.")))
+		self.cfglist.append(getConfigListEntry(_("> Used Skin"), config.plugins.dreamfin.skin, _("If you change the skin you have to restart at least the GUI!")))
+		self.cfglist.append(getConfigListEntry(_("> Show Plugin in Main Menu"), config.plugins.dreamfin.showInMainMenu, _("Use this to start the plugin direct in the main menu.")))
+		self.cfglist.append(getConfigListEntry(_("> Use Cache for Sections"), config.plugins.dreamfin.useCache, _("Save plex server answers in cache to speed up a bit.")))
+		self.cfglist.append(getConfigListEntry(_("> Use Picture Cache"), config.plugins.dreamfin.usePicCache, _("Use this only if you do have enough space on your hdd drive or flash.")))
+		self.cfglist.append(getConfigListEntry(_("> Show Player Poster on external LCD"), config.plugins.dreamfin.lcd4linux, _("e.g. lcd4linux")))
 
 		# USERINTERFACE SETTINGS
-		self.cfglist.append(getConfigListEntry(_("Userinterface Settings ") + separator, config.plugins.dreamplex.about, _(" ")))
-		self.cfglist.append(getConfigListEntry(_("> Summerize Servers"), config.plugins.dreamplex.summerizeServers, _("Summerize servers in an additional menu step. (plex.tv only)")))
-		self.cfglist.append(getConfigListEntry(_("> Summerize Sections"), config.plugins.dreamplex.summerizeSections, _("Summerize sections in an additional menu step.")))
-		self.cfglist.append(getConfigListEntry(_("> Show Filter for Section"), config.plugins.dreamplex.showFilter, _("Show additional filter in an additional menu step e.g. OnDeck")))
-		self.cfglist.append(getConfigListEntry(_("> Show Seen/Unseen count in TvShows"), config.plugins.dreamplex.showUnSeenCounts, _("Calculate and show them for tv shows.")))
-		self.cfglist.append(getConfigListEntry(_("> Start with Filtermode"), config.plugins.dreamplex.startWithFilterMode, _("Start with filtermode in any media view.")))
-		self.cfglist.append(getConfigListEntry(_("> Exit function in Player"), config.plugins.dreamplex.exitFunction, _("Specifiy what the exit button in the player should do.")))
+		self.cfglist.append(getConfigListEntry(_("Userinterface Settings ") + separator, config.plugins.dreamfin.about, _(" ")))
+		self.cfglist.append(getConfigListEntry(_("> Summerize Servers"), config.plugins.dreamfin.summerizeServers, _("Summerize servers in an additional menu step. (plex.tv only)")))
+		self.cfglist.append(getConfigListEntry(_("> Summerize Sections"), config.plugins.dreamfin.summerizeSections, _("Summerize sections in an additional menu step.")))
+		self.cfglist.append(getConfigListEntry(_("> Show Filter for Section"), config.plugins.dreamfin.showFilter, _("Show additional filter in an additional menu step e.g. OnDeck")))
+		self.cfglist.append(getConfigListEntry(_("> Show Seen/Unseen count in TvShows"), config.plugins.dreamfin.showUnSeenCounts, _("Calculate and show them for tv shows.")))
+		self.cfglist.append(getConfigListEntry(_("> Start with Filtermode"), config.plugins.dreamfin.startWithFilterMode, _("Start with filtermode in any media view.")))
+		self.cfglist.append(getConfigListEntry(_("> Exit function in Player"), config.plugins.dreamfin.exitFunction, _("Specifiy what the exit button in the player should do.")))
 
-		self.cfglist.append(getConfigListEntry(_("> Show Backdrops as Videos"), config.plugins.dreamplex.useBackdropVideos, _("Use this if you have m1v videos as backdrops")))
-		self.cfglist.append(getConfigListEntry(_("> Stop Live TV on startup"), config.plugins.dreamplex.stopLiveTvOnStartup, _("Stop live TV. Enables 'play themes', 'use backdrop videos'")))
+		self.cfglist.append(getConfigListEntry(_("> Show Backdrops as Videos"), config.plugins.dreamfin.useBackdropVideos, _("Use this if you have m1v videos as backdrops")))
+		self.cfglist.append(getConfigListEntry(_("> Stop Live TV on startup"), config.plugins.dreamfin.stopLiveTvOnStartup, _("Stop live TV. Enables 'play themes', 'use backdrop videos'")))
 
 		# playing themes stops live tv for this reason we enable this only if live stops on startup is set
 		# also backdrops as video needs to turn of live tv
-		if config.plugins.dreamplex.stopLiveTvOnStartup.value:
+		if config.plugins.dreamfin.stopLiveTvOnStartup.value:
 			# if backdrop videos are active we have to turn off theme playback
-			if config.plugins.dreamplex.useBackdropVideos.value:
-				config.plugins.dreamplex.playTheme.value = False
+			if config.plugins.dreamfin.useBackdropVideos.value:
+				config.plugins.dreamfin.playTheme.value = False
 			else:
-				self.cfglist.append(getConfigListEntry(_(">> Play Themes in TV Shows"), config.plugins.dreamplex.playTheme, _("Plays tv show themes automatically.")))
+				self.cfglist.append(getConfigListEntry(_(">> Play Themes in TV Shows"), config.plugins.dreamfin.playTheme, _("Plays tv show themes automatically.")))
 		else:
 			# if the live startup stops is not set we have to turn of playtheme automatically
-			config.plugins.dreamplex.playTheme.value = False
-			#config.plugins.dreamplex.useBackdropVideos.value = False
+			config.plugins.dreamfin.playTheme.value = False
+			#config.plugins.dreamfin.useBackdropVideos.value = False
 
-		if config.plugins.dreamplex.useBackdropVideos.value:
-			config.plugins.dreamplex.fastScroll.value = False
-			config.plugins.dreamplex.liveTvInViews.value = False
+		if config.plugins.dreamfin.useBackdropVideos.value:
+			config.plugins.dreamfin.fastScroll.value = False
+			config.plugins.dreamfin.liveTvInViews.value = False
 		else:
-			self.cfglist.append(getConfigListEntry(_("> Use fastScroll as default"), config.plugins.dreamplex.fastScroll, _("No update for addiontal informations in media views to speed up.")))
-			if not config.plugins.dreamplex.stopLiveTvOnStartup.value:
-				self.cfglist.append(getConfigListEntry(_("> Show liveTv in Views instead of backdrops"), config.plugins.dreamplex.liveTvInViews, _("Show live tv while you are navigating through your libs.")))
+			self.cfglist.append(getConfigListEntry(_("> Use fastScroll as default"), config.plugins.dreamfin.fastScroll, _("No update for addiontal informations in media views to speed up.")))
+			if not config.plugins.dreamfin.stopLiveTvOnStartup.value:
+				self.cfglist.append(getConfigListEntry(_("> Show liveTv in Views instead of backdrops"), config.plugins.dreamfin.liveTvInViews, _("Show live tv while you are navigating through your libs.")))
 
-		self.cfglist.append(getConfigListEntry(_("> Show additional data for plex.tv sections"), config.plugins.dreamplex.showDetailsInList, _("If server summerize is off you can here add additional information for better overview.")))
-		if config.plugins.dreamplex.showDetailsInList.value:
-			self.cfglist.append(getConfigListEntry(_("> Detail type for additional data"), config.plugins.dreamplex.showDetailsInListDetailType, _("Specifiy the type of additional data.")))
+		self.cfglist.append(getConfigListEntry(_("> Show additional data for plex.tv sections"), config.plugins.dreamfin.showDetailsInList, _("If server summerize is off you can here add additional information for better overview.")))
+		if config.plugins.dreamfin.showDetailsInList.value:
+			self.cfglist.append(getConfigListEntry(_("> Detail type for additional data"), config.plugins.dreamfin.showDetailsInListDetailType, _("Specifiy the type of additional data.")))
 
 		# VIEW SETTINGS
-		self.cfglist.append(getConfigListEntry(_("Path Settings ") + separator, config.plugins.dreamplex.about, _(" ")))
-		self.cfglist.append(getConfigListEntry(_("> Default View for Movies"), config.plugins.dreamplex.defaultMovieView, _("Specify what view type should start automatically.")))
-		self.cfglist.append(getConfigListEntry(_("> Default View for Shows"), config.plugins.dreamplex.defaultShowView, _("Specify what view type should start automatically.")))
-		self.cfglist.append(getConfigListEntry(_("> Default View for Music"), config.plugins.dreamplex.defaultMusicView, _("Specify what view type should start automatically.")))
+		self.cfglist.append(getConfigListEntry(_("Path Settings ") + separator, config.plugins.dreamfin.about, _(" ")))
+		self.cfglist.append(getConfigListEntry(_("> Default View for Movies"), config.plugins.dreamfin.defaultMovieView, _("Specify what view type should start automatically.")))
+		self.cfglist.append(getConfigListEntry(_("> Default View for Shows"), config.plugins.dreamfin.defaultShowView, _("Specify what view type should start automatically.")))
+		self.cfglist.append(getConfigListEntry(_("> Default View for Music"), config.plugins.dreamfin.defaultMusicView, _("Specify what view type should start automatically.")))
 
 		# PATH SETTINGS
-		self.cfglist.append(getConfigListEntry(_("Path Settings ") + separator, config.plugins.dreamplex.about, _(" ")))
+		self.cfglist.append(getConfigListEntry(_("Path Settings ") + separator, config.plugins.dreamfin.about, _(" ")))
 
-		self.mediafolderpath = getConfigListEntry(_("> Media Folder Path"), config.plugins.dreamplex.mediafolderpath, _("/hdd/dreamplex/medias"))
+		self.mediafolderpath = getConfigListEntry(_("> Media Folder Path"), config.plugins.dreamfin.mediafolderpath, _("/hdd/dreamfin/medias"))
 		self.cfglist.append(self.mediafolderpath)
 
-		self.configfolderpath = getConfigListEntry(_("> Config Folder Path"), config.plugins.dreamplex.configfolderpath, _("/hdd/dreamplex/config"))
+		self.configfolderpath = getConfigListEntry(_("> Config Folder Path"), config.plugins.dreamfin.configfolderpath, _("/hdd/dreamfin/config"))
 		self.cfglist.append(self.configfolderpath)
 
-		self.cachefolderpath = getConfigListEntry(_("> Cache Folder Path"), config.plugins.dreamplex.cachefolderpath, _("/hdd/dreamplex/cache"))
+		self.cachefolderpath = getConfigListEntry(_("> Cache Folder Path"), config.plugins.dreamfin.cachefolderpath, _("/hdd/dreamfin/cache"))
 		self.cfglist.append(self.cachefolderpath)
 
-		self.playerTempPath = getConfigListEntry(_("> Player Temp Path"), config.plugins.dreamplex.playerTempPath, _("/tmp"))
+		self.playerTempPath = getConfigListEntry(_("> Player Temp Path"), config.plugins.dreamfin.playerTempPath, _("/tmp"))
 		self.cfglist.append(self.playerTempPath)
 
-		self.logfolderpath = getConfigListEntry(_("> Log Folder Path"), config.plugins.dreamplex.logfolderpath, _("/tmp"))
+		self.logfolderpath = getConfigListEntry(_("> Log Folder Path"), config.plugins.dreamfin.logfolderpath, _("/tmp"))
 		self.cfglist.append(self.logfolderpath)
 
 		# MISC
-		self.cfglist.append(getConfigListEntry(_("Misc Settings ") + separator, config.plugins.dreamplex.about, _(" ")))
-		self.cfglist.append(getConfigListEntry(_("> Debug Mode"), config.plugins.dreamplex.debugMode, _("Enable only if needed. Slows down rapidly.")))
+		self.cfglist.append(getConfigListEntry(_("Misc Settings ") + separator, config.plugins.dreamfin.about, _(" ")))
+		self.cfglist.append(getConfigListEntry(_("> Debug Mode"), config.plugins.dreamfin.debugMode, _("Enable only if needed. Slows down rapidly.")))
 
-		if config.plugins.dreamplex.debugMode.value:
-			self.cfglist.append(getConfigListEntry(_("> Write debugfile"), config.plugins.dreamplex.writeDebugFile, _("Without this option we just print to console.")))
+		if config.plugins.dreamfin.debugMode.value:
+			self.cfglist.append(getConfigListEntry(_("> Write debugfile"), config.plugins.dreamfin.writeDebugFile, _("Without this option we just print to console.")))
 
 		self["config"].list = self.cfglist
 		self["config"].l.setList(self.cfglist)
@@ -277,7 +277,7 @@ class DPS_Settings(Screen, ConfigListScreen, HelpableScreen, DPH_PlexScreen):
 			elif myType == "cache":
 				self.cachefolderpath[1].value = pathValue
 
-		config.plugins.dreamplex.save()
+		config.plugins.dreamfin.save()
 
 		printl("", self, "C")
 
@@ -287,9 +287,9 @@ class DPS_Settings(Screen, ConfigListScreen, HelpableScreen, DPH_PlexScreen):
 	def keySave(self):
 		printl("", self, "S")
 
-		config.plugins.dreamplex.entriescount.save()
-		config.plugins.dreamplex.Entries.save()
-		config.plugins.dreamplex.save()
+		config.plugins.dreamfin.entriescount.save()
+		config.plugins.dreamfin.Entries.save()
+		config.plugins.dreamfin.save()
 		configfile.save()
 		self.close(None)
 
@@ -371,7 +371,7 @@ class DPS_ServerEntryList(MenuList):
 
 		self.list = []
 
-		for entry in config.plugins.dreamplex.Entries:
+		for entry in config.plugins.dreamfin.Entries:
 			res = [entry]
 			res.append((eListboxPythonMultiContent.TYPE_TEXT, 55, 0, 200, 20, 1, RT_HALIGN_LEFT | RT_VALIGN_CENTER, str(entry.name.value)))
 

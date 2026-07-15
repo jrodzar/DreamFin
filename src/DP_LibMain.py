@@ -63,13 +63,13 @@ class DP_LibMain(Screen):
 		self._views = getViews(libraryName)
 
 		if self._libraryName == "movies":
-			self.currentViewIndex = int(config.plugins.dreamplex.defaultMovieView.value)
+			self.currentViewIndex = int(config.plugins.dreamfin.defaultMovieView.value)
 
 		elif self._libraryName == "shows":
-			self.currentViewIndex = int(config.plugins.dreamplex.defaultShowView.value)
+			self.currentViewIndex = int(config.plugins.dreamfin.defaultShowView.value)
 
 		elif self._libraryName == "music":
-			self.currentViewIndex = int(config.plugins.dreamplex.defaultMusicView.value)
+			self.currentViewIndex = int(config.plugins.dreamfin.defaultMusicView.value)
 
 		else:
 			self.currentViewIndex = 0
@@ -199,11 +199,11 @@ class DP_LibMain(Screen):
 	def getLibraryData(self, source, url, nextViewMode, currentViewMode, uuid, forceUpdate=False):
 		printl("", self, "S")
 
-		if config.plugins.dreamplex.useCache.value:
+		if config.plugins.dreamfin.useCache.value:
 			pickleFileExists = False
 			regeneratePickleFile = False
 			#noinspection PyAttributeOutsideInit
-			self.pickleName = "%s%s_%s.cache" % (config.plugins.dreamplex.cachefolderpath.value, uuid, nextViewMode)
+			self.pickleName = "%s%s_%s.cache" % (config.plugins.dreamfin.cachefolderpath.value, uuid, nextViewMode)
 			if os.path.exists(self.pickleName):
 				pickleFileExists = True
 

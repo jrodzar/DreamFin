@@ -6,7 +6,7 @@ ships: an outer tar.gz containing ./debian-binary, ./control.tar.gz and
 ./data.tar.gz. Runs on a bare Python 3 (or 2.7) interpreter - no ar, no
 msgfmt, no opkg-utils needed - so the package can be built on Windows.
 
-The po/ catalogs are compiled to locale/<lang>/LC_MESSAGES/DreamPlex.mo
+The po/ catalogs are compiled to locale/<lang>/LC_MESSAGES/DreamFin.mo
 with a small pure-python msgfmt replacement.
 
 Usage:  py -3 tools/build_ipk.py [--outdir dist]
@@ -28,7 +28,7 @@ SRC_DIR = os.path.join(REPO_ROOT, "src")
 PO_DIR = os.path.join(REPO_ROOT, "po")
 CONTROL_DIR = os.path.join(REPO_ROOT, "CONTROL")
 
-PLUGIN_TARGET = "usr/lib/enigma2/python/Plugins/Extensions/DreamPlex"
+PLUGIN_TARGET = "usr/lib/enigma2/python/Plugins/Extensions/DreamFin"
 
 # files installed from the src/ root next to the python modules
 ROOT_EXTRA_FILES = [
@@ -243,7 +243,7 @@ def iter_data_members():
 			print("  po: skipping %s (no translated entries)" % name)
 			continue
 		mo = compile_mo(catalog)
-		yield ("%s/locale/%s/LC_MESSAGES/DreamPlex.mo" % (PLUGIN_TARGET, lang), mo, 0o644)
+		yield ("%s/locale/%s/LC_MESSAGES/DreamFin.mo" % (PLUGIN_TARGET, lang), mo, 0o644)
 
 
 #===============================================================================
@@ -312,8 +312,8 @@ def build_control_members(version):
 def main(argv=None):
 	parser = argparse.ArgumentParser(description="build the DreamPlex ipk")
 	parser.add_argument("--outdir", default=os.path.join(REPO_ROOT, "dist"))
-	parser.add_argument("--version-suffix", default="+pms" + time.strftime("%Y%m%d"),
-					help="appended to the plugin version (default: +pmsYYYYMMDD)")
+	parser.add_argument("--version-suffix", default="+dev" + time.strftime("%Y%m%d"),
+					help="appended to the plugin version (default: +devYYYYMMDD)")
 	args = parser.parse_args(argv)
 
 	version = read_plugin_version() + args.version_suffix
@@ -334,7 +334,7 @@ def main(argv=None):
 	if not os.path.isdir(args.outdir):
 		os.makedirs(args.outdir)
 
-	ipkName = "enigma2-plugin-extensions-dreamplex_%s_all.ipk" % version
+	ipkName = "enigma2-plugin-extensions-dreamfin_%s_all.ipk" % version
 	ipkPath = os.path.join(args.outdir, ipkName)
 
 	payload = build_tar_gz(outer, mtime)

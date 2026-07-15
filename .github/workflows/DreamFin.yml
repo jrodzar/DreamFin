@@ -1,0 +1,32 @@
+name: DreamFin
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    name: Offline test suite (python ${{ matrix.python }})
+    runs-on: ubuntu-22.04
+    strategy:
+      matrix:
+        python: ['3.10', '3.12']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+
+      - name: Install prerequisites
+        run: pip install six
+
+      - name: Checks (syntax, bytecompile)
+        run: python tools/run_checks.py
+
+      - name: Unit tests
+        run: python -m unittest discover -s tests -v
+
+      - name: Build IPK
+        run: python tools/build_ipk.py

@@ -52,7 +52,7 @@ def fixture(name):
 def get_config():
 	setup_environment()
 	from Components.config import config
-	import src  # noqa: F401  (creates config.plugins.dreamplex)
+	import src  # noqa: F401  (creates config.plugins.dreamfin)
 	return config
 
 
@@ -84,10 +84,10 @@ def make_plex_instance(mock=None, showFilter=True, useCache=False, **serverKwarg
 	"""Instantiate PlexLibrary against a MockPMS (or bare, if mock is None)."""
 	setup_environment()
 	config = get_config()
-	config.plugins.dreamplex.showFilter.value = showFilter
-	config.plugins.dreamplex.useCache.value = useCache
-	config.plugins.dreamplex.summerizeSections.value = False
-	config.plugins.dreamplex.debugMode.value = False
+	config.plugins.dreamfin.showFilter.value = showFilter
+	config.plugins.dreamfin.useCache.value = useCache
+	config.plugins.dreamfin.summerizeSections.value = False
+	config.plugins.dreamfin.debugMode.value = False
 
 	if mock is not None:
 		serverKwargs.setdefault("host", mock.host)

@@ -62,7 +62,7 @@ class DPS_ViewShows(DP_View):
 
 		self.setTitle(_("Shows"))
 
-		self.playTheme = config.plugins.dreamplex.playTheme.value
+		self.playTheme = config.plugins.dreamfin.playTheme.value
 
 		printl("", self, "C")
 

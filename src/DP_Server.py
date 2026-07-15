@@ -124,7 +124,7 @@ class DPS_Server(Screen, DPH_PlexScreen):
 
 		self.myEntryList = []
 
-		for serverConfig in config.plugins.dreamplex.Entries:
+		for serverConfig in config.plugins.dreamfin.Entries:
 
 			name = serverConfig.name.value
 
@@ -223,11 +223,11 @@ class DPS_Server(Screen, DPH_PlexScreen):
 			return
 
 		sel = self["entryList"].getCurrent()[4]
-		config.plugins.dreamplex.entriescount.value -= 1
-		config.plugins.dreamplex.entriescount.save()
-		config.plugins.dreamplex.Entries.remove(sel)
-		config.plugins.dreamplex.Entries.save()
-		config.plugins.dreamplex.save()
+		config.plugins.dreamfin.entriescount.value -= 1
+		config.plugins.dreamfin.entriescount.save()
+		config.plugins.dreamfin.Entries.remove(sel)
+		config.plugins.dreamfin.Entries.save()
+		config.plugins.dreamfin.save()
 		configfile.save()
 		self.updateList()
 
@@ -360,7 +360,7 @@ class DPS_ServerConfig(ConfigListScreen, Screen, DPH_PlexScreen):
 
 		self.cfglist = []
 		##
-		self.cfglist.append(getConfigListEntry(_("General Settings ") + separator, config.plugins.dreamplex.about, _("-")))
+		self.cfglist.append(getConfigListEntry(_("General Settings ") + separator, config.plugins.dreamfin.about, _("-")))
 		##
 		self.cfglist.append(getConfigListEntry(_(" > State"), self.current.state, _("Toggle state to on/off to show this server in the list or not.")))
 		self.cfglist.append(getConfigListEntry(_(" > Autostart"), self.current.autostart, _("Enter this server automatically on startup.")))
@@ -368,7 +368,7 @@ class DPS_ServerConfig(ConfigListScreen, Screen, DPH_PlexScreen):
 		self.cfglist.append(getConfigListEntry(_(" > Trailer"), self.current.loadExtraData, _("Enable trailer function. Only works with PlexPass or YYTrailer plugin.")))
 
 		##
-		self.cfglist.append(getConfigListEntry(_("Connection Settings ") + separator, config.plugins.dreamplex.about, _(" ")))
+		self.cfglist.append(getConfigListEntry(_("Connection Settings ") + separator, config.plugins.dreamfin.about, _(" ")))
 		##
 		self.cfglist.append(getConfigListEntry(_(" > Connection Type"), self.current.connectionType, _("Select your type how the box is reachable.")))
 
@@ -388,7 +388,7 @@ class DPS_ServerConfig(ConfigListScreen, Screen, DPH_PlexScreen):
 			self.addMyPlexSettings()
 
 		##
-		self.cfglist.append(getConfigListEntry(_("Playback Settings ") + separator, config.plugins.dreamplex.about, _(" ")))
+		self.cfglist.append(getConfigListEntry(_("Playback Settings ") + separator, config.plugins.dreamfin.about, _(" ")))
 		##
 
 		self.cfglist.append(getConfigListEntry(_(" > Playback Type"), self.current.playbackType, _(" ")))
@@ -417,14 +417,14 @@ class DPS_ServerConfig(ConfigListScreen, Screen, DPH_PlexScreen):
 
 		if self.current.playbackType.value == "2":
 			##
-			self.cfglist.append(getConfigListEntry(_("Subtitle Settings ") + separator, config.plugins.dreamplex.about, _(" ")))
+			self.cfglist.append(getConfigListEntry(_("Subtitle Settings ") + separator, config.plugins.dreamfin.about, _(" ")))
 			##
 			self.cfglist.append(getConfigListEntry(_(" >> Enable Subtitle renaming in direct local mode"), self.current.srtRenamingForDirectLocal, _("Renames filename.eng.srt automatically to filename.srt so e2 is able to read them.")))
 			if self.current.srtRenamingForDirectLocal.value:
 				self.cfglist.append(getConfigListEntry(_(" >> Target subtitle language"), self.current.subtitlesLanguage, _("Search string that should be removed from srt file.")))
 
 		##
-		self.cfglist.append(getConfigListEntry(_("Wake On Lan Settings ") + separator, config.plugins.dreamplex.about, _(" ")))
+		self.cfglist.append(getConfigListEntry(_("Wake On Lan Settings ") + separator, config.plugins.dreamfin.about, _(" ")))
 		##
 		self.cfglist.append(getConfigListEntry(_(" > Use Wake on Lan (WoL)"), self.current.wol, _(" ")))
 
@@ -547,8 +547,8 @@ class DPS_ServerConfig(ConfigListScreen, Screen, DPH_PlexScreen):
 		printl("", self, "S")
 
 		if self.newmode == 1:
-			config.plugins.dreamplex.entriescount.value += 1
-			config.plugins.dreamplex.entriescount.save()
+			config.plugins.dreamfin.entriescount.value += 1
+			config.plugins.dreamfin.entriescount.save()
 
 		#if self.current.machineIdentifier.value == "":
 		from .DP_PlexLibrary import PlexLibrary
@@ -593,9 +593,9 @@ class DPS_ServerConfig(ConfigListScreen, Screen, DPH_PlexScreen):
 	def saveNow(self, retval=None):
 		printl("", self, "S")
 
-		config.plugins.dreamplex.entriescount.save()
-		config.plugins.dreamplex.Entries.save()
-		config.plugins.dreamplex.save()
+		config.plugins.dreamfin.entriescount.save()
+		config.plugins.dreamfin.Entries.save()
+		config.plugins.dreamfin.save()
 		configfile.save()
 
 		self.close()
@@ -609,7 +609,7 @@ class DPS_ServerConfig(ConfigListScreen, Screen, DPH_PlexScreen):
 		printl("", self, "S")
 
 		if self.newmode == 1:
-			config.plugins.dreamplex.Entries.remove(self.current)
+			config.plugins.dreamfin.Entries.remove(self.current)
 		ConfigListScreen.cancelConfirm(self, True)
 
 		printl("", self, "C")

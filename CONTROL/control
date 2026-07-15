@@ -1,9 +1,9 @@
-Package: enigma2-plugin-extensions-dreamplex
-Version: 2.3.1
-Description: Plex client for Enigma2 - fork with modern Plex Media Server fixes
+Package: enigma2-plugin-extensions-dreamfin
+Version: 0.1.0
+Description: Emby/Jellyfin client for Enigma2, derived from DreamPlex
 Section: extra
 Priority: optional
-Maintainer: DonDavici, jbleyel, oe-alliance
+Maintainer: jrodzar
 Architecture: all
-Homepage: https://github.com/oe-alliance/DreamPlex
-Source: https://github.com/oe-alliance/DreamPlex
+Homepage: https://github.com/jrodzar/DreamFin
+Source: https://github.com/jrodzar/DreamFin

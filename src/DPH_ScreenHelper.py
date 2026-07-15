@@ -58,7 +58,7 @@ class DPH_ScreenHelper(object):
 	def __init__(self, forceMiniTv=False):
 		printl("", self, "S")
 
-		self.stopLiveTvOnStartup = config.plugins.dreamplex.stopLiveTvOnStartup.value
+		self.stopLiveTvOnStartup = config.plugins.dreamfin.stopLiveTvOnStartup.value
 
 		# we use this e.g in DP_View to use miniTv for backdrops via libiframe
 		self.forceMiniTv = forceMiniTv
