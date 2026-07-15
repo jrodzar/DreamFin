@@ -220,46 +220,6 @@
     <widget name="btn_redText" backgroundColor="background" font="OpenSans; 27" halign="left" valign="center" position="150,1038" size="360,40" transparent="1" zPosition="1" />
     <widget name="btn_greenText" backgroundColor="background" font="OpenSans; 27" halign="left" valign="center" position="550,1038" size="360,40" transparent="1" zPosition="1" />
   </screen>
-  <!-- DPS_Users -->
-  <screen name="DPS_Users" position="0,0" size="1920,1080" title=" " backgroundColor="background" flags="wfNoBorder">
-    <!-- background -->
-    <ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/DreamPlex/skins/default_FHD/images/background2.png" position="0,0" zPosition="-2" size="1920,1080" transparent="0" />
-    <!-- title -->
-    <widget source="Title" text="Home Users" render="Label" transparent="1" zPosition="4" valign="center" position="3,8" size="235,42" font="OpenSans; 30" foregroundColor="grey" backgroundColor="background" halign="center" />
-    <!-- content -->
-    <widget name="content" zPosition="3" position="50,80" size="1840,900" transparent="1" itemHeight="40" scrollbarMode="showOnDemand" foregroundColor="grey" backgroundColor="background" foregroundColorSelected="foreground" selectionPixmap="/usr/lib/enigma2/python/Plugins/Extensions/DreamPlex/skins/default_FHD/images/focus_settings.png" backgroundPixmap="/usr/lib/enigma2/python/Plugins/Extensions/DreamPlex/skins/default_FHD/images/sel_bg.png" font="OpenSans; 30" />
-    <!-- clock -->
-    <panel name="clockpanel" />
-    <!-- functions -->
-    <widget name="btn_red" zPosition="6" position="110,1038" size="30,40" alphatest="blend" />
-    <widget name="btn_green" zPosition="6" position="510,1038" size="30,40" alphatest="blend" />
-    <widget name="btn_yellow" zPosition="6" position="910,1038" size="30,40" alphatest="blend" />
-    <widget name="btn_redText" backgroundColor="background" font="OpenSans; 27" halign="left" valign="center" position="150,1038" size="360,40" transparent="1" zPosition="1" />
-    <widget name="btn_greenText" backgroundColor="background" font="OpenSans; 27" halign="left" valign="center" position="550,1038" size="360,40" transparent="1" zPosition="1" />
-    <widget name="btn_yellowText" backgroundColor="background" font="OpenSans; 27" halign="left" valign="center" position="950,1038" size="360,40" transparent="1" zPosition="1" />
-  </screen>
-  <!-- DPS_Syncer -->
-  <screen name="DPS_Syncer" position="0,0" size="1920,1080" title=" " backgroundColor="background" flags="wfNoBorder">
-    <!-- background -->
-    <ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/DreamPlex/skins/default_FHD/images/background2.png" position="0,0" zPosition="-2" size="1920,1080" transparent="0" />
-    <!-- title -->
-    <widget source="Title" text="Server Syncer" render="Label" transparent="1" zPosition="4" valign="center" position="3,8" size="235,42" font="OpenSans; 30" foregroundColor="grey" backgroundColor="background" halign="center" />
-    <!-- clock -->
-    <panel name="clockpanel" />
-    <!-- settings -->
-    <widget name="output" zPosition="99" position="950,80" size="920,650" font="OpenSans; 30" backgroundColor="background" foregroundColor="foreground" transparent="1" />
-    <widget name="progress" zPosition="99" position="950,560" size="920,450" font="OpenSans; 30" backgroundColor="background" foregroundColor="foreground" transparent="1" />
-    <!-- mini-tv -->
-    <ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/DreamPlex/skins/default_FHD/images/frame-fs8.png" position="0,0" zPosition="11" size="1920,1080" alphatest="blend" transparent="1" />
-    <widget name="miniTv" position="54,130" size="818,460" zPosition="10" backgroundColor="background-pig" />
-    <!-- functions -->
-    <widget name="btn_red" zPosition="6" position="110,1038" size="30,40" alphatest="blend" />
-    <widget name="btn_green" zPosition="6" position="510,1038" size="30,40" alphatest="blend" />
-    <widget name="btn_blue" zPosition="6" position="910,1038" size="30,40" alphatest="blend" />
-    <widget name="btn_redText" backgroundColor="background" font="OpenSans; 27" halign="left" valign="center" position="150,1038" size="360,40" transparent="1" zPosition="1" />
-    <widget name="btn_greenText" backgroundColor="background" font="OpenSans; 27" halign="left" valign="center" position="550,1038" size="360,40" transparent="1" zPosition="1" />
-    <widget name="btn_blueText" backgroundColor="background" font="OpenSans; 27" halign="left" valign="center" position="950,1038" size="360,40" transparent="1" zPosition="1" />
-  </screen>
   <!--DPS_ServerMenu -->
   <screen name="DPS_ServerMenu" position="0,0" size="1920,1080" title=" " backgroundColor="transparent" flags="wfNoBorder">
     <!-- background -->

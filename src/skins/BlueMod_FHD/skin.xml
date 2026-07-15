@@ -291,60 +291,7 @@
 		<!-- <eLabel text="DPS_PathSelector" position="500,12" size="600,50" font="OpenSans;32" halign="left" valign="center" foregroundColor="green" backgroundColor="background" transparent="1" zPosition="100" /> -->
 	</screen>
 
-	<!-- DPS_Users -->
-	<screen name="DPS_Users" position="0,0" size="1920,1080" title=" " backgroundColor="background" flags="wfNoBorder">
-		<!-- background -->
-		<ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/DreamPlex/skins/BlueMod_FHD/images/background2.png" position="0,0" zPosition="-2" size="1920,1080" transparent="0"/>
 
-		<!-- title -->
-		<widget source="Title" text="Home Users" render="Label" transparent="1" zPosition="4" valign="center" position="30,12" size="290,50" font="OpenSans; 32" foregroundColor="grey" backgroundColor="background" halign="left"/>
-
-		<!-- content -->
-		<widget name="content" zPosition="3" position="50,80" size="1840,800"  font="OpenSans;32" itemHeight="52" scrollbarMode="showOnDemand" scrollbarSliderBorderWidth="2" scrollbarWidth="10" scrollbarSliderForegroundColor="blue" scrollbarSliderBorderColor="scrollbarcolor" enableWrapAround="1" alphatest="blend" transparent="1" foregroundColor="grey1" backgroundColor="background"  foregroundColorSelected="white" backgroundColorSelected="background" selectionPixmap="/usr/lib/enigma2/python/Plugins/Extensions/DreamPlex/skins/BlueMod_FHD/images/focus_settings.png" backgroundPixmap="/usr/lib/enigma2/python/Plugins/Extensions/DreamPlex/skins/default_FHD/images/sel_bg.png"/>
-
-		<!-- clock -->
-		<panel name="clockpanel" />
-
-		<!-- functions -->
-		<widget name="btn_red" zPosition="6" position="20,1033" size="30,40" alphatest="blend" />
-		<widget name="btn_green" zPosition="6" position="495,1033" size="30,40" alphatest="blend" />
-		<widget name="btn_yellow" zPosition="6" position="970,1033" size="30,40" alphatest="blend" />
-
-		<widget name="btn_redText" backgroundColor="background" font="OpenSans; 27" halign="left" valign="center" position="60,1033" size="400,40" transparent="1" zPosition="1" />
-		<widget name="btn_greenText" backgroundColor="background" font="OpenSans; 27" halign="left" valign="center" position="535,1033" size="400,40" transparent="1" zPosition="1" />
-		<widget name="btn_yellowText" backgroundColor="background" font="OpenSans; 27" halign="left" valign="center" position="1010,1033" size="400,40" transparent="1" zPosition="1" />
-		<!-- <eLabel text="DPS_Users" position="500,12" size="600,50" font="OpenSans;32" halign="left" valign="center" foregroundColor="green" backgroundColor="background" transparent="1" zPosition="100" /> -->
-	</screen>
-
-	<!-- DPS_Syncer -->
-	<screen name="DPS_Syncer" position="0,0" size="1920,1080" title=" " backgroundColor="background" flags="wfNoBorder">
-		<!-- background -->
-		<ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/DreamPlex/skins/BlueMod_FHD/images/background2.png" position="0,0" zPosition="-2" size="1920,1080" transparent="0"/>
-
-		<!-- title -->
-		<widget source="Title" text="Server Syncer" render="Label" transparent="1" zPosition="4" valign="center" position="30,12" size="290,50" font="OpenSans; 32" foregroundColor="grey" backgroundColor="background" halign="left"/>
-
-		<!-- clock -->
-		<panel name="clockpanel" />
-
-		<!-- settings -->
-		<widget name="output" zPosition="99" position="950,80" size="920,580" font="OpenSans; 30" backgroundColor="background" foregroundColor="foreground" transparent="1" />
-		<widget name="progress" zPosition="99" position="950,590" size="920,420" font="OpenSans; 30" backgroundColor="background" foregroundColor="foreground" transparent="1" />
-
-		<!-- mini-tv -->
-		<ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/DreamPlex/skins/BlueMod_FHD/images/frame-fs8.png" position="0,0" zPosition="11" size="1920,1080" alphatest="blend" transparent="1"/>
-		<widget name="miniTv" position="60,134" size="818,460" zPosition="10" backgroundColor="background-pig"/>
-
-		<!-- functions -->
-		<widget name="btn_red" zPosition="6" position="20,1033" size="30,40" alphatest="blend" />
-		<widget name="btn_green" zPosition="6" position="495,1033" size="30,40" alphatest="blend" />
-		<widget name="btn_blue" zPosition="6" position="970,1033" size="30,40" alphatest="blend" />
-
-		<widget name="btn_redText" backgroundColor="background" font="OpenSans; 27" halign="left" valign="center" position="60,1033" size="410,40" transparent="1" zPosition="1" />
-		<widget name="btn_greenText" backgroundColor="background" font="OpenSans; 27" halign="left" valign="center" position="535,1033" size="400,40" transparent="1" zPosition="1" />
-		<widget name="btn_blueText" backgroundColor="background" font="OpenSans; 27" halign="left" valign="center" position="1010,1033" size="400,40" transparent="1" zPosition="1" />
-		<!-- <eLabel text="DPS_Syncer" position="500,12" size="600,50" font="OpenSans;32" halign="left" valign="center" foregroundColor="green" backgroundColor="background" transparent="1" zPosition="100" /> -->
-	</screen>
 
 	<!--DPS_ServerMenu -->
 	<screen name="DPS_ServerMenu" position="0,0" size="1920,1080" title=" " backgroundColor="background" flags="wfNoBorder">

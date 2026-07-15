@@ -24,8 +24,6 @@ You should have received a copy of the GNU General Public License
 #=================================
 #IMPORT
 #=================================
-import time
-
 from Components.ActionMap import ActionMap
 from Components.ConfigList import ConfigListScreen
 from Components.Sources.StaticText import StaticText
@@ -36,7 +34,6 @@ from Components.config import config, getConfigListEntry, configfile
 from Components.Input import Input
 
 from Screens.MessageBox import MessageBox
-from Screens.ChoiceBox import ChoiceBox
 from Screens.InputBox import InputBox
 from Screens.Screen import Screen
 
@@ -45,9 +42,6 @@ from .__init__ import initServerEntryConfig, _  # _ is translation
 
 from .DP_PlexLibrary import PlexLibrary
 from .DP_Mappings import DPS_Mappings
-from .DP_Users import DPS_Users
-from .DP_Syncer import DPS_Syncer
-from .DPH_PlexGdm import PlexGdm
 from .DPH_ScreenHelper import DPH_PlexScreen
 from .DP_ViewFactory import getGuiElements
 from .DPH_Singleton import Singleton
@@ -89,9 +83,7 @@ class DPS_Server(Screen, DPH_PlexScreen):
 			 "ok": self.keyOk,
 			 "back": self.keyClose,
 			 "red": self.keyRed,
-			 "yellow": self.keyYellow,
 			 "green": self.keyGreen,
-			 "blue": self.keyBlue,
 			 }, -1)
 		self.what = what
 
@@ -117,8 +109,10 @@ class DPS_Server(Screen, DPH_PlexScreen):
 
 		self["btn_redText"].setText(_("Delete"))
 		self["btn_greenText"].setText(_("Add"))
-		self["btn_yellowText"].setText(_("Sync Media"))
-		self["btn_blueText"].setText(_("Discover"))
+		self["btn_yellowText"].hide()
+		self["btn_yellow"].hide()
+		self["btn_blueText"].hide()
+		self["btn_blue"].hide()
 
 		printl("", self, "C")
 
@@ -201,18 +195,6 @@ class DPS_Server(Screen, DPH_PlexScreen):
 	#===========================================================================
 	#
 	#===========================================================================
-	def useSelectedServerData(self, choice):
-		printl("", self, "S")
-
-		if choice is not None:
-			serverData = choice[1]
-			self.session.openWithCallback(self.updateList, DPS_ServerConfig, None, serverData)
-
-		printl("", self, "C")
-
-	#===========================================================================
-	#
-	#===========================================================================
 	def keyOk(self):
 		printl("", self, "S")
 
@@ -228,55 +210,6 @@ class DPS_Server(Screen, DPH_PlexScreen):
 
 		printl("config selction: " + str(sel), self, "D")
 		self.session.openWithCallback(self.updateList, DPS_ServerConfig, sel)
-
-		printl("", self, "C")
-
-	#===========================================================================
-	#
-	#===========================================================================
-	def keyYellow(self):
-		printl("", self, "S")
-
-		try:
-			serverConfig = self["entryList"].getCurrent()[4]
-
-		except Exception as ex:
-			printl("Exception: " + str(ex), self, "W")
-			serverConfig = None
-
-		if serverConfig is None:
-			return
-
-		printl("config selction: " + str(serverConfig), self, "D")
-		self.session.open(DPS_Syncer, "sync", serverConfig)
-
-		printl("", self, "C")
-
-	#===========================================================================
-	#
-	#===========================================================================
-	def keyBlue(self):
-		printl("", self, "S")
-
-		client = PlexGdm()
-		client.setClientDetails()
-
-		client.start_discovery()
-		while not client.discovery_complete:
-			print("Waiting for results")
-			time.sleep(1)
-
-		client.stop_discovery()
-		serverList = client.getServerList()
-		printl("serverList: " + str(serverList), self, "D")
-
-		menu = []
-		for server in serverList:
-			printl("server: " + str(server), self, "D")
-			menu.append((str(server.get("serverName")) + " (" + str(server.get("server")) + ":" + str(server.get("port")) + ")", server,))
-
-		printl("menu: " + str(menu), self, "D")
-		self.session.openWithCallback(self.useSelectedServerData, ChoiceBox, title=_("Select server"), list=menu)
 
 		printl("", self, "C")
 
@@ -308,10 +241,9 @@ class DPS_Server(Screen, DPH_PlexScreen):
 class DPS_ServerConfig(ConfigListScreen, Screen, DPH_PlexScreen):
 
 	useMappings = False
-	useHomeUsers = False
 	authenticated = False
 
-	def __init__(self, session, entry, data=None):
+	def __init__(self, session, entry):
 		printl("", self, "S")
 
 		Screen.__init__(self, session)
@@ -325,7 +257,6 @@ class DPS_ServerConfig(ConfigListScreen, Screen, DPH_PlexScreen):
 		    "exit": self.keyCancel,
 			"yellow": self.keyYellow,
 			"blue": self.keyBlue,
-			"red": self.keyRed,
 			"left": self.keyLeft,
 			"right": self.keyRight,
 		}, -2)
@@ -349,11 +280,6 @@ class DPS_ServerConfig(ConfigListScreen, Screen, DPH_PlexScreen):
 		if entry is None:
 			self.newmode = 1
 			self.current = initServerEntryConfig()
-			if data is not None:
-				ipBlocks = data.get("server").split(".")
-				self.current.name.value = data.get("serverName")
-				self.current.ip.value = [int(ipBlocks[0]), int(ipBlocks[1]), int(ipBlocks[2]), int(ipBlocks[3])]
-				self.current.port.value = int(data.get("port"))
 
 		else:
 			self.newmode = 0
@@ -506,20 +432,8 @@ class DPS_ServerConfig(ConfigListScreen, Screen, DPH_PlexScreen):
 			self.cfglist.append(getConfigListEntry(_(" >> Mac address (Size: 12 alphanumeric no seperator) only for WoL"), self.current.wol_mac, _(" ")))
 			self.cfglist.append(getConfigListEntry(_(" >> Wait for server delay (max 180 seconds) only for WoL"), self.current.wol_delay, _(" ")))
 
-		##
-		self.cfglist.append(getConfigListEntry(_("Sync Settings ") + separator, config.plugins.dreamplex.about, _(" ")))
-		##
-		self.cfglist.append(getConfigListEntry(_(" > Sync Movies Medias"), self.current.syncMovies, _("Sync this content.")))
-		self.cfglist.append(getConfigListEntry(_(" > Sync Shows Medias"), self.current.syncShows, _("Sync this content.")))
-		self.cfglist.append(getConfigListEntry(_(" > Sync Music Medias"), self.current.syncMusic, _("Sync this content.")))
-
 		self["config"].list = self.cfglist
 		self["config"].l.setList(self.cfglist)
-
-		if self.current.myplexHomeUsers.value:
-			self.useHomeUsers = True
-		else:
-			self.useHomeUsers = False
 
 		self.setKeyNames()
 
@@ -590,22 +504,15 @@ class DPS_ServerConfig(ConfigListScreen, Screen, DPH_PlexScreen):
 			self["btn_yellowText"].hide()
 			self["btn_yellow"].hide()
 
-		if (self.current.localAuth.value or self.current.connectionType.value == "2") and self.newmode == 0:
-			if self.useHomeUsers:
-				self["btn_redText"].setText(_("Home Users"))
-				self["btn_redText"].show()
-				self["btn_red"].show()
-			else:
-				self["btn_redText"].hide()
-				self["btn_red"].hide()
+		self["btn_redText"].hide()
+		self["btn_red"].hide()
 
+		if (self.current.localAuth.value or self.current.connectionType.value == "2") and self.newmode == 0:
 			self["btn_blueText"].setText(_("(re)create plex.tv Token"))
 
 			self["btn_blueText"].show()
 			self["btn_blue"].show()
 		else:
-			self["btn_redText"].hide()
-			self["btn_red"].hide()
 			self["btn_blueText"].hide()
 			self["btn_blue"].hide()
 
@@ -752,20 +659,5 @@ class DPS_ServerConfig(ConfigListScreen, Screen, DPH_PlexScreen):
 		else:
 			response = self.plexInstance.getLastResponse()
 			self.session.openWithCallback(self.saveNow, MessageBox, (_("Error:") + "\n%s \n" + _("for the user:") + "\n%s") % (response, self.current.myplexTokenUsername.value), MessageBox.TYPE_INFO)
-
-		printl("", self, "C")
-
-	#===========================================================================
-	#
-	#===========================================================================
-	def keyRed(self):
-		printl("", self, "S")
-
-		if self.useHomeUsers:
-			serverID = self.currentId
-			plexInstance = Singleton().getPlexInstance(PlexLibrary(self.session, self.current))
-			self.session.open(DPS_Users, serverID, plexInstance)
-
-		#self.session.open(MessageBox,(_("plex.tv Token:") + "\n%s \n" + _("plex.tv Localtoken:") + "\n%s \n"+ _("for the user:") + "\n%s") % (self.current.myplexToken.value, self.current.myplexLocalToken.value, self.current.myplexTokenUsername.value), MessageBox.TYPE_INFO)
 
 		printl("", self, "C")

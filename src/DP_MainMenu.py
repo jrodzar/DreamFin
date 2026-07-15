@@ -38,7 +38,6 @@ from .DP_Settings import DPS_Settings
 from .DP_Server import DPS_Server
 from .DP_About import DPS_About
 from .DP_ServerMenu import DPS_ServerMenu, DPS_List
-from .DP_Syncer import DPS_Syncer
 
 from .DPH_Singleton import Singleton
 from .DPH_MovingLabel import DPH_HorizontalMenu
@@ -217,9 +216,6 @@ class DPS_MainMenu(DPH_Screen, DPH_HorizontalMenu, DPH_ScreenHelper):
 				elif selection[1] == "LiveTv":
 					self.exit()
 
-				elif selection[1] == "DPS_Syncer":
-					self.session.open(DPS_Syncer, "render")
-
 			else:
 				pass
 
@@ -366,7 +362,6 @@ class DPS_MainMenu(DPH_Screen, DPH_HorizontalMenu, DPH_ScreenHelper):
 		mainMenuList.append((_("Settings"), "DPS_Settings", "settingsEntry"))
 		mainMenuList.append((_("Server"), "DPS_Server", "settingsEntry"))
 		mainMenuList.append((_("Systemcheck"), "DPS_SystemCheck", "settingsEntry"))
-		mainMenuList.append((_("Backdrops"), "DPS_Syncer", "settingsEntry"))
 
 		self.nextExitIsQuit = False
 

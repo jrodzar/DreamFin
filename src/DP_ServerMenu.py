@@ -33,16 +33,12 @@ from Components.Pixmap import Pixmap
 from Components.Label import Label
 
 from Screens.MessageBox import MessageBox
-from Screens.ChoiceBox import ChoiceBox
-from Screens.InputBox import InputBox
 
 from .DPH_Singleton import Singleton
 from .DPH_MovingLabel import DPH_HorizontalMenu
 from .DP_HelperScreens import DPS_InputBox
-from .DP_Syncer import DPS_Syncer
 from .DPH_ScreenHelper import DPH_ScreenHelper, DPH_Screen, DPH_Filter, DPH_PlexScreen
 from .DP_ViewFactory import getGuiElements
-from .DP_Users import DPS_Users
 
 from .__common__ import printl2 as printl, getLiveTv, runInThread
 from .__plugin__ import Plugin
@@ -89,7 +85,6 @@ class DPS_ServerMenu(DPH_Screen, DPH_HorizontalMenu, DPH_ScreenHelper, DPH_Filte
 	menuStep = 0  # vaule how many steps we made to restore navigation data
 	currentMenuDataDict = {}
 	currentIndexDict = {}
-	isHomeUser = False
 
 	#===========================================================================
 	#
@@ -128,8 +123,6 @@ class DPS_ServerMenu(DPH_Screen, DPH_HorizontalMenu, DPH_ScreenHelper, DPH_Filte
 				"up": (self.up, ""),
 				"down": (self.down, ""),
 				"cancel": (self.cancel, ""),
-			    "red": (self.onKeyRed, ""),
-			    "green": (self.onKeyGreen, ""),
 			}, -2)
 
 		self["btn_green"] = Pixmap()
@@ -159,17 +152,6 @@ class DPS_ServerMenu(DPH_Screen, DPH_HorizontalMenu, DPH_ScreenHelper, DPH_Filte
 
 		if self.miniTv:
 			self.initMiniTv()
-
-		if self.g_serverConfig.myplexHomeUsers.value:
-			self["btn_green"].show()
-			self["btn_greenText"].setText(_("Switch User"))
-			self["text_HomeUserLabel"].setText(_("Current User:"))
-			currentHomeUser = self.g_serverConfig.myplexCurrentHomeUser.value
-			if currentHomeUser != "":
-				self["text_HomeUser"].setText(self.g_serverConfig.myplexCurrentHomeUser.value)
-				self.plexInstance.setAccessTokenHeader(self.plexInstance.g_currentServer, self.g_serverConfig.myplexCurrentHomeUserAccessToken.value)
-			else:
-				self["text_HomeUser"].setText(self.g_serverConfig.myplexTokenUsername.value)
 
 		printl("", self, "C")
 
@@ -216,139 +198,6 @@ class DPS_ServerMenu(DPH_Screen, DPH_HorizontalMenu, DPH_ScreenHelper, DPH_Filte
 #===============================================================================
 # KEYSTROKES
 #===============================================================================
-
-	#===============================================================
-	#
-	#===============================================================
-	def onKeyRed(self):
-		printl("", self, "S")
-
-		self.session.open(DPS_Syncer, "sync", self.g_serverConfig,)
-
-		printl("", self, "C")
-
-	#===============================================================
-	#
-	#===============================================================
-	def onKeyGreen(self):
-		printl("", self, "S")
-
-		self.displayOptionsMenu()
-
-		printl("", self, "C")
-
-	#===========================================================================
-	#
-	#===========================================================================
-	def displayOptionsMenu(self):
-		printl("", self, "S")
-
-		functionList = []
-
-		# add plex.tv User as first one
-		functionList.append((self.g_serverConfig.myplexTokenUsername.value, self.g_serverConfig.myplexPin.value, self.g_serverConfig.myplexToken.value, False, self.g_serverConfig.myplexId.value))
-
-		# now add all home users
-		self.homeUsersObject = DPS_Users(self.session, self.g_serverConfig.id.value, self.plexInstance)
-		homeUsersFromServer = self.homeUsersObject["content"].getHomeUsersFromServer()
-
-		if homeUsersFromServer is not None:
-			for user in homeUsersFromServer.findall('user'):
-				self.lastUserId = user.attrib.get("id")
-				self.currentHomeUsername = user.attrib.get("username")
-				self.currentPin = user.attrib.get("pin")
-				self.currentHomeUserToken = user.attrib.get("token")
-
-				functionList.append((self.currentHomeUsername, self.currentPin, self.currentHomeUserToken, True, self.lastUserId))
-
-		self.session.openWithCallback(self.displayOptionsMenuCallback, ChoiceBox, title=_("Home Users"), list=functionList)
-
-		printl("", self, "C")
-
-	#===========================================================================
-	#
-	#===========================================================================
-	def displayOptionsMenuCallback(self, choice):
-		printl("", self, "S")
-
-		if choice is None or choice[1] is None:
-			printl("choice: None - we pressed exit", self, "D")
-			return
-
-		printl("choice: " + str(choice), self, "D")
-		self.isHomeUser = choice[3]
-		self.currentHomeUserId = choice[4]
-		self.currentHomeUserPin = choice[1]
-
-		if self.isHomeUser:
-			if choice[1] != "":
-				printl(choice[1], self, "D")
-				# compare against the pin of the CHOSEN user, not the last listed one
-				self.currentPin = choice[1]
-				self.session.openWithCallback(self.askForPin, InputBox, title=_("Please enter the pincode!"), type=Input.PIN)
-			else:
-				self.switchUser()
-		else:
-			if self.g_serverConfig.myplexPinProtect.value:
-				self.session.openWithCallback(self.askForPin, InputBox, title=_("Please enter the pincode!"), type=Input.PIN)
-				self.currentPin = self.g_serverConfig.myplexPin.value
-			else:
-				self.switchUser()
-
-		printl("", self, "C")
-
-	#===============================================================
-	#
-	#===============================================================
-	def switchUser(self):
-		printl("", self, "S")
-
-		# TODO add use saved values if we have no internet connection
-
-		xmlResponse = self.plexInstance.switchHomeUser(self.currentHomeUserId, self.currentHomeUserPin)
-
-		entryData = (dict(xmlResponse.items()))
-		myId = entryData['id']
-		token = entryData['authenticationToken']
-		title = entryData['title']
-
-		self.plexInstance.serverConfig_myplexToken = token
-		accessToken = self.plexInstance.getPlexUserTokenForLocalServerAuthentication(self.plexInstance.g_host)
-
-		if not accessToken:
-			# we get all the restriction data from plex and not from the local server this means that if we ar not connected no data is coming to check, means no restction
-			self.session.open(MessageBox, "No accessToken! Check plex.tv connection and plexPass status.", MessageBox.TYPE_INFO)
-		else:
-			self.g_serverConfig.myplexCurrentHomeUser.value = title
-			self.g_serverConfig.myplexCurrentHomeUserAccessToken.value = accessToken
-			self.g_serverConfig.myplexCurrentHomeUserId.value = myId
-			self.g_serverConfig.save()
-
-			self.plexInstance.setAccessTokenHeader(self.plexInstance.g_currentServer, accessToken)
-
-			self["text_HomeUser"].setText(title)
-
-		printl("", self, "C")
-
-	#===============================================================
-	#
-	#===============================================================
-	def askForPin(self, enteredPin):
-		printl("", self, "S")
-
-		if enteredPin is None:
-			pass
-		else:
-			if int(enteredPin) == int(self.currentPin):
-				self.session.open(MessageBox, "The pin was correct! Switching user.", MessageBox.TYPE_INFO)
-#				if self.isHomeUser:
-#					self.switchUser()
-#				else:
-				self.switchUser()
-			else:
-				self.session.open(MessageBox, "The pin was wrong! Aborting user switch.", MessageBox.TYPE_INFO)
-
-		printl("", self, "C")
 
 	#===============================================================
 	#

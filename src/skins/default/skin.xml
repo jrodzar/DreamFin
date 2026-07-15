@@ -212,31 +212,7 @@
 
 	</screen>
 
-	<!-- DPS_Users -->
-	<screen name="DPS_Users" position="0,0" size="1280,720" title=" " backgroundColor="#000000" flags="wfNoBorder">
-		<!-- TemplateBaseScreen -->
-		<panel name="TemplateBaseScreen" />
 
-		<!-- content -->
-		<widget name="content" zPosition="3" position="125,100" size="1025,600" transparent="1" itemHeight="35" scrollbarMode="showOnDemand" foregroundColor="#5C5C5C" backgroundColor="#212121" foregroundColorSelected="#ffffff" selectionPixmap="/usr/lib/enigma2/python/Plugins/Extensions/DreamPlex/skins/default/images/focus_settings-fs8.png" backgroundPixmap="/usr/lib/enigma2/python/Plugins/Extensions/DreamPlex/skins/default/images/sel_bg-fs8.png"/>
-
-	</screen>
-
-	<!-- DPS_Syncer -->
-	<screen name="DPS_Syncer" position="0,0" size="1280,720" title=" " backgroundColor="#000000" flags="wfNoBorder">
-
-		<!-- TemplateBaseScreen -->
-		<panel name="TemplateBaseScreen" />
-
-		<!-- settings -->
-		<widget name="output" zPosition="99" position="630,80" size="670,450" font="OpenSans; 18" backgroundColor="#212121" foregroundColor="#ffffff" transparent="1" />
-		<widget name="progress" zPosition="99" position="30,440" size="670,300" font="OpenSans; 18" backgroundColor="#212121" foregroundColor="#ffffff" transparent="1" />
-
-		<!-- mini-tv -->
-		<ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/DreamPlex/skins/default/images/frame-fs8.png" position="0,0" zPosition="11" size="1280,720" alphatest="blend" transparent="1"/>
-		<widget name="miniTv" position="25,86" size="555,321" zPosition="10" backgroundColor="#ff111111"/>
-
-	</screen>
 
 	<!--DPS_ServerMenu -->
 	<screen name="DPS_ServerMenu" position="0,0" size="1280,720" title=" " backgroundColor="#ffffffff" flags="wfNoBorder">

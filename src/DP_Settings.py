@@ -188,12 +188,6 @@ class DPS_Settings(Screen, ConfigListScreen, HelpableScreen, DPH_PlexScreen):
 		self.logfolderpath = getConfigListEntry(_("> Log Folder Path"), config.plugins.dreamplex.logfolderpath, _("/tmp"))
 		self.cfglist.append(self.logfolderpath)
 
-		# REMOTE
-		self.cfglist.append(getConfigListEntry(_("Remote Settings ") + separator, config.plugins.dreamplex.about, _(" ")))
-		self.cfglist.append(getConfigListEntry(_("> Activate Remote Player"), config.plugins.dreamplex.remoteAgent, _("Activate to be able to use with any app with remote function for Plex.")))
-		if config.plugins.dreamplex.remoteAgent.value:
-			self.cfglist.append(getConfigListEntry(_("> Remote Player Port"), config.plugins.dreamplex.remotePort, _("Change the port to your needs.")))
-
 		# MISC
 		self.cfglist.append(getConfigListEntry(_("Misc Settings ") + separator, config.plugins.dreamplex.about, _(" ")))
 		self.cfglist.append(getConfigListEntry(_("> Debug Mode"), config.plugins.dreamplex.debugMode, _("Enable only if needed. Slows down rapidly.")))
