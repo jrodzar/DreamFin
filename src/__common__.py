@@ -931,6 +931,29 @@ def convertSize(size):
 #===========================================================================
 
 
+def getRatingValue(details):
+	"""Return a 0-10 popularity score for an item.
+
+	The Emby/Jellyfin backend maps the community score (CommunityRating)
+	into entryData["rating"] already; "userRating" is an optional fallback
+	(the user's own score) that stays empty until a later phase populates
+	it. Reading through a small helper keeps the star widget from being
+	left empty when only one of the keys carries a value.
+	"""
+	for key in ("rating", "userRating"):
+		try:
+			value = float(details.get(key, 0) or 0)
+		except (ValueError, TypeError):
+			value = 0.0
+		if value:
+			return value
+	return 0.0
+
+#===========================================================================
+#
+#===========================================================================
+
+
 def loadPicture(filename):
 	printl2("", "__common__::loadPicture", "S")
 	ptr = None
