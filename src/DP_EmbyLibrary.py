@@ -88,6 +88,22 @@ PAGED_REQUEST_TIMEOUT = 20
 CONNECT_ATTEMPTS = 2
 MAX_REDIRECTS = 3
 
+# config.uniQuality choice -> (MaxWidth, MaxHeight, VideoBitrate bps) for the
+# transcoder. Labels in __init__ match these (e.g. "1920x1080, 10mbps").
+UNI_QUALITY_TABLE = {
+	"0": (420, 240, 320000),
+	"1": (576, 320, 720000),
+	"2": (720, 480, 1500000),
+	"3": (1024, 768, 2000000),
+	"4": (1280, 720, 3000000),
+	"5": (1280, 720, 4000000),
+	"6": (1920, 1080, 8000000),
+	"7": (1920, 1080, 10000000),
+	"8": (1920, 1080, 12000000),
+	"9": (1920, 1080, 20000000),
+}
+DEFAULT_UNI_QUALITY = (1024, 768, 2000000)  # matches uniQuality default "3"
+
 # ticks are 100 ns units: 10**4 ticks per millisecond
 TICKS_PER_MS = 10000
 
@@ -188,6 +204,10 @@ class EmbyLibrary(object):
 		self.g_stream = "1"
 		self.g_transcode = "false"
 		self.g_currentMediaSourceId = None
+		# stream indices the audio/subtitle dialogs pick; consumed by
+		# transcode() (Emby has no server-side "set active stream" call)
+		self.g_audioStreamIndex = None
+		self.g_subtitleStreamIndex = None
 		self.fallback = False
 		self.locations = ""
 		self.currentFile = ""
@@ -1501,10 +1521,30 @@ class EmbyLibrary(object):
 			"subtitle": {}, "subCount": 0, "external": {}, "subOffset": -1, "audioOffset": -1,
 		}
 
-		# tráilers/extras (loadExtraData) land in phase 4
+		# tráilers/extras: one selectable part per LocalTrailer. The UI reads
+		# the trailer id at index 5 (DP_View.selectMedia) to play it.
 		if loadExtraData:
-			printl("", self, "C")
-			return empty
+			trailers = self._itemsFromAnswer(
+				self.getJson(self.getContentUrl("/Users/%s/Items/%s/LocalTrailers" % (self.g_userId, jsonToStr(myId))))) or []
+			parts = []
+			for index, trailer in enumerate(trailers):
+				trailerId = jsonToStr(trailer.get("Id"))
+				key = "/Videos/%s/stream?static=true" % trailerId
+				parts.append((
+					key,                                   # 0 stream url
+					jsonToStr(trailer.get("Name")),        # 1 label
+					jsonToStr(trailer.get("Container")),   # 2 container
+					"",                                    # 3 size
+					"",                                    # 4 duration
+					trailerId,                             # 5 id (DP_View.selectMedia reads items[5])
+					"",                                    # 6 codec
+					index,                                 # 7 mediaIndex
+				))
+			streams = dict(empty)
+			streams["partsCount"] = len(parts)
+			streams["parts"] = parts
+			printl("trailers: " + str(len(parts)), self, "C")
+			return streams
 
 		item = self.getJson(self._detailUrl(myId))
 		self.lastResponse = item
@@ -1559,6 +1599,7 @@ class EmbyLibrary(object):
 		streams["sourceIds"] = sourceIds
 		streams["videoData"] = videoData
 		streams["mediaData"] = mediaData
+		streams["_item"] = item  # reused by the audio/subtitle stream dialogs
 		self.g_currentMediaSourceId = sourceIds[0] if sourceIds else jsonToStr(myId)
 
 		printl("parts: " + str(len(parts)), self, "C")
@@ -1633,8 +1674,15 @@ class EmbyLibrary(object):
 			sourceId = sourceIds[0] if sourceIds else jsonToStr(myId)
 		self.g_currentMediaSourceId = sourceId
 
+		# transcoded playback (playbackType 1) swaps the direct URL for the
+		# HLS/progressive transcode URL; direct/local keep the resolved url
+		if self.g_transcode == "true" and not isExtraData:
+			playUrl = self.transcode(myId, url)
+		else:
+			playUrl = self.appendTokenToUrl(url)
+
 		playerData = {
-			"playUrl": self.appendTokenToUrl(url),
+			"playUrl": playUrl,
 			"resumeStamp": resume,
 			"server": self.server,
 			"id": jsonToStr(myId),
@@ -1736,32 +1784,154 @@ class EmbyLibrary(object):
 		return self.appendTokenToUrl(self.getContentUrl("/Audio/%s/stream?static=true" % themeId))
 
 	#===============================================================================
-	# PHASE-4 SURFACE - defensive stubs so the audio button / transcode path
-	# do not crash the UI before phase 4 fills them in
+	# TRANSCODING (phase 4). The gstreamer HLS gate on OpenATV 6.4 is verified
+	# on the box; a config/auto progressive .ts fallback is offered for hlsdemux
+	# builds that choke on the m3u8.
 	#===============================================================================
+
+	def getUniversalTranscoderSettings(self):
+		"""(MaxWidth, MaxHeight, VideoBitrate) for the picked uniQuality."""
+		quality = jsonToStr(getattr(self.g_serverConfig, "uniQuality", _emptyConfig("3")).value)
+		return UNI_QUALITY_TABLE.get(quality, DEFAULT_UNI_QUALITY)
+
+	def _transcodeStreamParams(self):
+		"""Common query params for the transcode request (quality + the audio/
+		subtitle stream indices the dialogs picked)."""
+		maxWidth, maxHeight, videoBitrate = self.getUniversalTranscoderSettings()
+		sourceId = self.g_currentMediaSourceId or ""
+		params = [
+			("DeviceId", self.g_sessionID),
+			("MediaSourceId", sourceId),
+			("PlaySessionId", self.g_sessionID),
+			("VideoCodec", "h264"),
+			("AudioCodec", "aac,mp3,ac3"),
+			("MaxWidth", jsonToStr(maxWidth)),
+			("MaxHeight", jsonToStr(maxHeight)),
+			("VideoBitrate", jsonToStr(videoBitrate)),
+			("AudioBitrate", "192000"),
+		]
+		if self.g_audioStreamIndex is not None:
+			params.append(("AudioStreamIndex", jsonToStr(self.g_audioStreamIndex)))
+		if self.g_subtitleStreamIndex is not None:
+			params.append(("SubtitleStreamIndex", jsonToStr(self.g_subtitleStreamIndex)))
+		return params
+
+	def _progressive(self):
+		return bool(getattr(self.g_serverConfig, "progressiveTranscode", _emptyConfig(False)).value)
+
+	def transcode(self, myId, url):
+		"""Resolve the URL the player feeds to gstreamer for a transcode.
+
+		Default: HLS master.m3u8 (SegmentContainer=ts, SubtitleMethod=Encode);
+		the master playlist is prefetched so the server spins up the session,
+		its last non-comment line absolutized and given an api_key, with the
+		master URL itself as the fallback (hlsdemux resolves it). When the
+		server entry asks for a progressive stream, hand over /stream.ts.
+		"""
+		printl("myId: " + str(myId), self, "S")
+
+		params = self._transcodeStreamParams()
+
+		if self._progressive():
+			# progressive fallback: a single .ts the old hlsdemux can play
+			progressive = [(k, v) for (k, v) in params if k not in ("PlaySessionId", "AudioCodec")]
+			path = "/Videos/%s/stream.ts?%s" % (jsonToStr(myId), self._encodeParams(progressive))
+			resolved = self.appendTokenToUrl(self.getContentUrl(path))
+			printl("progressive transcode URL: " + resolved, self, "C")
+			return resolved
+
+		hlsParams = list(params) + [("SegmentContainer", "ts"), ("SubtitleMethod", "Encode")]
+		masterPath = "/Videos/%s/master.m3u8?%s" % (jsonToStr(myId), self._encodeParams(hlsParams))
+		masterUrl = self.appendTokenToUrl(self.getContentUrl(masterPath))
+
+		resolved = self._prefetchMasterPlaylist(masterUrl)
+		printl("transcode URL: " + str(resolved), self, "C")
+		return resolved
+
+	@staticmethod
+	def _encodeParams(pairs):
+		return "&".join("%s=%s" % (k, v) for k, v in pairs)
+
+	def _prefetchMasterPlaylist(self, masterUrl):
+		"""GET the master playlist so the server starts the encode, then hand
+		the player the media playlist it points at (absolutized, with api_key).
+		Falls back to the master URL itself on any hiccup."""
+		payload = self.doRequest(masterUrl, timeout=PAGED_REQUEST_TIMEOUT)
+		if not payload:
+			return masterUrl
+
+		base = masterUrl.split("?", 1)[0].rsplit("/", 1)[0]
+		lastUrl = None
+		try:
+			for raw in payload.decode("utf-8", "replace").splitlines():
+				line = raw.strip()
+				if not line or line.startswith("#"):
+					continue
+				if line.startswith("http"):
+					lastUrl = line
+				else:
+					lastUrl = "%s/%s" % (base, line)
+		except Exception as ex:
+			printl("master playlist parse failed: " + str(ex), self, "W")
+
+		if not lastUrl:
+			return masterUrl
+		return self.appendTokenToUrl(lastUrl)
+
+	def stopEncoding(self):
+		"""Tear down the active transcode session (best effort)."""
+		path = "/Videos/ActiveEncodings?DeviceId=%s&PlaySessionId=%s" % (self.g_sessionID, self.g_sessionID)
+		self.getJson(self.getContentUrl(path), myType="DELETE")
+		return True
+
+	#===============================================================================
+	# AUDIO / SUBTITLE STREAMS. Emby has no server-side "set active stream"; the
+	# dialogs store the picked MediaStream Index, consumed by transcode().
+	#===============================================================================
+
+	def _streamsOfType(self, itemId, streamType):
+		item = self.streams.get("_item") if self.streams else None
+		if not item:
+			item = self.getJson(self._detailUrl(itemId))
+		rows = []
+		for source in (item or {}).get("MediaSources") or []:
+			sourceId = jsonToStr(source.get("Id"))
+			for stream in source.get("MediaStreams") or []:
+				if stream.get("Type") != streamType:
+					continue
+				rows.append({
+					"language": jsonToStr(stream.get("DisplayTitle") or stream.get("Language") or streamType),
+					"languageCode": jsonToStr(stream.get("Language")),
+					"id": jsonToStr(stream.get("Index")),
+					"partid": sourceId,
+					"selected": "1" if stream.get("IsDefault") else "",
+				})
+		return rows
+
+	def getAudioById(self, server=None, itemId=None):
+		return self._streamsOfType(itemId, "Audio")
+
+	def getSubtitleById(self, server=None, itemId=None):
+		return self._streamsOfType(itemId, "Subtitle")
+
+	def setAudioById(self, server=None, stream_id=None, part_id=None):
+		"""Remember the audio MediaStream Index for the next transcode."""
+		try:
+			self.g_audioStreamIndex = int(stream_id)
+		except (TypeError, ValueError):
+			self.g_audioStreamIndex = None
+
+	def setSubtitleById(self, server=None, stream_id=None, part_id=None):
+		try:
+			self.g_subtitleStreamIndex = int(stream_id)
+		except (TypeError, ValueError):
+			self.g_subtitleStreamIndex = None
 
 	def getSelectedEmbeddedSubtitleData(self):
 		return None
 
 	def getLastResponse(self):
 		return self.lastResponse or self.lastError
-
-	def stopEncoding(self):
-		# phase 3 plays direct and the periodic progress report is the
-		# keepalive; DELETE /Videos/ActiveEncodings lands in phase 4
-		return True
-
-	def getAudioById(self, server=None, itemId=None):
-		return []
-
-	def getSubtitleById(self, server=None, itemId=None):
-		return []
-
-	def setAudioById(self, *args):
-		return None
-
-	def setSubtitleById(self, *args):
-		return None
 
 	#===============================================================================
 	#

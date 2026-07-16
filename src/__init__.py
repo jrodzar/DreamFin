@@ -223,6 +223,9 @@ def initServerEntryConfig():
 
 	# universal transcoder settings
 	config.plugins.dreamfin.Entries[i].uniQuality = ConfigSelection(default="3", choices=[("0", _("420x240, 320kbps")), ("1", _("576x320, 720 kbps")), ("2", _("720x480, 1,5mbps")), ("3", _("1024x768, 2mbps")), ("4", _("1280x720, 3mbps")), ("5", _("1280x720, 4mbps")), ("6", _("1920x1080, 8mbps")), ("7", _("1920x1080, 10mbps")), ("8", _("1920x1080, 12mbps")), ("9", _("1920x1080, 20mbps"))])
+	# progressive .ts fallback for gstreamer builds whose hlsdemux chokes on
+	# the transcode m3u8 (the phase-4 OpenATV 6.4 gate); off = HLS master
+	config.plugins.dreamfin.Entries[i].progressiveTranscode = ConfigYesNo(default=False)
 
 	printl("=== TRANSCODED ===", "__init__::initServerEntryConfig", "D")
 	printl("universalTranscoder: " + str(config.plugins.dreamfin.Entries[i].universalTranscoder.value), "__init__::initServerEntryConfig", "D")

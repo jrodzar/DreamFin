@@ -358,12 +358,8 @@ class DPS_ServerConfig(ConfigListScreen, Screen, DPH_PlexScreen):
 
 		elif self.current.playbackType.value == "1":
 			self.useMappings = False
-			self.cfglist.append(getConfigListEntry(_(" >> Use universal Transcoder"), self.current.universalTranscoder, _("You need gstreamer_fragmented installed for this feature! Please check in System ... ")))
-			if not self.current.universalTranscoder.value:
-				self.cfglist.append(getConfigListEntry(_(" >> Transcoding quality"), self.current.quality, _("You need gstreamer_fragmented installed for this feature! Please check in System ... ")))
-				self.cfglist.append(getConfigListEntry(_(" >> Segmentsize in seconds"), self.current.segments, _("You need gstreamer_fragmented installed for this feature! Please check in System ... ")))
-			else:
-				self.cfglist.append(getConfigListEntry(_(" >> Transcoding quality"), self.current.uniQuality, _("You need gstreamer_fragmented installed for this feature! Please check in System ... ")))
+			self.cfglist.append(getConfigListEntry(_(" >> Transcoding quality"), self.current.uniQuality, _("Requested transcode resolution/bitrate. The server encodes to H.264/AAC.")))
+			self.cfglist.append(getConfigListEntry(_(" >> Progressive stream (HLS fallback)"), self.current.progressiveTranscode, _("Enable only if HLS playback stutters/fails: streams a single .ts instead of the m3u8.")))
 
 		elif self.current.playbackType.value == "2":
 			self.useMappings = True
