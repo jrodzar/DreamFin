@@ -284,6 +284,13 @@ class DP_View(DPH_Screen, DPH_ScreenHelper, DPH_MultiColorFunctions, DPH_Filter)
 
 		self["rated"] = MultiPixmap()
 
+		# rotating busy spinner + caption, shown while the library loads in
+		# the background (see startBusy/stopBusy in DPH_ScreenHelper)
+		self["busy"] = MultiPixmap()
+		self["busy"].hide()
+		self["busyText"] = Label()
+		self["busyText"].hide()
+
 		self["title"] = Label()
 		self["grandparentTitle"] = Label()
 
@@ -425,6 +432,9 @@ class DP_View(DPH_Screen, DPH_ScreenHelper, DPH_MultiColorFunctions, DPH_Filter)
 		else:
 			# we need this as dummy
 			self["stillPicture"] = Label()
+
+		# stop the busy spinner timer if the screen is closed mid-load
+		self.onClose.append(self.stopBusy)
 
 		# on layout finish we have to do some stuff
 		self.onLayoutFinish.append(self.setPara)
@@ -1697,6 +1707,21 @@ class DP_View(DPH_Screen, DPH_ScreenHelper, DPH_MultiColorFunctions, DPH_Filter)
 		forceUpdate = self.forceUpdate
 		self.forceUpdate = False
 
+		# tell the user we are working. With a spinner (skins that ship it)
+		# the caption goes under the spinner; without one, fall back to a hint
+		# on the item counter so external skins still say something
+		if self.getBusyWidget() is None:
+			try:
+				self["total"].setText(_("Loading..."))
+			except Exception:
+				pass
+		else:
+			try:
+				self["busyText"].setText(_("Loading..."))
+			except Exception:
+				pass
+		self.startBusy()
+
 		runInThread(lambda: self.loadLibrary(entryData, forceUpdate), self.onLibraryLoaded)
 
 		printl("", self, "C")
@@ -1706,6 +1731,10 @@ class DP_View(DPH_Screen, DPH_ScreenHelper, DPH_MultiColorFunctions, DPH_Filter)
 	#===========================================================================
 	def onLibraryLoaded(self, libraryDataArr, error):
 		printl("", self, "S")
+
+		# the background request is done: drop the busy spinner (updateList
+		# below overwrites the "Loading..." hint with the real counter)
+		self.stopBusy()
 
 		if error is not None:
 			printl("error while loading library: " + str(error), self, "E")
