@@ -8,6 +8,7 @@ from tests.embymock import MockEmby
 
 helpers.setup_environment()
 
+from Components.config import config  # noqa: E402
 from src.__plugin__ import Plugin  # noqa: E402
 
 AUTH_PATH = "/Users/AuthenticateByName"
@@ -122,6 +123,21 @@ class TestGetAllSections(unittest.TestCase):
 
 		self.assertEqual([t[1] for t in types],
 						[Plugin.MENU_MOVIES, Plugin.MENU_TVSHOWS, Plugin.MENU_MUSIC])
+
+	def test_section_types_resolve_the_accent(self):
+		# regression: summerizeSections=True is the config default, so entering a
+		# server routes through getSectionTypes (not getAllSections). It must
+		# still resolve the accent or the theme never learns the server type -
+		# the fresh jellyfin default must flip to emby (wire_auth serves an Emby
+		# /System/Info/Public) and arm the one-time colour hint.
+		lib = helpers.make_emby_instance(self.mock)
+		config.plugins.dreamfin.lastAccent.value = "jellyfin"
+
+		lib.getSectionTypes()
+
+		self.assertEqual(lib.getServerType(), "emby")
+		self.assertEqual(config.plugins.dreamfin.lastAccent.value, "emby")
+		self.assertTrue(lib.accentJustChanged())
 
 
 class TestSynthesizedFilter(unittest.TestCase):

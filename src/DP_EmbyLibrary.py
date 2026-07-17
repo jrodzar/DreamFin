@@ -651,6 +651,12 @@ class EmbyLibrary(object):
 	def getSectionTypes(self):
 		printl("", self, "S")
 
+		# Phase 5: resolve the server accent on entry here too. This summarized
+		# path (config default summerizeSections=True) is the one most users
+		# hit, so without this the colours never learn the server type - the
+		# detectServerType() call in getAllSections() only covers the full path.
+		self.detectServerType()
+
 		fullList = []
 		entryData = {}
 		fullList.append((_("Movies"), Plugin.MENU_MOVIES, "movieEntry", entryData))
