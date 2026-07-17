@@ -26,7 +26,7 @@ You should have received a copy of the GNU General Public License
 #===============================================================================
 import threading
 
-from os import remove
+from os import remove, rename
 from time import sleep, localtime, time, strftime
 
 from Screens.Screen import Screen
@@ -64,7 +64,7 @@ from .DPH_Singleton import Singleton
 #from .DP_Summary import DreamplexPlayerSummary
 from .DPH_ScreenHelper import DPH_ScreenHelper
 
-from .__common__ import printl2 as printl, buildMediaChoiceName, encodeThat, runInThread, fireAndForget, IMAGE_SIZE_PLACEHOLDER
+from .__common__ import printl2 as printl, buildMediaChoiceName, encodeThat, runInThread, fireAndForget, IMAGE_SIZE_PLACEHOLDER, isCompleteImage
 from .__init__ import _  # _ is translation
 
 
@@ -582,6 +582,13 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 
 		if self.whatPoster is None:
 			self.buildPosterData()
+
+		# buildPosterData drops the file when the download came back truncated;
+		# without a complete poster, skip the decode so we never render a grey
+		# half-image (the skin's poster background shows through instead)
+		if not self.whatPoster or not fileExists(self.whatPoster):
+			printl("no complete poster to render", self, "C")
+			return
 
 		self.EXpicloadPoster.startDecode(self.whatPoster, 0, 0, False)
 
@@ -1757,24 +1764,40 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 		else:
 			download_url = self.selection[1]["thumb"]
 
-		download_url = download_url.replace(IMAGE_SIZE_PLACEHOLDER, '&maxWidth=' + self.width + '&maxHeight=' + self.height)
+		if not download_url:
+			printl("no posterdata in response, skipping ...", self, "D")
+			printl("", self, "C")
+			return
 
+		download_url = download_url.replace(IMAGE_SIZE_PLACEHOLDER, '&maxWidth=' + self.width + '&maxHeight=' + self.height)
 		printl("download url: " + download_url, self, "D")
 		printl("what poster: " + self.whatPoster, self, "D")
 
-		if download_url != "":
-			response = self.plexInstance.doRequest(download_url)
+		# A poster fetched WHILE a transcode saturates the link can arrive
+		# truncated, and a half JPEG decodes with a grey bottom. Fetch a couple
+		# of times, accept only a COMPLETE image, and write it atomically
+		# (temp + rename) so whatPoster is never left as a partial file.
+		for attempt in range(2):
+			payload = self.plexInstance.doRequest(download_url)
+			if payload and isCompleteImage(payload):
+				tmpPath = self.whatPoster + ".part"
+				try:
+					with open(tmpPath, "wb") as local_file:
+						local_file.write(payload)
+					rename(tmpPath, self.whatPoster)
+					printl("poster downloaded ok", self, "C")
+					return
+				except Exception as e:
+					printl("download write error: " + str(e), self, "D")
+			printl("poster download attempt %d incomplete/failed, retrying" % (attempt + 1), self, "W")
 
-			try:
-				printl("starting download", self, "D")
-				with open(self.whatPoster, "wb") as local_file:
-					local_file.write(response)
-					local_file.close()
-			except Exception as e:
-				printl("download error: " + str(e), self, "D")
-				printl("last plexinstance error: " + str(self.plexInstance.getLastErrorMessage()), self, "D")
-		else:
-			printl("no posterdata in xml response, skipping ...", self, "D")
+		# never leave a corrupt/partial poster behind: drop it so setPoster
+		# renders no poster instead of a grey half-image
+		try:
+			if fileExists(self.whatPoster):
+				remove(self.whatPoster)
+		except Exception:
+			pass
 
 		printl("", self, "C")
 

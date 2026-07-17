@@ -997,6 +997,27 @@ def getRatingValue(details):
 #===========================================================================
 
 
+def isCompleteImage(data):
+	"""True if data looks like a fully-downloaded JPEG/PNG (not truncated).
+
+	A poster/artwork fetched WHILE a transcode saturates the link can arrive
+	truncated; a half JPEG then decodes with a grey bottom. Checking the end
+	marker lets callers reject a partial download instead of caching/showing
+	a corrupt image.
+	"""
+	if not data or len(data) < 128:
+		return False
+	if data[:3] == b"\xff\xd8\xff":       # JPEG -> must end with EOI FF D9
+		return data[-2:] == b"\xff\xd9"
+	if data[:8] == b"\x89PNG\r\n\x1a\n":  # PNG -> must end with the IEND chunk
+		return data[-8:] == b"IEND\xae\x42\x60\x82"
+	return True  # unknown format: accept rather than reject
+
+#===========================================================================
+#
+#===========================================================================
+
+
 def loadPicture(filename):
 	printl2("", "__common__::loadPicture", "S")
 	ptr = None

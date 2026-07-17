@@ -7,7 +7,7 @@ from tests import helpers
 
 helpers.setup_environment()
 
-from src.__common__ import getRatingValue, buildMediaChoiceName  # noqa: E402
+from src.__common__ import getRatingValue, buildMediaChoiceName, isCompleteImage  # noqa: E402
 
 
 class TestMediaChoiceName(unittest.TestCase):
@@ -74,6 +74,35 @@ class TestGetRatingValue(unittest.TestCase):
 		popularity = getRatingValue({"rating": "5.5"})
 		self.assertEqual(int(popularity * 10), 55)
 		self.assertNotEqual(int(popularity) * 10, 55)
+
+
+class TestIsCompleteImage(unittest.TestCase):
+	"""A poster fetched during a transcode can arrive truncated (half JPEG ->
+	grey bottom). isCompleteImage rejects a partial download."""
+
+	JPEG_HEAD = b"\xff\xd8\xff\xe0" + b"\x00" * 200
+
+	def test_complete_jpeg_is_accepted(self):
+		self.assertTrue(isCompleteImage(self.JPEG_HEAD + b"\xff\xd9"))
+
+	def test_truncated_jpeg_is_rejected(self):
+		# same JPEG without the EOI marker -> a partial download
+		self.assertFalse(isCompleteImage(self.JPEG_HEAD))
+
+	def test_complete_png_is_accepted(self):
+		png = b"\x89PNG\r\n\x1a\n" + b"\x00" * 200 + b"IEND\xae\x42\x60\x82"
+		self.assertTrue(isCompleteImage(png))
+
+	def test_truncated_png_is_rejected(self):
+		self.assertFalse(isCompleteImage(b"\x89PNG\r\n\x1a\n" + b"\x00" * 200))
+
+	def test_empty_or_tiny_is_rejected(self):
+		self.assertFalse(isCompleteImage(b""))
+		self.assertFalse(isCompleteImage(None))
+		self.assertFalse(isCompleteImage(b"\xff\xd8\xff\xff\xd9"))  # under 128 bytes
+
+	def test_unknown_format_is_accepted(self):
+		self.assertTrue(isCompleteImage(b"GIF89a" + b"\x00" * 200))
 
 
 if __name__ == "__main__":
