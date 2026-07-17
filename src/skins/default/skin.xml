@@ -85,7 +85,7 @@
 		<widget name="+2" transparent="1" zPosition="8" position="996,490" size="250,50" font="OpenSans; 22" halign="center" foregroundColor="#ffffff" backgroundColor="#0f0f0f"/>
 
 		<!-- picons -->
-		<widget source="menu" render="Pixmap" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/DreamFin/skins/default/picons/dreamplex.png" zPosition="10" position="800,120" size="350,350" alphatest="blend" >
+		<widget source="menu" render="Pixmap" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/DreamFin/skins/default/picons/dreamfin.png" zPosition="10" position="800,120" size="350,350" alphatest="blend" >
 			<convert type="MenuEntryCompare">serverEntry</convert>
 			<convert type="ConditionalShowHide" />
 		</widget>
@@ -253,11 +253,11 @@
 			<convert type="MenuEntryCompare">musicEntry</convert>
 			<convert type="ConditionalShowHide" />
 		</widget>
-		<widget source="menu" render="Pixmap" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/DreamFin/skins/default/picons/dreamplex.png" zPosition="10" position="800,120" size="350,350" alphatest="blend" >
+		<widget source="menu" render="Pixmap" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/DreamFin/skins/default/picons/dreamfin.png" zPosition="10" position="800,120" size="350,350" alphatest="blend" >
 			<convert type="MenuEntryCompare">mixedEntry</convert>
 			<convert type="ConditionalShowHide" />
 		</widget>
-		<widget source="menu" render="Pixmap" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/DreamFin/skins/default/picons/dreamplex.png" zPosition="10" position="800,120" size="350,350" alphatest="blend" >
+		<widget source="menu" render="Pixmap" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/DreamFin/skins/default/picons/dreamfin.png" zPosition="10" position="800,120" size="350,350" alphatest="blend" >
 			<convert type="MenuEntryCompare">serverFilter</convert>
 			<convert type="ConditionalShowHide" />
 		</widget>

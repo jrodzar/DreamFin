@@ -78,7 +78,7 @@
 		<widget name="+2" transparent="1" zPosition="8" position="1530,680" size="380,150" font="OpenSans; 34" halign="center" valign="center" foregroundColor="foreground" backgroundColor="background"/>
 
 		<!-- picons -->
-		<widget source="menu" render="Pixmap" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/DreamFin/skins/BlueMod_FHD/picons/dreamplex.png" zPosition="10" position="1250,150" size="350,350" alphatest="blend" >
+		<widget source="menu" render="Pixmap" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/DreamFin/skins/BlueMod_FHD/accent_emby/picons/dreamfin.png" zPosition="10" position="1250,150" size="350,350" alphatest="blend" >
 			<convert type="MenuEntryCompare">serverEntry</convert>
 			<convert type="ConditionalShowHide" />
 		</widget>
@@ -132,7 +132,7 @@
 	<screen name="DPS_Settings" position="0,0" size="1920,1080" title=" " backgroundColor="background" flags="wfNoBorder">
 	<!-- background -->
 		<ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/DreamFin/skins/BlueMod_FHD/images/background2.png" position="0,0" zPosition="-2" size="1920,1080" transparent="0" />
-		<ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/DreamFin/skins/BlueMod_FHD/picons/dreamplex.png" zPosition="10" position="1420,500" size="350,350" alphatest="blend" />
+		<ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/DreamFin/skins/BlueMod_FHD/accent_emby/picons/dreamfin.png" zPosition="10" position="1420,500" size="350,350" alphatest="blend" />
 	<!-- mini-tv -->
 		<ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/DreamFin/skins/BlueMod_FHD/images/frame-tv.png" position="1295,75" zPosition="10" size="610,375" alphatest="blend" transparent="1" />
 		<widget source="session.VideoPicture" render="Pig" position="1325,105" size="550,315" zPosition="5" backgroundColor="background-pig" />
@@ -154,7 +154,7 @@
 	<screen name="DPS_SystemCheck" position="0,0" size="1920,1080" title=" " backgroundColor="background" flags="wfNoBorder">
 	<!-- background -->
 		<ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/DreamFin/skins/BlueMod_FHD/images/background2.png" position="0,0" zPosition="-2" size="1920,1080" transparent="0" />
-		<ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/DreamFin/skins/BlueMod_FHD/picons/dreamplex.png" zPosition="10" position="1420,500" size="350,350" alphatest="blend" />
+		<ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/DreamFin/skins/BlueMod_FHD/accent_emby/picons/dreamfin.png" zPosition="10" position="1420,500" size="350,350" alphatest="blend" />
 	<!-- mini-tv -->
 		<ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/DreamFin/skins/BlueMod_FHD/images/frame-tv.png" position="1295,75" zPosition="11" size="610,375" alphatest="blend" transparent="1" />
 		<widget source="session.VideoPicture" render="Pig" position="1325,105" size="550,315" zPosition="5" backgroundColor="background-pig" />
@@ -173,7 +173,7 @@
 	<screen name="DPS_Server" position="0,0" size="1920,1080" title=" " backgroundColor="background" flags="wfNoBorder">
 	<!-- background -->
 		<ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/DreamFin/skins/BlueMod_FHD/images/background2.png" position="0,0" zPosition="-2" size="1920,1080" transparent="0" />
-		<ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/DreamFin/skins/BlueMod_FHD/picons/dreamplex.png" zPosition="10" position="1420,500" size="350,350" alphatest="blend" />
+		<ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/DreamFin/skins/BlueMod_FHD/accent_emby/picons/dreamfin.png" zPosition="10" position="1420,500" size="350,350" alphatest="blend" />
 	<!-- mini-tv -->
 		<ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/DreamFin/skins/BlueMod_FHD/images/frame-tv.png" position="1295,75" zPosition="11" size="610,375" alphatest="blend" transparent="1" />
 		<widget source="session.VideoPicture" render="Pig" position="1325,105" size="550,315" zPosition="5" backgroundColor="background-pig" />
@@ -310,7 +310,7 @@
 				}</convert>
 		</widget>
 	<!-- picons -->
-		<widget source="menu" render="Pixmap" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/DreamFin/skins/BlueMod_FHD/picons/dreamplex.png" zPosition="10" position="50,680" size="350,350" alphatest="blend">
+		<widget source="menu" render="Pixmap" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/DreamFin/skins/BlueMod_FHD/accent_emby/picons/dreamfin.png" zPosition="10" position="50,680" size="350,350" alphatest="blend">
 			<convert type="MenuEntryCompare">serverEntry</convert>
 			<convert type="ConditionalShowHide" />
 		</widget>
