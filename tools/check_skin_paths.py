@@ -66,7 +66,7 @@ def default_targets():
 		skinDir = os.path.join(SKINS_DIR, name)
 		if not os.path.isdir(skinDir):
 			continue
-		for base in ("skin.xml", "params"):
+		for base in ("skin.xml", "skin_emby.xml", "skin_jellyfin.xml", "params"):
 			candidate = os.path.join(skinDir, base)
 			if os.path.isfile(candidate):
 				targets.append(candidate)
