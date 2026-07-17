@@ -717,15 +717,54 @@ class DP_View(DPH_Screen, DPH_ScreenHelper, DPH_MultiColorFunctions, DPH_Filter)
 				printl("", self, "C")
 				return
 
-			plexInstance = Singleton().getBackendInstance()
-			url = plexInstance.getItemUrl(entryData["ratingKey"])
-
-			# fetch off the main loop, then patch the row in the callback
-			runInThread(lambda: plexInstance.getMoviesFromSection(url),
-					lambda result, error: self.applyRefreshedViewState(index, result, error))
+			# Re-fetch now, then retry a couple of times: the player reports the
+			# stop in fireAndForget and Emby only writes the resume position to
+			# the item's UserData when it processes /Sessions/Playing/Stopped,
+			# which can land AFTER this first re-fetch (worse under transcode,
+			# where stopEncoding widens the window). A single re-fetch therefore
+			# reads the stale pre-stop state and the marker stays wrong until a
+			# full section reload. _pollEntryViewState re-fetches a few times;
+			# the attempt that runs once the stop has committed patches it right.
+			self._viewStateIndex = index
+			self._viewStateAttempts = 3
+			if getattr(self, "_viewStateRefreshTimer", None) is None:
+				self._viewStateRefreshTimer = eTimer()
+				self._viewStateRefreshTimer.callback.append(self._pollEntryViewState)
+			else:
+				self._viewStateRefreshTimer.stop()
+			self._pollEntryViewState()
 
 		except Exception as e:
 			printl("could not refresh entry view state: " + str(e), self, "W")
+
+		printl("", self, "C")
+
+	#===========================================================================
+	#
+	#===========================================================================
+	def _pollEntryViewState(self):
+		"""One re-fetch of the played item, rescheduling itself until the
+		attempts run out - so the seen/started/unseen marker still lands after
+		the async stop report commits on the server (see refreshEntryViewState)."""
+		printl("", self, "S")
+
+		try:
+			index = self._viewStateIndex
+			if 0 <= index < len(self.listViewList):
+				entryData = self.listViewList[index][1]
+				if "ratingKey" in entryData:
+					plexInstance = Singleton().getBackendInstance()
+					url = plexInstance.getItemUrl(entryData["ratingKey"])
+					# fetch off the main loop, then patch the row in the callback
+					runInThread(lambda: plexInstance.getMoviesFromSection(url),
+							lambda result, error: self.applyRefreshedViewState(index, result, error))
+
+			self._viewStateAttempts -= 1
+			if self._viewStateAttempts > 0:
+				self._viewStateRefreshTimer.start(1500, True)
+
+		except Exception as e:
+			printl("could not poll entry view state: " + str(e), self, "W")
 
 		printl("", self, "C")
 
