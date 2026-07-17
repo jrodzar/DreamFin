@@ -26,7 +26,7 @@ You should have received a copy of the GNU General Public License
 from enigma import eTimer
 from Components.Label import MultiColorLabel
 from skin import parseColor
-from .__common__ import printl2 as printl
+from .__common__ import printl2 as printl, getSkinHighlightedColor
 from .DPH_Singleton import Singleton
 
 
@@ -160,7 +160,9 @@ class DPH_HorizontalMenu(object):
 				myType = str(menuScreen.get('type'))
 				if myType == "horizontal":
 					self.g_horizontal_menu = True
-					self.highlightedColor = str(menuScreen.get('highlighted'))
+					# Phase 5: theme the horizontal menu by the server accent
+					# (green/lilac) instead of the amber params value
+					self.highlightedColor = getSkinHighlightedColor()
 					self.normalColor = str(menuScreen.get('normal'))
 
 		printl("", self, "C")

@@ -80,6 +80,9 @@ skinCompatibility = "v2"
 skinDebugMode = False
 skinHighlightedColor = "#e69405"
 skinNormalColor = "#ffffff"
+# Phase 5: per-server accent -> the highlight/selection colour (green Emby /
+# lilac Jellyfin). Overrides the amber params highlight at each plugin open.
+ACCENT_HIGHLIGHT = {"emby": "#52b54b", "jellyfin": "#aa5cc3"}
 skinFolder = None
 g_boxData = None
 screens = []
@@ -505,6 +508,22 @@ def getBoxResolution():
 #===============================================================================
 
 
+def getEffectiveAccent():
+	"""The server accent to theme by: config.plugins.dreamfin.lastAccent,
+	defaulting to jellyfin (lilac) - the fresh-install look before any server
+	has been entered."""
+	accent = str(config.plugins.dreamfin.lastAccent.value)
+	return accent if accent in ("emby", "jellyfin") else "jellyfin"
+
+
+def getAccentHighlightColor():
+	return ACCENT_HIGHLIGHT.get(getEffectiveAccent(), ACCENT_HIGHLIGHT["jellyfin"])
+
+#===============================================================================
+#
+#===============================================================================
+
+
 def loadSkinParams():
 	printl2("", "__common__::loadSkinParams", "S")
 
@@ -525,6 +544,10 @@ def loadSkinParams():
 		skinHighlightedColor = str(skinParams.get('highlighted'))
 		skinNormalColor = str(skinParams.get('normal'))
 
+	# Phase 5: the server accent overrides the amber params highlight, so the
+	# list selection (getSkinHighlightedColor consumers) turns green/lilac
+	skinHighlightedColor = getAccentHighlightColor()
+
 	printl2("", "__common__::loadSkinParams", "C")
 
 #===============================================================================
@@ -541,7 +564,12 @@ def loadPlexSkin():
 	"""
 	printl2("", "__common__::loadPlexSkin", "S")
 
-	currentSkin = getSkinFolder() + "/skin.xml"
+	accent = getEffectiveAccent()
+	currentSkin = getSkinFolder() + "/skin_%s.xml" % accent
+	# degraded fallback: if the per-accent variant is missing the amber base
+	# still renders (the accent simply won't apply until the variant is built)
+	if not os.path.isfile(currentSkin):
+		currentSkin = getSkinFolder() + "/skin.xml"
 
 	loadSkin(currentSkin)
 
