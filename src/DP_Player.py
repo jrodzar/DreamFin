@@ -1729,21 +1729,38 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 	def buildPosterData(self):
 		printl("", self, "S")
 
-		mediaPath = config.plugins.dreamfin.mediafolderpath.value
 		image_prefix = Singleton().getBackendInstance().getServerName().lower()
-
 		self.poster_postfix = "_poster_" + self.width + "x" + self.height + "_v2.jpg"
 
-		if self.isShow:
-			self.whatPoster = mediaPath + image_prefix + "_" + self.show_id + self.poster_postfix
+		# Honour the same picture-cache convention as the list (DP_View): with
+		# the cache OFF the list writes the CURRENT item's poster to a fixed
+		# "temp" file in the log folder while browsing. Reusing that exact file
+		# means the player does NOT re-download the poster at playback time - a
+		# re-download while a transcode saturates the link arrives truncated.
+		if not config.plugins.dreamfin.usePicCache.value:
+			mediaPath = config.plugins.dreamfin.logfolderpath.value
+			posterId = "temp"
 		else:
-			self.whatPoster = mediaPath + image_prefix + "_" + self.media_id + self.poster_postfix
+			mediaPath = config.plugins.dreamfin.mediafolderpath.value
+			posterId = self.show_id if self.isShow else self.media_id
+
+		self.whatPoster = mediaPath + image_prefix + "_" + posterId + self.poster_postfix
 
 		printl("what poster: " + self.whatPoster, self, "D")
 
 		printl("builded poster data: " + str(self.whatPoster), self, "D")
 
-		if not fileExists(self.whatPoster):
+		# reuse the on-disk poster only if it is a COMPLETE image (the list may
+		# have written it, or a previous play); a missing or truncated file
+		# triggers a validated re-download
+		reuse = False
+		if fileExists(self.whatPoster):
+			try:
+				with open(self.whatPoster, "rb") as posterFile:
+					reuse = isCompleteImage(posterFile.read())
+			except Exception:
+				reuse = False
+		if not reuse:
 			self.downloadPoster()
 
 		if config.plugins.dreamfin.lcd4linux.value:
