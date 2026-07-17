@@ -358,7 +358,8 @@ class DPS_ServerConfig(ConfigListScreen, Screen, DPH_PlexScreen):
 
 		elif self.current.playbackType.value == "1":
 			self.useMappings = False
-			self.cfglist.append(getConfigListEntry(_(" >> Transcoding quality"), self.current.uniQuality, _("Requested transcode resolution/bitrate. The server encodes to H.264/AAC.")))
+			self.cfglist.append(getConfigListEntry(_(" >> Transcoding quality"), self.current.uniQuality, _("Requested transcode resolution/bitrate.")))
+			self.cfglist.append(getConfigListEntry(_(" >> Transcode video codec"), self.current.transcodeVideoCodec, _("H.264 for maximum compatibility (older gstreamer / OpenATV 6.4). HEVC gives better quality at a lower bitrate on boxes that decode it, if the server can encode HEVC.")))
 			self.cfglist.append(getConfigListEntry(_(" >> Progressive stream (HLS fallback)"), self.current.progressiveTranscode, _("Enable only if HLS playback stutters/fails: streams a single .ts instead of the m3u8.")))
 
 		elif self.current.playbackType.value == "2":

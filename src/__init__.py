@@ -226,6 +226,10 @@ def initServerEntryConfig():
 	# progressive .ts fallback for gstreamer builds whose hlsdemux chokes on
 	# the transcode m3u8 (the phase-4 OpenATV 6.4 gate); off = HLS master
 	config.plugins.dreamfin.Entries[i].progressiveTranscode = ConfigYesNo(default=False)
+	# transcode target video codec: h264 for max compatibility (older gstreamer
+	# / OpenATV 6.4), hevc for better quality at a lower bitrate on boxes that
+	# decode HEVC (e.g. the SF8008); the server still needs the HEVC encoder
+	config.plugins.dreamfin.Entries[i].transcodeVideoCodec = ConfigSelection(default="h264", choices=[("h264", "H.264"), ("hevc", _("HEVC (H.265)"))])
 
 	printl("=== TRANSCODED ===", "__init__::initServerEntryConfig", "D")
 	printl("universalTranscoder: " + str(config.plugins.dreamfin.Entries[i].universalTranscoder.value), "__init__::initServerEntryConfig", "D")

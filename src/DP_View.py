@@ -1146,6 +1146,10 @@ class DP_View(DPH_Screen, DPH_ScreenHelper, DPH_MultiColorFunctions, DPH_Filter)
 		self.playbackModes = [("0", _("Streamed")), ("1", _("Transcoded")), ("2", _("Direct Local"))]
 		self.configuredPlaybackMode = int(self.serverConfig.playbackType.value)
 		self.nextPlaybackMode = self.configuredPlaybackMode
+		# the player plays in self.playbackMode; without this it stayed at the
+		# class default "default" (-> Streamed) until the user pressed the blue
+		# button, so a server configured as Transcoded/Direct-Local was ignored
+		self.playbackMode = self.configuredPlaybackMode
 		self.lengthOfPlaybackModes = len(self.playbackModes)
 
 		printl("", self, "C")

@@ -85,6 +85,16 @@ class TestTranscodeUrl(TranscodeTestCase):
 		self.assertEqual(q.get("PlaySessionId"), [self.lib.g_sessionID])
 		self.assertIn("api_key", q)
 
+	def test_video_codec_can_be_hevc(self):
+		# boxes that decode HEVC (e.g. the SF8008) can ask the server to
+		# transcode to HEVC for better quality at a lower bitrate
+		self.lib.g_serverConfig.transcodeVideoCodec.value = "hevc"
+		self._master()
+		self.lib.transcode(MOVIE_ID, "http://ignored")
+
+		q = self.mock.requests_for("/Videos/%s/master.m3u8" % MOVIE_ID)[0]["query"]
+		self.assertEqual(q.get("VideoCodec"), ["hevc"])
+
 	def test_prefetch_returns_absolutized_media_playlist(self):
 		self._master("#EXTM3U\nmain.m3u8\n")
 		resolved = self.lib.transcode(MOVIE_ID, "http://ignored")

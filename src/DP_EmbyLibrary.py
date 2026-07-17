@@ -1727,7 +1727,7 @@ class EmbyLibrary(object):
 			"PositionTicks": msToTicks(positionMs),
 			"IsPaused": bool(isPaused),
 			"CanSeek": True,
-			"PlayMethod": "DirectStream",
+			"PlayMethod": "Transcode" if self.g_transcode == "true" else "DirectStream",
 		}
 		return self._postJson("/Sessions/Playing", body)
 
@@ -1805,11 +1805,14 @@ class EmbyLibrary(object):
 		subtitle stream indices the dialogs picked)."""
 		maxWidth, maxHeight, videoBitrate = self.getUniversalTranscoderSettings()
 		sourceId = self.g_currentMediaSourceId or ""
+		# h264 for max compatibility (older gstreamer / 6.4); hevc for better
+		# quality at a lower bitrate on boxes that decode HEVC (per server)
+		videoCodec = jsonToStr(getattr(self.g_serverConfig, "transcodeVideoCodec", _emptyConfig("h264")).value) or "h264"
 		params = [
 			("DeviceId", self.g_sessionID),
 			("MediaSourceId", sourceId),
 			("PlaySessionId", self.g_sessionID),
-			("VideoCodec", "h264"),
+			("VideoCodec", videoCodec),
 			("AudioCodec", "aac,mp3,ac3"),
 			("MaxWidth", jsonToStr(maxWidth)),
 			("MaxHeight", jsonToStr(maxHeight)),
