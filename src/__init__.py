@@ -515,5 +515,10 @@ def prepareEnvironment():
 
 
 def startEnvironment():
+	# reload BOTH the skin and the params on every plugin open (Phase 5): the
+	# skin file picks the accent colour, loadSkinParams re-resolves the accent
+	# highlight - so entering a server of a different type themes the whole UI on
+	# the next open. loadSkinParams was boot-only, which left the highlight stuck.
+	loadSkinParams()
 	# we put load skin here to avoid bootloops if there is something wrong with the skin
 	loadPlexSkin()
