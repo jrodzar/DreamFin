@@ -13,8 +13,16 @@ from tests import helpers
 helpers.setup_environment()
 
 from Components.config import config  # noqa: E402
+import src  # noqa: E402
 from src.__common__ import (  # noqa: E402
     getEffectiveAccent, getAccentHighlightColor, ACCENT_HIGHLIGHT)
+from src.DP_EmbyLibrary import EmbyLibrary  # noqa: E402
+
+
+def _lib(serverType):
+    sc = src.initServerEntryConfig()
+    sc.serverType.value = serverType
+    return EmbyLibrary(session=None, serverConfig=sc)
 
 
 class TestAccent(unittest.TestCase):
@@ -34,6 +42,21 @@ class TestAccent(unittest.TestCase):
         # enigma2 6-hex colours (no alpha), matching the amber #e69405 format
         for value in ACCENT_HIGHLIGHT.values():
             self.assertTrue(re.match(r"^#[0-9a-fA-F]{6}$", value), value)
+
+
+class TestAccentHint(unittest.TestCase):
+    """detectServerType flags a one-time hint when it flips the accent to a
+    server type different from what the skin was loaded with this open."""
+
+    def test_flag_fires_once_on_change_then_stays_clear(self):
+        config.plugins.dreamfin.lastAccent.value = "jellyfin"
+        lib = _lib("emby")  # g_serverType=emby -> detectServerType short-circuits
+        self.assertFalse(lib.accentJustChanged())   # nothing happened yet
+        lib.detectServerType()                       # jellyfin -> emby: changes
+        self.assertTrue(lib.accentJustChanged())     # hint fires once
+        self.assertFalse(lib.accentJustChanged())    # read-and-clear
+        lib.detectServerType()                       # emby == emby: no change
+        self.assertFalse(lib.accentJustChanged())
 
 
 if __name__ == "__main__":

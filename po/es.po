@@ -1871,3 +1871,6 @@ msgstr "Se guarda en texto plano en los ajustes de enigma2; usa una clave API si
 msgid "User to log in with. Not needed when an API key is set."
 msgstr "Usuario con el que iniciar sesión. No hace falta si defines una clave API."
 
+msgid "DreamFin colours will match this server the next time you open the plugin."
+msgstr "Los colores de DreamFin coincidirán con este servidor la próxima vez que abras el plugin."
+

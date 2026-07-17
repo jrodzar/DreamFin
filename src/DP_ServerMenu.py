@@ -487,6 +487,14 @@ class DPS_ServerMenu(DPH_Screen, DPH_HorizontalMenu, DPH_ScreenHelper, DPH_Filte
 		if initialLoad:
 			self.finishInitialData()
 
+		# Phase 5: entering a server whose type differs from the accent the skin
+		# was loaded with this open -> one-line hint (colours apply next open)
+		if self.plexInstance.accentJustChanged():
+			self.session.open(
+				MessageBox,
+				_("DreamFin colours will match this server the next time you open the plugin."),
+				MessageBox.TYPE_INFO, timeout=6)
+
 		printl("", self, "C")
 
 	#===========================================================================

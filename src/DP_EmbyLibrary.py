@@ -177,6 +177,9 @@ class EmbyLibrary(object):
 		self.g_accessToken = ""
 		self.g_userId = ""
 		self.g_serverType = str(getattr(self.g_serverConfig, "serverType", _emptyConfig("auto")).value) or "auto"
+		# set true once detectServerType() flips the accent to a server type
+		# different from the one the skin was loaded with (Phase 5 hint)
+		self.g_accentJustChanged = False
 
 		# host: keep the hostname for DNS entries (TLS SNI needs it -
 		# resolving to an IP here would break name-based virtual hosts)
@@ -602,8 +605,18 @@ class EmbyLibrary(object):
 			if accentConfig is not None and accentConfig.value != serverType:
 				accentConfig.value = serverType
 				accentConfig.save()
+				# the skin this open loaded used the old accent -> hint that
+				# the colours will match on the next plugin open
+				self.g_accentJustChanged = True
 		except Exception as ex:
 			printl("could not persist accent: " + str(ex), self, "W")
+
+	def accentJustChanged(self):
+		"""True once after entering a server whose type differs from the accent
+		the skin was loaded with this plugin open (read-and-clear)."""
+		changed = self.g_accentJustChanged
+		self.g_accentJustChanged = False
+		return changed
 
 	#===============================================================================
 	#
