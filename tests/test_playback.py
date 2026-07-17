@@ -61,6 +61,19 @@ class TestSingleItemDetailWrap(PlaybackBase):
 		self.assertIn("/Users/%s/Items/%s" % (EMBY_UID, MOVIE_ID), url)
 		self.assertIn("Fields=", url)
 
+	def test_detail_refetch_carries_people_and_rating(self):
+		# the detail-panel enrichment (director/cast/writer/rating) relies on
+		# the getItemUrl re-fetch bringing the People + CommunityRating that
+		# the list rows deliberately omit for speed
+		self._serve_detail("item_detail_emby.json")
+		lib = self._lib()
+		fullList, _mc = lib.getMoviesFromSection(lib.getItemUrl(MOVIE_ID))
+		entryData = fullList[0][1]
+		self.assertTrue(entryData["cast"], "cast should be populated from People")
+		self.assertTrue(entryData["director"], "director should be populated from People")
+		self.assertTrue(entryData["writer"], "writer should be populated from People")
+		self.assertTrue(entryData["rating"], "rating should come from CommunityRating")
+
 
 class TestGetMediaOptions(PlaybackBase):
 

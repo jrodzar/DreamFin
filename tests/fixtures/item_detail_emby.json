@@ -282,6 +282,11 @@
  "Overview": "Buster es un koala que posee y dirige un gran teatro que está pasando por un momento muy delicado. Para arreglar la situación y recuperar la gloria perdida, organizará el concurso de canto más grande del mundo, que atrae a multitud de animales que buscan convertirse en estrellas. Entre ellos encontramos a un bromista y arrogante ratón, una elefanta adolescente que tiene pánico escénico, una cerda que padece estrés debido a su camada de 25 lechones, un joven gorila proveniente de una familia de gánsteres y una puercoespín que tiene su propia banda de rock alternativo.",
  "People": [
   {
+   "Name": "Jane Director",
+   "Id": "dir1",
+   "Type": "Director"
+  },
+  {
    "Id": "4212",
    "Name": "Matthew McConaughey",
    "PrimaryImageTag": "72a5e352797e9baae499dbff3702ef19",
@@ -308,6 +313,11 @@
    "PrimaryImageTag": "52230cf8139ba19d4ad36729cc52b65e",
    "Role": "Ash (voice)",
    "Type": "Actor"
+  },
+  {
+   "Name": "Sam Writer",
+   "Id": "wri1",
+   "Type": "Writer"
   }
  ],
  "PremiereDate": "2016-11-22T23:00:00.0000000Z",
@@ -342,5 +352,6 @@
   "PlayCount": 0,
   "PlaybackPositionTicks": 12345670000,
   "Played": false
- }
+ },
+ "CommunityRating": 6.5
 }

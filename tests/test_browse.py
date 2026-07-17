@@ -339,7 +339,7 @@ class TestBrowseMixedAndMusic(unittest.TestCase):
 		artists = {"Items": [{"Type": "MusicArtist", "Id": "a1", "Name": "Artist", "UserData": {}}], "TotalRecordCount": 1}
 		albums = {"Items": [{"Type": "MusicAlbum", "Id": "b1", "Name": "Album", "ProductionYear": 1999, "UserData": {}}], "TotalRecordCount": 1}
 		tracks = {"Items": [{"Type": "Audio", "Id": "t1", "Name": "Track", "IndexNumber": 3,
-						"RunTimeTicks": 1800000000, "UserData": {"PlayCount": 2},
+						"RunTimeTicks": 1800000000, "UserData": {"PlayCount": 2, "Played": True},
 						"MediaSources": [{"Id": "ms1", "Container": "flac", "Size": 999,
 										"MediaStreams": [{"Type": "Audio", "Codec": "flac", "Channels": 2}]}]}], "TotalRecordCount": 1}
 		self.mock.add_json("/Artists/AlbumArtists", artists)
@@ -364,7 +364,7 @@ class TestBrowseMixedAndMusic(unittest.TestCase):
 		self.assertEqual(trackEntry[1]["tagType"], "Track")
 		self.assertEqual(trackEntry[1]["nextViewMode"], "play")
 		self.assertEqual(trackEntry[1]["duration"], "180000")
-		self.assertEqual(trackEntry[3], "seen")  # PlayCount 2
+		self.assertEqual(trackEntry[3], "seen")  # Played=True (not just PlayCount)
 		assert_all_strings(self, trackEntry[1], "track entryData")
 
 

@@ -1037,6 +1037,10 @@ class EmbyLibrary(object):
 			"rating": self._communityRating(item),
 			"duration": jsonToStr(ticksToMs(item["RunTimeTicks"])) if item.get("RunTimeTicks") else "",
 			"viewCount": self._viewCount(userData),
+			# "seen" is UserData.Played (a real boolean), NOT PlayCount: Emby
+			# bumps PlayCount on every stop, even one a few seconds in (and then
+			# zeroes the resume position), so PlayCount>0 does NOT mean watched.
+			"played": "1" if userData.get("Played") else "0",
 			"viewOffset": jsonToStr(ticksToMs(userData["PlaybackPositionTicks"])) if userData.get("PlaybackPositionTicks") else "0",
 			"genre": self._joinNames(item.get("Genres")),
 			"director": self._joinPeople(item, "Director"),
@@ -1310,10 +1314,12 @@ class EmbyLibrary(object):
 		return "unseen"
 
 	def getViewStatefromViewCount(self, entryData):
-		viewCount = int(entryData.get("viewCount") or 0)
-		viewOffset = int(entryData.get("viewOffset") or 0)
-		if viewCount > 0:
+		# watched is the Played boolean, not PlayCount (see itemToEntryData):
+		# a movie stopped after a few seconds comes back with PlayCount=1 but
+		# Played=False and a zeroed position, i.e. it is NOT watched.
+		if str(entryData.get("played")) == "1":
 			return "seen"
+		viewOffset = int(entryData.get("viewOffset") or 0)
 		if viewOffset > 0:
 			return "started"
 		return "unseen"

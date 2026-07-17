@@ -753,7 +753,7 @@ class DP_View(DPH_Screen, DPH_ScreenHelper, DPH_MultiColorFunctions, DPH_Filter)
 
 			# only carry over the watch state, the rest of entryData keeps
 			# whatever the original view flow put there
-			for field in ("viewCount", "viewOffset", "lastViewedAt"):
+			for field in ("viewCount", "played", "viewOffset", "lastViewedAt"):
 				if field in freshData:
 					entryData[field] = freshData[field]
 				else:
@@ -1925,9 +1925,92 @@ class DP_View(DPH_Screen, DPH_ScreenHelper, DPH_MultiColorFunctions, DPH_Filter)
 			# now go for it
 			self.handlePictures()
 
+			# lists omit People/rating for speed; enrich the panel of the
+			# item now under the cursor with a one-off per-item detail fetch
+			self.loadFullDetailIfNeeded()
+
 		else:
 			self["title"].setText("no data retrieved")
 			self["shortDescription"].setText("no data retrieved")
+
+		printl("", self, "C")
+
+	#===========================================================================
+	# Per-item detail enrichment: list rows are fetched WITHOUT People (cast/
+	# director/writer) or the community rating, because asking for People in a
+	# 200-item page is very slow on Jellyfin. When an item settles under the
+	# cursor we fetch its full detail once and repaint the panel with it.
+	#===========================================================================
+	def loadFullDetailIfNeeded(self):
+		printl("", self, "S")
+
+		try:
+			details = self.details
+			# skip while fast-scrolling, for non-leaf items, and once cached
+			if self.fastScroll or not details or details.get("_detailLoaded"):
+				printl("", self, "C")
+				return
+			if details.get("tagType") not in ("Video", "Track"):
+				printl("", self, "C")
+				return
+			if "ratingKey" not in details or "server" not in details:
+				printl("", self, "C")
+				return
+
+			ratingKey = details["ratingKey"]
+			plexInstance = Singleton().getBackendInstance()
+			url = plexInstance.getItemUrl(ratingKey)
+
+			# off the main loop; repaint in the callback if still the current item
+			runInThread(lambda: plexInstance.getMoviesFromSection(url),
+					lambda result, error: self.applyFullDetail(ratingKey, result, error))
+		except Exception as e:
+			printl("could not schedule full detail load: " + str(e), self, "W")
+
+		printl("", self, "C")
+
+	#===========================================================================
+	#
+	#===========================================================================
+	def applyFullDetail(self, ratingKey, result, error):
+		printl("", self, "S")
+
+		try:
+			if error is not None or not result:
+				printl("", self, "C")
+				return
+			freshList = result[0] if result else None
+			if not freshList:
+				printl("", self, "C")
+				return
+
+			freshData = freshList[0][1]
+			details = self.details
+			# the user may have moved on; only apply to the still-current row
+			if not details or details.get("ratingKey") != ratingKey:
+				printl("", self, "C")
+				return
+
+			for field in ("director", "cast", "writer", "rating", "genre", "country", "summary", "tagline"):
+				value = freshData.get(field)
+				if value:
+					details[field] = value
+			details["_detailLoaded"] = "1"
+
+			# repaint just the enriched labels (guarded: widgets vary per view)
+			for name, default in (("cast", " "), ("writer", " "), ("director", " "), ("genre", " - ")):
+				if name in self:
+					try:
+						self[name].setText(encodeThat(details.get(name, default)))
+					except Exception:
+						pass
+			if hasattr(self, "handlePopularityPixmaps"):
+				try:
+					self.handlePopularityPixmaps()
+				except Exception:
+					pass
+		except Exception as e:
+			printl("could not apply full detail: " + str(e), self, "W")
 
 		printl("", self, "C")
 
@@ -2423,6 +2506,8 @@ class DP_View(DPH_Screen, DPH_ScreenHelper, DPH_MultiColorFunctions, DPH_Filter)
 		myList = list(currentSelection)
 		myList[3] = self.unseenPic
 		myList[1]["viewCount"] = "0"
+		myList[1]["played"] = "0"
+		myList[1]["viewOffset"] = "0"
 		self.listViewList[currentIndex] = tuple(myList)
 		# modifyEntry does not repaint the row everywhere, rebuild the list
 		self.updateList(myIndex=currentIndex)
@@ -2450,6 +2535,7 @@ class DP_View(DPH_Screen, DPH_ScreenHelper, DPH_MultiColorFunctions, DPH_Filter)
 		myList = list(currentSelection)
 		myList[3] = self.seenPic
 		myList[1]["viewCount"] = "1"
+		myList[1]["played"] = "1"
 		self.listViewList[currentIndex] = tuple(myList)
 		# modifyEntry does not repaint the row everywhere, rebuild the list
 		self.updateList(myIndex=currentIndex)
