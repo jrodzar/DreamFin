@@ -6,7 +6,7 @@
     <color name="background30" value="#30000000" />
     <color name="background40" value="#40000000" />
     <color name="background-pig" value="#ff000000" />
-    <color name="bernstein" value="#00f0a30a" />
+    <color name="accent" value="#00f0a30a" />
     <color name="black" value="#00000000" />
     <color name="foreground" value="#00ffffff" />
     <color name="green" value="#0000ff00" />
@@ -300,10 +300,10 @@
     <widget name="stillPicture" backgroundColor="background-pig" zPosition="-3" position="51,127" size="822,462" />
     <widget name="miniTv" position="51,127" size="822,462" zPosition="43" backgroundColor="background-pig" />
     <!-- information -->
-    <widget name="totalLabel" transparent="1" zPosition="4" halign="right" position="350,8" size="140,42" font="OpenSans; 30" foregroundColor="bernstein" backgroundColor="background" />
-    <widget name="total" transparent="1" zPosition="4" halign="left" position="500,8" size="70,42" font="OpenSans; 30" foregroundColor="bernstein" backgroundColor="background" />
-    <widget name="paginationLabel" transparent="1" zPosition="50" halign="right" position="650,8" size="140,42" font="OpenSans; 30" foregroundColor="bernstein" backgroundColor="background" />
-    <widget name="pagination" transparent="1" zPosition="50" halign="left" position="800,8" size="70,42" font="OpenSans; 30" foregroundColor="bernstein" backgroundColor="background" />
+    <widget name="totalLabel" transparent="1" zPosition="4" halign="right" position="350,8" size="140,42" font="OpenSans; 30" foregroundColor="accent" backgroundColor="background" />
+    <widget name="total" transparent="1" zPosition="4" halign="left" position="500,8" size="70,42" font="OpenSans; 30" foregroundColor="accent" backgroundColor="background" />
+    <widget name="paginationLabel" transparent="1" zPosition="50" halign="right" position="650,8" size="140,42" font="OpenSans; 30" foregroundColor="accent" backgroundColor="background" />
+    <widget name="pagination" transparent="1" zPosition="50" halign="left" position="800,8" size="70,42" font="OpenSans; 30" foregroundColor="accent" backgroundColor="background" />
     <!-- content -->
     <widget source="listview" render="Listbox" zPosition="8" position="950,62" size="950,640" scrollbarMode="showNever" foregroundColor="grey" foregroundColorSelected="foreground" backgroundColor="background" transparent="1" selectionPixmap="/usr/lib/enigma2/python/Plugins/Extensions/DreamFin/skins/default_FHD/images/focus_list.png" backgroundPixmap="/usr/lib/enigma2/python/Plugins/Extensions/DreamFin/skins/default_FHD/images/sel_bg.png">
       <convert type="TemplatedMultiContent">
@@ -316,57 +316,57 @@
 			</convert>
     </widget>
     <!-- general -->
-    <widget name="title" transparent="1" zPosition="5" halign="left" position="245,722" size="800,50" font="OpenSans;30" foregroundColor="bernstein" backgroundColor="background" />
+    <widget name="title" transparent="1" zPosition="5" halign="left" position="245,722" size="800,50" font="OpenSans;30" foregroundColor="accent" backgroundColor="background" />
     
     <widget name="shortDescription" text="" transparent="1" zPosition="99" halign="left" position="245,780" size="990,250" font="OpenSans; 24" foregroundColor="foreground" backgroundColor="background" />
     <ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/DreamFin/skins/default_FHD/icons/five_stars_dark-fs8.png" zPosition="83" position="395,602" size="141,29" alphatest="blend" transparent="1" />
     <widget name="rating_stars" zPosition="84" position="395,602" size="141,29" transparent="1" orientation="orHorizontal" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/DreamFin/skins/default_FHD/icons/five_stars_bright-fs8.png" />
-    <widget name="yearLabel" transparent="1" zPosition="4" halign="left" position="1250,725" size="170,35" font="OpenSans; 23" foregroundColor="bernstein" backgroundColor="background" />
+    <widget name="yearLabel" transparent="1" zPosition="4" halign="left" position="1250,725" size="170,35" font="OpenSans; 23" foregroundColor="accent" backgroundColor="background" />
     <widget name="year" transparent="1" zPosition="4" halign="left" position="1400,725" size="500,35" font="OpenSans; 23" foregroundColor="foreground" backgroundColor="background" />
-    <widget name="genreLabel" transparent="1" zPosition="4" halign="left" position="1250,760" size="170,35" font="OpenSans; 23" foregroundColor="bernstein" backgroundColor="background" />
+    <widget name="genreLabel" transparent="1" zPosition="4" halign="left" position="1250,760" size="170,35" font="OpenSans; 23" foregroundColor="accent" backgroundColor="background" />
     <widget name="genre" transparent="1" zPosition="4" halign="left" position="1400,760" size="500,35" font="OpenSans; 23" foregroundColor="foreground" backgroundColor="background" />
-    <widget name="directorLabel" transparent="1" zPosition="4" halign="left" position="1250,830" size="170,35" font="OpenSans; 23" foregroundColor="bernstein" backgroundColor="background" />
+    <widget name="directorLabel" transparent="1" zPosition="4" halign="left" position="1250,830" size="170,35" font="OpenSans; 23" foregroundColor="accent" backgroundColor="background" />
     <widget name="director" transparent="1" zPosition="4" halign="left" position="1400,830" size="500,35" font="OpenSans; 23" foregroundColor="foreground" backgroundColor="background" />
-    <widget name="writerLabel" transparent="1" zPosition="4" halign="left" position="1250,795" size="170,35" font="OpenSans; 23" foregroundColor="bernstein" backgroundColor="background" />
+    <widget name="writerLabel" transparent="1" zPosition="4" halign="left" position="1250,795" size="170,35" font="OpenSans; 23" foregroundColor="accent" backgroundColor="background" />
     <widget name="writer" transparent="1" zPosition="4" halign="left" position="1400,795" size="500,35" font="OpenSans; 23" foregroundColor="foreground" backgroundColor="background" />
-    <widget name="castLabel" transparent="1" zPosition="4" halign="left" position="1250,865" size="170,35" font="OpenSans; 23" foregroundColor="bernstein" backgroundColor="background" />
+    <widget name="castLabel" transparent="1" zPosition="4" halign="left" position="1250,865" size="170,35" font="OpenSans; 23" foregroundColor="accent" backgroundColor="background" />
     <widget name="cast" transparent="1" zPosition="4" halign="left" position="1400,865" size="500,35" font="OpenSans; 23" foregroundColor="foreground" backgroundColor="background" />
-    <widget name="subtitlesLabel" transparent="1" zPosition="4" halign="left" position="1250,900" size="170,35" font="OpenSans; 23" foregroundColor="bernstein" backgroundColor="background" />
+    <widget name="subtitlesLabel" transparent="1" zPosition="4" halign="left" position="1250,900" size="170,35" font="OpenSans; 23" foregroundColor="accent" backgroundColor="background" />
     <widget name="subtitles" transparent="1" zPosition="4" halign="left" position="1400,900" size="500,35" font="OpenSans; 23" foregroundColor="foreground" backgroundColor="background" />
-    <widget name="audioLabel" transparent="1" zPosition="4" halign="left" position="1250,935" size="170,35" font="OpenSans; 23" foregroundColor="bernstein" backgroundColor="background" />
+    <widget name="audioLabel" transparent="1" zPosition="4" halign="left" position="1250,935" size="170,35" font="OpenSans; 23" foregroundColor="accent" backgroundColor="background" />
     <widget name="audio" transparent="1" zPosition="4" halign="left" position="1400,935" size="500,35" font="OpenSans; 23" foregroundColor="foreground" backgroundColor="background" />
-    <widget name="studioLabel" transparent="1" zPosition="4" halign="left" position="1250,970" size="170,35" font="OpenSans; 23" foregroundColor="bernstein" backgroundColor="background" />
+    <widget name="studioLabel" transparent="1" zPosition="4" halign="left" position="1250,970" size="170,35" font="OpenSans; 23" foregroundColor="accent" backgroundColor="background" />
     <widget name="studio" transparent="1" zPosition="4" halign="left" position="1400,970" size="450,35" font="OpenSans; 23" foregroundColor="foreground" backgroundColor="background" />
-    <widget name="durationLabel" transparent="1" zPosition="4" halign="left" position="1250,1005" size="170,30" font="OpenSans; 23" foregroundColor="bernstein" backgroundColor="background" />
+    <widget name="durationLabel" transparent="1" zPosition="4" halign="left" position="1250,1005" size="170,30" font="OpenSans; 23" foregroundColor="accent" backgroundColor="background" />
     <widget name="duration" transparent="1" zPosition="4" halign="left" position="1400,1005" size="450,30" font="OpenSans; 23" foregroundColor="foreground" backgroundColor="background" />
     <!-- tv show specific -->
     <widget name="grandparentTitle" transparent="1" zPosition="83" halign="left" position="145,95" size="750,35" font="OpenSans; 23" foregroundColor="foreground" backgroundColor="background" />
-    <widget name="childCountLabel" transparent="1" zPosition="6" halign="left" position="1250,830" size="170,35" font="OpenSans; 20" foregroundColor="bernstein" backgroundColor="background" />
+    <widget name="childCountLabel" transparent="1" zPosition="6" halign="left" position="1250,830" size="170,35" font="OpenSans; 20" foregroundColor="accent" backgroundColor="background" />
     <widget name="childCount" transparent="1" zPosition="6" halign="left" position="1400,830" size="500,35" font="OpenSans; 20" foregroundColor="foreground" backgroundColor="background" />
-    <widget name="leafCountLabel" transparent="1" zPosition="6" halign="left" position="1250,865" size="170,35" font="OpenSans; 20" foregroundColor="bernstein" backgroundColor="background" />
+    <widget name="leafCountLabel" transparent="1" zPosition="6" halign="left" position="1250,865" size="170,35" font="OpenSans; 20" foregroundColor="accent" backgroundColor="background" />
     <widget name="leafCount" transparent="1" zPosition="6" halign="left" position="1400,865" size="500,35" font="OpenSans; 20" foregroundColor="foreground" backgroundColor="background" />
-    <widget name="viewedLeafCountLabel" transparent="1" zPosition="6" halign="left" position="1250,900" size="170,35" font="OpenSans; 20" foregroundColor="bernstein" backgroundColor="background" />
+    <widget name="viewedLeafCountLabel" transparent="1" zPosition="6" halign="left" position="1250,900" size="170,35" font="OpenSans; 20" foregroundColor="accent" backgroundColor="background" />
     <widget name="viewedLeafCount" transparent="1" zPosition="6" halign="left" position="1400,900" size="500,35" font="OpenSans; 20" foregroundColor="foreground" backgroundColor="background" />
-    <widget name="unviewedLeafCountLabel" transparent="1" zPosition="6" halign="left" position="1250,935" size="170,35" font="OpenSans; 20" foregroundColor="bernstein" backgroundColor="background" />
+    <widget name="unviewedLeafCountLabel" transparent="1" zPosition="6" halign="left" position="1250,935" size="170,35" font="OpenSans; 20" foregroundColor="accent" backgroundColor="background" />
     <widget name="unviewedLeafCount" transparent="1" zPosition="6" halign="left" position="1400,935" size="500,35" font="OpenSans; 20" foregroundColor="foreground" backgroundColor="background" />
-    <widget name="infoLabel" transparent="1" zPosition="9" halign="left" position="210,225" size="170,35" font="OpenSans; 20" foregroundColor="bernstein" backgroundColor="background" />
+    <widget name="infoLabel" transparent="1" zPosition="9" halign="left" position="210,225" size="170,35" font="OpenSans; 20" foregroundColor="accent" backgroundColor="background" />
     <widget name="info" transparent="1" zPosition="9" halign="left" position="310,225" size="170,35" font="OpenSans; 20" foregroundColor="foreground" backgroundColor="background" />
     <!-- detail pane -->
-    <widget name="videoCodecLabel" transparent="1" zPosition="9" halign="left" position="245,760" size="170,35" font="OpenSans; 23" foregroundColor="bernstein" backgroundColor="background" />
+    <widget name="videoCodecLabel" transparent="1" zPosition="9" halign="left" position="245,760" size="170,35" font="OpenSans; 23" foregroundColor="accent" backgroundColor="background" />
     <widget name="videoCodec" transparent="1" zPosition="9" halign="left" position="395,760" size="620,35" font="OpenSans; 23" foregroundColor="foreground" backgroundColor="background" />
-    <widget name="bitrateLabel" transparent="1" zPosition="9" halign="left" position="245,795" size="170,35" font="OpenSans; 23" foregroundColor="bernstein" backgroundColor="background" />
+    <widget name="bitrateLabel" transparent="1" zPosition="9" halign="left" position="245,795" size="170,35" font="OpenSans; 23" foregroundColor="accent" backgroundColor="background" />
     <widget name="bitrate" transparent="1" zPosition="9" halign="left" position="395,795" size="620,35" font="OpenSans; 23" foregroundColor="foreground" backgroundColor="background" />
-    <widget name="videoFrameRateLabel" transparent="1" zPosition="9" halign="left" position="245,830" size="170,35" font="OpenSans; 23" foregroundColor="bernstein" backgroundColor="background" />
+    <widget name="videoFrameRateLabel" transparent="1" zPosition="9" halign="left" position="245,830" size="170,35" font="OpenSans; 23" foregroundColor="accent" backgroundColor="background" />
     <widget name="videoFrameRate" transparent="1" zPosition="9" halign="left" position="395,830" size="620,35" font="OpenSans; 23" foregroundColor="foreground" backgroundColor="background" />
-    <widget name="audioChannelsLabel" transparent="1" zPosition="9" halign="left" position="245,865" size="170,35" font="OpenSans; 23" foregroundColor="bernstein" backgroundColor="background" />
+    <widget name="audioChannelsLabel" transparent="1" zPosition="9" halign="left" position="245,865" size="170,35" font="OpenSans; 23" foregroundColor="accent" backgroundColor="background" />
     <widget name="audioChannels" transparent="1" zPosition="9" halign="left" position="395,865" size="620,35" font="OpenSans; 23" foregroundColor="foreground" backgroundColor="background" />
-    <widget name="aspectRatioLabel" transparent="1" zPosition="9" halign="left" position="245,900" size="170,35" font="OpenSans; 23" foregroundColor="bernstein" backgroundColor="background" />
+    <widget name="aspectRatioLabel" transparent="1" zPosition="9" halign="left" position="245,900" size="170,35" font="OpenSans; 23" foregroundColor="accent" backgroundColor="background" />
     <widget name="aspectRatio" transparent="1" zPosition="9" halign="left" position="395,900" size="620,35" font="OpenSans; 22" foregroundColor="foreground" backgroundColor="background" />
-    <widget name="videoResolutionLabel" transparent="1" zPosition="9" halign="left" position="245,935" size="170,35" font="OpenSans; 23" foregroundColor="bernstein" backgroundColor="background" />
+    <widget name="videoResolutionLabel" transparent="1" zPosition="9" halign="left" position="245,935" size="170,35" font="OpenSans; 23" foregroundColor="accent" backgroundColor="background" />
     <widget name="videoResolution" transparent="1" zPosition="9" halign="left" position="395,935" size="620,35" font="OpenSans; 23" foregroundColor="foreground" backgroundColor="background" />
-    <widget name="audioCodecLabel" transparent="1" zPosition="9" halign="left" position="245,970" size="170,35" font="OpenSans; 23" foregroundColor="bernstein" backgroundColor="background" />
+    <widget name="audioCodecLabel" transparent="1" zPosition="9" halign="left" position="245,970" size="170,35" font="OpenSans; 23" foregroundColor="accent" backgroundColor="background" />
     <widget name="audioCodec" transparent="1" zPosition="9" halign="left" position="395,970" size="620,35" font="OpenSans; 23" foregroundColor="foreground" backgroundColor="background" />
-    <widget name="fileLabel" transparent="1" zPosition="9" halign="left" position="245,1005" size="170,30" font="OpenSans; 23" foregroundColor="bernstein" backgroundColor="background" />
+    <widget name="fileLabel" transparent="1" zPosition="9" halign="left" position="245,1005" size="170,30" font="OpenSans; 23" foregroundColor="accent" backgroundColor="background" />
     <widget name="file" transparent="1" zPosition="9" halign="left" position="395,1005" size="800,30" font="OpenSans; 23" foregroundColor="foreground" backgroundColor="background" />
     <widget name="casePic" zPosition="49" position="0,730" size="240,292" alphatest="blend" transparent="0" />
     <widget name="poster" transparent="1" zPosition="50" position="32,740" size="195,268" alphatest="blend" />
@@ -387,7 +387,7 @@
     <widget name="btn_yellowText" backgroundColor="background" font="OpenSans; 27" halign="left" valign="center" position="950,1038" size="360,40" transparent="1" zPosition="1" />
     <widget name="btn_blueText" backgroundColor="background" font="OpenSans; 27" halign="left" valign="center" position="1350,1038" size="360,40" transparent="1" zPosition="1" />
     <!-- functions -->
-    <widget name="number_key_popup" zPosition="51" halign="left" valign="center" position="center,center" size="75,80" font="OpenSans;70" foregroundColor="bernstein" transparent="1" />
+    <widget name="number_key_popup" zPosition="51" halign="left" valign="center" position="center,center" size="75,80" font="OpenSans;70" foregroundColor="accent" transparent="1" />
     <widget name="L1" transparent="1" zPosition="10" position="1805,1038" size="20,35" font="OpenSans; 20" halign="center" valign="center" />
     <widget name="L2" transparent="1" zPosition="10" position="1825,1038" size="20,35" font="OpenSans; 20" halign="center" valign="center" />
     <widget name="L3" transparent="1" zPosition="10" position="1845,1038" size="20,35" font="OpenSans; 20" halign="center" valign="center" />
@@ -404,10 +404,10 @@
     <!-- clock -->
     <panel name="clockpanel" />
     <!-- information -->
-   <widget name="totalLabel" transparent="1" zPosition="4" halign="right" position="350,8" size="140,42" font="OpenSans; 30" foregroundColor="bernstein" backgroundColor="background" />
-    <widget name="total" transparent="1" zPosition="4" halign="left" position="500,8" size="70,42" font="OpenSans; 30" foregroundColor="bernstein" backgroundColor="background" />
-    <widget name="paginationLabel" transparent="1" zPosition="50" halign="right" position="650,8" size="140,42" font="OpenSans; 30" foregroundColor="bernstein" backgroundColor="background" />
-    <widget name="pagination" transparent="1" zPosition="50" halign="left" position="800,8" size="70,42" font="OpenSans; 30" foregroundColor="bernstein" backgroundColor="background" />
+   <widget name="totalLabel" transparent="1" zPosition="4" halign="right" position="350,8" size="140,42" font="OpenSans; 30" foregroundColor="accent" backgroundColor="background" />
+    <widget name="total" transparent="1" zPosition="4" halign="left" position="500,8" size="70,42" font="OpenSans; 30" foregroundColor="accent" backgroundColor="background" />
+    <widget name="paginationLabel" transparent="1" zPosition="50" halign="right" position="650,8" size="140,42" font="OpenSans; 30" foregroundColor="accent" backgroundColor="background" />
+    <widget name="pagination" transparent="1" zPosition="50" halign="left" position="800,8" size="70,42" font="OpenSans; 30" foregroundColor="accent" backgroundColor="background" />
        <widget source="listview" render="Listbox" zPosition="8" position="15,611" size="535,400" scrollbarMode="showNever" foregroundColor="grey" foregroundColorSelected="foreground" backgroundColor="background" transparent="1" selectionPixmap="/usr/lib/enigma2/python/Plugins/Extensions/DreamFin/skins/default_FHD/images/focus_list.png" backgroundPixmap="/usr/lib/enigma2/python/Plugins/Extensions/DreamFin/skins/default_FHD/images/sel_bg.png">
       <convert type="TemplatedMultiContent">
 				{"template": [ MultiContentEntryText(pos = (40,0), size = (535,40), flags = RT_HALIGN_LEFT | RT_VALIGN_CENTER, text = 0),
@@ -427,54 +427,54 @@
     <widget name="shortDescription" text="" transparent="1" zPosition="10" halign="left" position="1290,675" size="620,350" font="OpenSans; 24" foregroundColor="foreground" backgroundColor="background" />
     <ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/DreamFin/skins/default_FHD/icons/five_stars_dark-fs8.png" zPosition="83" position="600,650" size="141,29" alphatest="blend" transparent="1" />
     <widget name="rating_stars" zPosition="84" position="600,650" size="141,29" transparent="1" orientation="orHorizontal" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/DreamFin/skins/default_FHD/icons/five_stars_bright-fs8.png" />
-    <widget name="yearLabel" transparent="1" zPosition="4" halign="left" position="760,640" size="170,35" font="OpenSans; 23" foregroundColor="bernstein" backgroundColor="background" />
+    <widget name="yearLabel" transparent="1" zPosition="4" halign="left" position="760,640" size="170,35" font="OpenSans; 23" foregroundColor="accent" backgroundColor="background" />
     <widget name="year" transparent="1" zPosition="4" halign="left" position="903,640" size="370,35" font="OpenSans; 23" foregroundColor="foreground" backgroundColor="background" />
-    <widget name="genreLabel" transparent="1" zPosition="4" halign="left" position="760,675" size="170,35" font="OpenSans; 23" foregroundColor="bernstein" backgroundColor="background" />
+    <widget name="genreLabel" transparent="1" zPosition="4" halign="left" position="760,675" size="170,35" font="OpenSans; 23" foregroundColor="accent" backgroundColor="background" />
     <widget name="genre" transparent="1" zPosition="4" halign="left" position="903,675" size="370,35" font="OpenSans; 23" foregroundColor="foreground" backgroundColor="background" />
-    <widget name="writerLabel" transparent="1" zPosition="4" halign="left" position="760,710" size="170,35" font="OpenSans; 23" foregroundColor="bernstein" backgroundColor="background" />
+    <widget name="writerLabel" transparent="1" zPosition="4" halign="left" position="760,710" size="170,35" font="OpenSans; 23" foregroundColor="accent" backgroundColor="background" />
     <widget name="writer" transparent="1" zPosition="4" halign="left" position="903,710" size="370,35" font="OpenSans; 23" foregroundColor="foreground" backgroundColor="background" />
-    <widget name="directorLabel" transparent="1" zPosition="4" halign="left" position="760,745" size="170,35" font="OpenSans; 23" foregroundColor="bernstein" backgroundColor="background" />
+    <widget name="directorLabel" transparent="1" zPosition="4" halign="left" position="760,745" size="170,35" font="OpenSans; 23" foregroundColor="accent" backgroundColor="background" />
     <widget name="director" transparent="1" zPosition="4" halign="left" position="903,745" size="370,35" font="OpenSans; 23" foregroundColor="foreground" backgroundColor="background" />
-    <widget name="castLabel" transparent="1" zPosition="4" halign="left" position="760,780" size="170,35" font="OpenSans; 23" foregroundColor="bernstein" backgroundColor="background" />
+    <widget name="castLabel" transparent="1" zPosition="4" halign="left" position="760,780" size="170,35" font="OpenSans; 23" foregroundColor="accent" backgroundColor="background" />
     <widget name="cast" transparent="1" zPosition="4" halign="left" position="903,780" size="370,70" font="OpenSans; 23" foregroundColor="foreground" backgroundColor="background" />
-    <widget name="subtitlesLabel" transparent="1" zPosition="4" halign="left" position="760,850" size="170,35" font="OpenSans; 23" foregroundColor="bernstein" backgroundColor="background" />
+    <widget name="subtitlesLabel" transparent="1" zPosition="4" halign="left" position="760,850" size="170,35" font="OpenSans; 23" foregroundColor="accent" backgroundColor="background" />
     <widget name="subtitles" transparent="1" zPosition="4" halign="left" position="903,850" size="370,35" font="OpenSans; 23" foregroundColor="foreground" backgroundColor="background" />
-    <widget name="audioLabel" transparent="1" zPosition="4" halign="left" position="760,885" size="170,35" font="OpenSans; 23" foregroundColor="bernstein" backgroundColor="background" />
+    <widget name="audioLabel" transparent="1" zPosition="4" halign="left" position="760,885" size="170,35" font="OpenSans; 23" foregroundColor="accent" backgroundColor="background" />
     <widget name="audio" transparent="1" zPosition="4" halign="left" position="903,885" size="370,35" font="OpenSans; 23" foregroundColor="foreground" backgroundColor="background" />
-    <widget name="studioLabel" transparent="1" zPosition="4" halign="left" position="760,920" size="170,35" font="OpenSans; 23" foregroundColor="bernstein" backgroundColor="background" />
+    <widget name="studioLabel" transparent="1" zPosition="4" halign="left" position="760,920" size="170,35" font="OpenSans; 23" foregroundColor="accent" backgroundColor="background" />
     <widget name="studio" transparent="1" zPosition="4" halign="left" position="903,920" size="370,35" font="OpenSans; 23" foregroundColor="foreground" backgroundColor="background" />
-    <widget name="durationLabel" transparent="1" zPosition="4" halign="left" position="760,955" size="170,35" font="OpenSans; 23" foregroundColor="bernstein" backgroundColor="background" />
+    <widget name="durationLabel" transparent="1" zPosition="4" halign="left" position="760,955" size="170,35" font="OpenSans; 23" foregroundColor="accent" backgroundColor="background" />
     <widget name="duration" transparent="1" zPosition="4" halign="left" position="903,955" size="370,35" font="OpenSans; 23" foregroundColor="foreground" backgroundColor="background" />
     <widget name="tag" transparent="1" zPosition="48" halign="left" valign="center" noWrap="1" position="558,990" size="480,35" font="OpenSans; 27" foregroundColor="grey" backgroundColor="background" />
     <!-- detail pane -->
-    <widget name="videoCodecLabel" transparent="1" zPosition="9" halign="left" position="1290,675" size="170,35" font="OpenSans; 23" foregroundColor="bernstein" backgroundColor="background" />
+    <widget name="videoCodecLabel" transparent="1" zPosition="9" halign="left" position="1290,675" size="170,35" font="OpenSans; 23" foregroundColor="accent" backgroundColor="background" />
     <widget name="videoCodec" transparent="1" zPosition="9" halign="left" position="1445,675" size="470,35" font="OpenSans; 23" foregroundColor="foreground" backgroundColor="background" />
-    <widget name="bitrateLabel" transparent="1" zPosition="9" halign="left" position="1290,710" size="170,35" font="OpenSans; 23" foregroundColor="bernstein" backgroundColor="background" />
+    <widget name="bitrateLabel" transparent="1" zPosition="9" halign="left" position="1290,710" size="170,35" font="OpenSans; 23" foregroundColor="accent" backgroundColor="background" />
     <widget name="bitrate" transparent="1" zPosition="9" halign="left" position="1445,710" size="470,35" font="OpenSans; 23" foregroundColor="foreground" backgroundColor="background" />
-    <widget name="videoFrameRateLabel" transparent="1" zPosition="9" halign="left" position="1290,745" size="170,35" font="OpenSans; 23" foregroundColor="bernstein" backgroundColor="background" />
+    <widget name="videoFrameRateLabel" transparent="1" zPosition="9" halign="left" position="1290,745" size="170,35" font="OpenSans; 23" foregroundColor="accent" backgroundColor="background" />
     <widget name="videoFrameRate" transparent="1" zPosition="9" halign="left" position="1445,745" size="470,35" font="OpenSans; 23" foregroundColor="foreground" backgroundColor="background" />
-    <widget name="audioChannelsLabel" transparent="1" zPosition="9" halign="left" position="1290,780" size="170,35" font="OpenSans; 23" foregroundColor="bernstein" backgroundColor="background" />
+    <widget name="audioChannelsLabel" transparent="1" zPosition="9" halign="left" position="1290,780" size="170,35" font="OpenSans; 23" foregroundColor="accent" backgroundColor="background" />
     <widget name="audioChannels" transparent="1" zPosition="9" halign="left" position="1445,780" size="470,35" font="OpenSans; 23" foregroundColor="foreground" backgroundColor="background" />
-    <widget name="aspectRatioLabel" transparent="1" zPosition="9" halign="left" position="1290,815" size="170,35" font="OpenSans; 23" foregroundColor="bernstein" backgroundColor="background" />
+    <widget name="aspectRatioLabel" transparent="1" zPosition="9" halign="left" position="1290,815" size="170,35" font="OpenSans; 23" foregroundColor="accent" backgroundColor="background" />
     <widget name="aspectRatio" transparent="1" zPosition="9" halign="left" position="1445,815" size="470,35" font="OpenSans; 23" foregroundColor="foreground" backgroundColor="background" />
-    <widget name="videoResolutionLabel" transparent="1" zPosition="9" halign="left" position="1290,850" size="170,35" font="OpenSans; 23" foregroundColor="bernstein" backgroundColor="background" />
+    <widget name="videoResolutionLabel" transparent="1" zPosition="9" halign="left" position="1290,850" size="170,35" font="OpenSans; 23" foregroundColor="accent" backgroundColor="background" />
     <widget name="videoResolution" transparent="1" zPosition="9" halign="left" position="1445,850" size="470,35" font="OpenSans; 23" foregroundColor="foreground" backgroundColor="background" />
-    <widget name="audioCodecLabel" transparent="1" zPosition="9" halign="left" position="1290,885" size="170,35" font="OpenSans; 20" foregroundColor="bernstein" backgroundColor="background" />
+    <widget name="audioCodecLabel" transparent="1" zPosition="9" halign="left" position="1290,885" size="170,35" font="OpenSans; 20" foregroundColor="accent" backgroundColor="background" />
     <widget name="audioCodec" transparent="1" zPosition="9" halign="left" position="1445,885" size="470,35" font="OpenSans; 23" foregroundColor="foreground" backgroundColor="background" />
-    <widget name="fileLabel" transparent="1" zPosition="9" halign="left" position="1290,920" size="170,35" font="OpenSans; 23" foregroundColor="bernstein" backgroundColor="background" />
+    <widget name="fileLabel" transparent="1" zPosition="9" halign="left" position="1290,920" size="170,35" font="OpenSans; 23" foregroundColor="accent" backgroundColor="background" />
     <widget name="file" transparent="1" zPosition="9" halign="left" position="1445,920" size="470,102" font="OpenSans; 23" foregroundColor="foreground" backgroundColor="background" />
     <!-- tv show specific -->
     <!-- tbd -->
-    <widget name="grandparentTitle" transparent="1" zPosition="5" halign="left" position="760,745" size="512,35" font="OpenSans; 23" foregroundColor="bernstein" backgroundColor="background" />
-    <widget name="childCountLabel" transparent="1" zPosition="6" halign="left" position="760,780" size="170,35" font="OpenSans; 23" foregroundColor="bernstein" backgroundColor="background" />
+    <widget name="grandparentTitle" transparent="1" zPosition="5" halign="left" position="760,745" size="512,35" font="OpenSans; 23" foregroundColor="accent" backgroundColor="background" />
+    <widget name="childCountLabel" transparent="1" zPosition="6" halign="left" position="760,780" size="170,35" font="OpenSans; 23" foregroundColor="accent" backgroundColor="background" />
     <widget name="childCount" transparent="1" zPosition="6" halign="left" position="903,780" size="370,35" font="OpenSans; 23" foregroundColor="foreground" backgroundColor="background" />
-    <widget name="leafCountLabel" transparent="1" zPosition="4" halign="left" position="760,815" size="170,35" font="OpenSans; 23" foregroundColor="bernstein" backgroundColor="background" />
+    <widget name="leafCountLabel" transparent="1" zPosition="4" halign="left" position="760,815" size="170,35" font="OpenSans; 23" foregroundColor="accent" backgroundColor="background" />
     <widget name="leafCount" transparent="1" zPosition="4" halign="left" position="903,815" size="370,35" font="OpenSans; 23" foregroundColor="foreground" backgroundColor="background" />
-    <widget name="viewedLeafCountLabel" transparent="1" zPosition="4" halign="left" position="760,850" size="170,35" font="OpenSans; 23" foregroundColor="bernstein" backgroundColor="background" />
+    <widget name="viewedLeafCountLabel" transparent="1" zPosition="4" halign="left" position="760,850" size="170,35" font="OpenSans; 23" foregroundColor="accent" backgroundColor="background" />
     <widget name="viewedLeafCount" transparent="1" zPosition="4" halign="left" position="903,850" size="370,35" font="OpenSans; 23" foregroundColor="foreground" backgroundColor="background" />
-    <widget name="unviewedLeafCountLabel" transparent="1" zPosition="4" halign="left" position="760,885" size="170,35" font="OpenSans; 23" foregroundColor="bernstein" backgroundColor="background" />
+    <widget name="unviewedLeafCountLabel" transparent="1" zPosition="4" halign="left" position="760,885" size="170,35" font="OpenSans; 23" foregroundColor="accent" backgroundColor="background" />
     <widget name="unviewedLeafCount" transparent="1" zPosition="4" halign="left" position="903,885" size="370,35" font="OpenSans; 23" foregroundColor="foreground" backgroundColor="background" />
-    <widget name="infoLabel" transparent="1" zPosition="9" halign="left" position="783,388" size="250,35" font="OpenSans; 23" foregroundColor="bernstein" backgroundColor="background" />
+    <widget name="infoLabel" transparent="1" zPosition="9" halign="left" position="783,388" size="250,35" font="OpenSans; 23" foregroundColor="accent" backgroundColor="background" />
     <widget name="info" transparent="1" zPosition="9" halign="left" position="973,388" size="230,35" font="OpenSans; 23" foregroundColor="foreground" backgroundColor="background" />
     <!-- tv show specific ende-->
     <widget name="casePic" zPosition="49" position="543,1176" size="240,292" alphatest="blend" transparent="0" />
@@ -492,7 +492,7 @@
     <widget name="btn_yellowText" backgroundColor="background" font="OpenSans; 27" halign="left" valign="center" position="950,1038" size="360,40" transparent="1" zPosition="1" />
     <widget name="btn_blueText" backgroundColor="background" font="OpenSans; 27" halign="left" valign="center" position="1350,1038" size="360,40" transparent="1" zPosition="1" />
     <!-- functions -->
-    <widget name="number_key_popup" zPosition="51" halign="left" valign="center" position="center,center" size="75,80" font="OpenSans;70" foregroundColor="bernstein" transparent="1" />
+    <widget name="number_key_popup" zPosition="51" halign="left" valign="center" position="center,center" size="75,80" font="OpenSans;70" foregroundColor="accent" transparent="1" />
     <widget name="L1" transparent="1" zPosition="10" position="1805,1038" size="20,35" font="OpenSans; 20" halign="center" valign="center" />
     <widget name="L2" transparent="1" zPosition="10" position="1825,1038" size="20,35" font="OpenSans; 20" halign="center" valign="center" />
     <widget name="L3" transparent="1" zPosition="10" position="1845,1038" size="20,35" font="OpenSans; 20" halign="center" valign="center" />
@@ -506,8 +506,8 @@
     <panel name="clockpanel" />
     <ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/DreamFin/skins/default_FHD/images/cover-movie-fs8.png" position="4,808" size="195,268" zPosition="48" alphatest="blend" transparent="1" />
     <widget name="poster" transparent="1" zPosition="49" position="4,808" size="195,268" alphatest="blend" />
-    <widget source="mediaTitle" render="Label" zPosition="4" position="210,800" size="1500,48" font="OpenSans; 34" halign="left" valign="top" noWrap="1" foregroundColor="bernstein" backgroundColor="background40" transparent="1" />
-    <widget name="endingTime" zPosition="10" position="1420,803" transparent="1" size="500,42" valign="top" halign="right" font="OpenSans; 34" foregroundColor="bernstein" backgroundColor="background40" noWrap="1" />
+    <widget source="mediaTitle" render="Label" zPosition="4" position="210,800" size="1500,48" font="OpenSans; 34" halign="left" valign="top" noWrap="1" foregroundColor="accent" backgroundColor="background40" transparent="1" />
+    <widget name="endingTime" zPosition="10" position="1420,803" transparent="1" size="500,42" valign="top" halign="right" font="OpenSans; 34" foregroundColor="accent" backgroundColor="background40" noWrap="1" />
     <widget name="shortDescription" text="" zPosition="99" halign="left" position="215,890" size="1710,190" font="OpenSans; 30" foregroundColor="foreground" backgroundColor="background40" transparent="1" />
     <ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/DreamFin/skins/default_FHD/images/back_progress.png" position="210,850" size="1700,1" zPosition="3" transparent="1" />
     <widget source="session.CurrentService" render="PositionGauge" position="210,850" size="1700,1" zPosition="3" transparent="1">
@@ -516,7 +516,7 @@
     <widget source="session.CurrentService" render="Progress" position="210,848" size="1700,6" backgroundColor="background40" zPosition="4" transparent="1">
       <convert type="ServicePosition">Position</convert>
     </widget>
-    <widget source="session.CurrentService" render="Label" position="210,855" size="160,38" font="OpenSans; 32" halign="right" valign="center" zPosition="4" backgroundColor="background40" transparent="1" foregroundColor="bernstein">
+    <widget source="session.CurrentService" render="Label" position="210,855" size="160,38" font="OpenSans; 32" halign="right" valign="center" zPosition="4" backgroundColor="background40" transparent="1" foregroundColor="accent">
       <convert type="ServicePosition">Length</convert>
     </widget>
     <widget source="session.CurrentService" render="Label" zPosition="4" position="980,855" size="160,38" font="OpenSans; 32" halign="right" valign="center" backgroundColor="background40" shadowColor="#40000000" shadowOffset="-1,-1" transparent="1">
@@ -534,8 +534,8 @@
     <!-- clock -->
     <panel name="clockpanel" />
     <widget name="poster" transparent="1" zPosition="49" position="4,808" size="195,268" alphatest="blend" />
-    <widget source="mediaTitle" render="Label" zPosition="4" position="209,800" size="1500,48" font="OpenSans; 34" halign="left" valign="top" noWrap="1" foregroundColor="bernstein" backgroundColor="background40" transparent="1" />
-    <widget name="endingTime" zPosition="10" position="1420,803" transparent="1" size="500,42" valign="top" halign="right" font="OpenSans; 34" foregroundColor="bernstein" backgroundColor="background40" noWrap="1" />
+    <widget source="mediaTitle" render="Label" zPosition="4" position="209,800" size="1500,48" font="OpenSans; 34" halign="left" valign="top" noWrap="1" foregroundColor="accent" backgroundColor="background40" transparent="1" />
+    <widget name="endingTime" zPosition="10" position="1420,803" transparent="1" size="500,42" valign="top" halign="right" font="OpenSans; 34" foregroundColor="accent" backgroundColor="background40" noWrap="1" />
     <widget name="shortDescription" text="" zPosition="99" halign="left" position="215,890" size="1710,190" font="OpenSans; 30" foregroundColor="foreground" backgroundColor="background40" transparent="1" />
     <ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/DreamFin/skins/default_FHD/images/back_progress.png" position="210,850" size="1700,1" zPosition="3" transparent="1" />
     <widget source="session.CurrentService" render="PositionGauge" position="210,850" size="1700,1" zPosition="3" transparent="1">
@@ -544,7 +544,7 @@
     <widget source="session.CurrentService" render="Progress" position="210,848" size="1700,6" backgroundColor="background40" zPosition="4" transparent="1">
       <convert type="ServicePosition">Position</convert>
     </widget>
-    <widget source="session.CurrentService" render="Label" position="210,855" size="160,38" font="OpenSans; 32" halign="right" valign="center" zPosition="4" backgroundColor="background40" transparent="1" foregroundColor="bernstein">
+    <widget source="session.CurrentService" render="Label" position="210,855" size="160,38" font="OpenSans; 32" halign="right" valign="center" zPosition="4" backgroundColor="background40" transparent="1" foregroundColor="accent">
       <convert type="ServicePosition">Length</convert>
     </widget>
     <widget source="session.CurrentService" render="Label" zPosition="4" position="980,855" size="160,38" font="OpenSans; 32" halign="right" valign="center" backgroundColor="background40" shadowColor="#40000000" shadowOffset="-1,-1" transparent="1">
