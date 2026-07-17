@@ -727,8 +727,12 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 		# tell the server a playback session has started; the resume point is
 		# then kept by the periodic progress reports and the stop report. Never
 		# for extras/trailers, and never block the GUI waiting for the answer.
+		# On a resume, report the resume position (self.resumeStamp is seconds,
+		# still set here - the async seekWatcher only clears it once it seeks),
+		# else the dashboard sits at 0 until the first 30s progress tick.
 		if not self.isExtraData:
-			fireAndForget(lambda: self.plexInstance.reportPlaybackStart(self.id, 0, False))
+			startMs = int((self.resumeStamp or 0) * 1000) if self.resume else 0
+			fireAndForget(lambda: self.plexInstance.reportPlaybackStart(self.id, startMs, False))
 
 		#mh
 		sesd = self.plexInstance.getSelectedEmbeddedSubtitleData()
@@ -1405,6 +1409,13 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 			# report the final position so the server stores the resume point
 			# (Emby/Jellyfin apply their own min/max resume thresholds)
 			positionMs = currentTime * 1000
+			# stopping BEFORE the async resume seek has run leaves currentTime
+			# pre-seek (~0); reporting that would wipe the saved resume. While
+			# resumeStamp is still set (not yet seeked) report the resume point.
+			if self.resumeStamp is not None:
+				resumeMs = int(self.resumeStamp * 1000)
+				if resumeMs > positionMs:
+					positionMs = resumeMs
 			itemId = self.id
 			fireAndForget(lambda: self.plexInstance.reportStopped(itemId, positionMs))
 
