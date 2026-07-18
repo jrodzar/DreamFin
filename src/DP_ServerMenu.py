@@ -44,6 +44,11 @@ from .__common__ import printl2 as printl, getLiveTv, runInThread
 from .__plugin__ import Plugin
 from .__init__ import _  # _ is translation
 
+try:
+	from urllib.parse import quote as urlquote  # py3
+except ImportError:
+	from urllib import quote as urlquote  # py2
+
 #===============================================================================
 #
 #===============================================================================
@@ -292,10 +297,20 @@ class DPS_ServerMenu(DPH_Screen, DPH_HorizontalMenu, DPH_ScreenHelper, DPH_Filte
 		printl("entryData: " + str(entryData), self, "D")
 
 		if searchString is not None:
+			# the input pads the term with trailing spaces and it may hold
+			# non-ascii: strip + url-encode it, or the raw spaces make an
+			# invalid URL ("URL can't contain control characters") and EVERY
+			# search failed with "No data".
+			term = searchString.strip()
+			try:
+				term = term.encode("utf-8")
+			except (UnicodeDecodeError, AttributeError):
+				pass
+			searchTerm = urlquote(term)
 			if "origContentUrl" in entryData[0]:
-				searchUrl = entryData[0]["origContentUrl"] + "&SearchTerm=" + searchString
+				searchUrl = entryData[0]["origContentUrl"] + "&SearchTerm=" + searchTerm
 			else:
-				searchUrl = entryData[0]["contentUrl"] + "&SearchTerm=" + searchString
+				searchUrl = entryData[0]["contentUrl"] + "&SearchTerm=" + searchTerm
 				entryData[0]["origContentUrl"] = entryData[0]["contentUrl"]
 
 			printl("searchUrl: " + str(searchUrl), self, "D")

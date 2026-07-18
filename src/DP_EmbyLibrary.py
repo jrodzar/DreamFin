@@ -409,10 +409,14 @@ class EmbyLibrary(object):
 		ignore paging (no TotalRecordCount) are handled with one request."""
 		printl("url: " + str(url), self, "D")
 
-		# /Users/{id}/Items/Latest is NOT a pageable Items envelope: it returns a
-		# bare array and 500s the moment a StartIndex is appended, which showed
-		# up as "No data in this section" for Recently added. Fetch it as-is.
-		if "/Items/Latest" in url:
+		# A URL that already carries its own Limit wants exactly that many rows and
+		# must NOT be walked page by page:
+		#  - /Items/Latest returns a bare array and 500s when StartIndex is added;
+		#  - the "recently added / on deck" episode queries ask for Limit=100 but
+		#    live under a library with tens of thousands of episodes, so paging by
+		#    TotalRecordCount walked the WHOLE library and hung the plugin.
+		# Fetch these in one request, honouring the caller's Limit.
+		if "Limit=" in url:
 			return self.getJson(url, timeout=PAGED_REQUEST_TIMEOUT)
 
 		merged = None

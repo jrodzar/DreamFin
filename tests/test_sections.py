@@ -322,6 +322,25 @@ class TestRecentlyAddedAndEpisodes(unittest.TestCase):
 		for req in self.mock.requests_for(latest):
 			self.assertNotIn("StartIndex", req["query"])
 
+	def test_limited_query_is_not_paged_to_the_whole_library(self):
+		# a query that carries its own Limit (recently-added episodes ask for
+		# Limit=100 but live under a library with tens of thousands of episodes)
+		# must be fetched in ONE request, not walked page by page by
+		# TotalRecordCount - that walked the whole library and hung the plugin.
+		path = "/Users/%s/Items" % EMBY_UID
+		self.mock.add_json(path, {"Items": [{"Id": "e1", "Type": "Episode", "Name": "E1"}],
+								"TotalRecordCount": 35000})
+		lib = helpers.make_emby_instance(self.mock)
+		self.assertTrue(lib.authenticate())
+
+		result = lib.getJsonPaged(lib.getContentUrl(
+			path + "?ParentId=x&Recursive=true&IncludeItemTypes=Episode&Limit=100"))
+
+		self.assertEqual(len(result["Items"]), 1)
+		reqs = self.mock.requests_for(path)
+		self.assertEqual(len(reqs), 1)  # one request, no paging
+		self.assertNotIn("StartIndex", reqs[0]["query"])
+
 	def test_episode_carries_parent_and_grandparent_ids(self):
 		lib = helpers.make_emby_instance(self.mock)
 		entry = lib.itemToEntryData({
