@@ -1,9 +1,17 @@
-DreamFin 0.1.1 — release notes
+DreamFin 0.1.2 — release notes
 ==============================
 
 **DreamFin** is an Emby/Jellyfin client for Enigma2 forked from DreamPlex. It
 reuses the DreamPlex user interface and replaces the Plex backend with an
 Emby/Jellyfin one. See `README.md` for setup, lineage and attribution.
+
+Fixed in 0.1.2
+--------------
+
+- TV shows and seasons now show their star rating (and cast). The rating only
+  comes back in Emby's single-item detail response, and the per-item detail
+  fetch that loads it was limited to playable rows — so series always showed
+  empty rating stars, even when the show had a rating.
 
 Fixed in 0.1.1
 --------------

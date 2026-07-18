@@ -5,6 +5,13 @@ DreamFin is a fork of DreamPlex (a Plex client for Enigma2) with the Plex
 backend replaced by an Emby/Jellyfin one. See `RELEASENOTES.md` for the full
 release notes and `README.md` for lineage and attribution.
 
+0.1.2 — bugfix
+--------------
+* TV shows and seasons now load their community rating (and cast). Emby only
+  returns the rating in the single-item detail response, and the per-item
+  enrichment that fetches it was limited to playable rows, so show-list rating
+  stars were always empty.
+
 0.1.1 — bugfix
 --------------
 * Fixed a crash (and missing artwork/metadata) in the TV-show views: items
