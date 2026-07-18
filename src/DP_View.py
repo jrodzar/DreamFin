@@ -1989,11 +1989,15 @@ class DP_View(DPH_Screen, DPH_ScreenHelper, DPH_MultiColorFunctions, DPH_Filter)
 
 		try:
 			details = self.details
-			# skip while fast-scrolling, for non-leaf items, and once cached
+			# skip while fast-scrolling and once cached
 			if self.fastScroll or not details or details.get("_detailLoaded"):
 				printl("", self, "C")
 				return
-			if details.get("tagType") not in ("Video", "Track"):
+			# lists omit People/rating for speed; enrich the selected item.
+			# Shows/Seasons also carry a community rating (and cast), and only
+			# Emby's single-item response returns it - so they need this one-off
+			# detail fetch just like the playable Video/Track rows do.
+			if details.get("tagType") not in ("Video", "Track", "Show", "Episodes"):
 				printl("", self, "C")
 				return
 			if "ratingKey" not in details or "server" not in details:
