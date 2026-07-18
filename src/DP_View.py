@@ -2110,10 +2110,13 @@ class DP_View(DPH_Screen, DPH_ScreenHelper, DPH_MultiColorFunctions, DPH_Filter)
 
 		duration = str(self.details.get("duration", " - "))
 
-		if duration == " - ":
-			self["duration"].setText(duration)
-		else:
+		# only movies/episodes carry a runtime; series/seasons/artists/albums
+		# have duration '' -> show the placeholder, never feed it to
+		# durationToTime (int('') used to crash the whole refresh)
+		if duration.strip().isdigit():
 			self["duration"].setText(durationToTime(duration))
+		else:
+			self["duration"].setText(" - ")
 
 		printl("", self, "C")
 

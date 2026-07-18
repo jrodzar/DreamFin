@@ -921,7 +921,16 @@ def indentXml(elem, level=0, more_sibs=False):
 def durationToTime(duration):
 	printl2("", "__common__::durationToTime", "S")
 
-	m, s = divmod(int(duration) / 1000, 60)
+	# series/seasons/artists/albums carry no runtime, so duration is '' (or any
+	# non-numeric value). int('') used to raise ValueError here and crash the
+	# whole show view refresh - guard it and fall back to the '-' placeholder.
+	try:
+		ms = int(duration)
+	except (ValueError, TypeError):
+		printl2("", "__common__::durationToTime", "C")
+		return " - "
+
+	m, s = divmod(ms / 1000, 60)
 	h, m = divmod(m, 60)
 
 	printl2("", "__common__::durationToTime", "C")

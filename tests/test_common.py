@@ -7,7 +7,28 @@ from tests import helpers
 
 helpers.setup_environment()
 
-from src.__common__ import getRatingValue, buildMediaChoiceName, isCompleteImage  # noqa: E402
+from src.__common__ import getRatingValue, buildMediaChoiceName, isCompleteImage, durationToTime  # noqa: E402
+
+
+class TestDurationToTime(unittest.TestCase):
+	"""Regression: series/seasons/artists carry no runtime, so their entryData
+	duration is '' . durationToTime('') used to do int('') -> ValueError, which
+	crashed the whole show-view refresh (green screen) and, because setDuration
+	runs first, also left the year/genre/studio/artwork unset."""
+
+	def test_numeric_ms_formats_as_hms(self):
+		self.assertEqual(durationToTime("5400000"), "1:30:00")
+		self.assertEqual(durationToTime("0"), "0:00:00")
+
+	def test_empty_duration_is_placeholder_not_crash(self):
+		self.assertEqual(durationToTime(""), " - ")
+
+	def test_non_numeric_duration_is_placeholder(self):
+		self.assertEqual(durationToTime(" - "), " - ")
+		self.assertEqual(durationToTime("abc"), " - ")
+
+	def test_none_duration_does_not_raise(self):
+		self.assertEqual(durationToTime(None), " - ")
 
 
 class TestMediaChoiceName(unittest.TestCase):
