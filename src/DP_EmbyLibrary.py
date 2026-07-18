@@ -409,6 +409,12 @@ class EmbyLibrary(object):
 		ignore paging (no TotalRecordCount) are handled with one request."""
 		printl("url: " + str(url), self, "D")
 
+		# /Users/{id}/Items/Latest is NOT a pageable Items envelope: it returns a
+		# bare array and 500s the moment a StartIndex is appended, which showed
+		# up as "No data in this section" for Recently added. Fetch it as-is.
+		if "/Items/Latest" in url:
+			return self.getJson(url, timeout=PAGED_REQUEST_TIMEOUT)
+
 		merged = None
 		start = 0
 		separator = "&" if "?" in url else "?"
@@ -1077,15 +1083,30 @@ class EmbyLibrary(object):
 		if item.get("ParentIndexNumber") is not None:
 			entryData["parentIndex"] = jsonToStr(item.get("ParentIndexNumber"))
 
-		# show/season episode counters; the UI does int() arithmetic on them
+		# show/season episode counters; the show view does int() arithmetic on
+		# them, so they must always be present and numeric - a missing key made
+		# int('') raise and crashed the whole refresh for items without a count.
+		entryData["leafCount"] = "0"
+		entryData["viewedLeafCount"] = "0"
 		if item.get("RecursiveItemCount") is not None:
 			leafCount = int(item["RecursiveItemCount"])
 			entryData["leafCount"] = jsonToStr(leafCount)
 			unplayed = userData.get("UnplayedItemCount")
 			if unplayed is not None:
 				entryData["viewedLeafCount"] = jsonToStr(max(0, leafCount - int(unplayed)))
-			else:
-				entryData["viewedLeafCount"] = entryData["leafCount"] if userData.get("Played") else "0"
+			elif userData.get("Played"):
+				entryData["viewedLeafCount"] = entryData["leafCount"]
+
+		# episodes/seasons: the show view builds the poster/backdrop cache keys
+		# from the parent/grandparent ids and title (Plex supplied these
+		# natively). Without them _refresh did self.details['parentRatingKey']
+		# -> KeyError and crashed while navigating episodes.
+		if item.get("SeasonId"):
+			entryData["parentRatingKey"] = jsonToStr(item.get("SeasonId"))
+		if item.get("SeriesId"):
+			entryData["grandparentRatingKey"] = jsonToStr(item.get("SeriesId"))
+		if item.get("SeriesName"):
+			entryData["grandparentTitle"] = jsonToStr(item.get("SeriesName"))
 
 		# marker the show detail view checks ('theme' in self.details) to
 		# decide whether to fetch a series theme song; the real URL is

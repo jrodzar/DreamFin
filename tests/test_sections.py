@@ -294,5 +294,48 @@ class TestSynthesizedFilter(unittest.TestCase):
 		self.assertEqual(requests[1]["query"].get("StartIndex"), ["200"])
 
 
+class TestRecentlyAddedAndEpisodes(unittest.TestCase):
+	"""Regression for two post-0.1.2 crashes/failures in the show flow:
+	/Items/Latest is a bare-array endpoint that 500s the moment the pager
+	appends StartIndex (Recently added -> 'No data'); and episode entryData
+	must carry the parent/grandparent ids the show view reads by [] (missing
+	-> KeyError green screen while navigating episodes)."""
+
+	def setUp(self):
+		self.mock = MockEmby().start()
+		wire_auth(self.mock)
+
+	def tearDown(self):
+		self.mock.stop()
+
+	def test_latest_is_fetched_without_paging(self):
+		latest = "/Users/%s/Items/Latest" % EMBY_UID
+		self.mock.add_json(latest, [{"Id": "m1", "Type": "Movie", "Name": "M1"}])
+		lib = helpers.make_emby_instance(self.mock)
+		self.assertTrue(lib.authenticate())
+
+		result = lib.getJsonPaged(lib.getContentUrl(latest + "?Limit=60"))
+
+		self.assertIsInstance(result, list)
+		self.assertEqual(len(result), 1)
+		# the pager must NOT append StartIndex to Latest (it 500s the server)
+		for req in self.mock.requests_for(latest):
+			self.assertNotIn("StartIndex", req["query"])
+
+	def test_episode_carries_parent_and_grandparent_ids(self):
+		lib = helpers.make_emby_instance(self.mock)
+		entry = lib.itemToEntryData({
+			"Id": "ep1", "Name": "Episodio 1", "Type": "Episode",
+			"SeasonId": "s1", "SeriesId": "sh1", "SeriesName": "My Show",
+		})
+		self.assertEqual(entry["parentRatingKey"], "s1")
+		self.assertEqual(entry["grandparentRatingKey"], "sh1")
+		self.assertEqual(entry["grandparentTitle"], "My Show")
+		# leafCount/viewedLeafCount must always be present and numeric: the show
+		# view does int() on them and a missing key made int('') crash
+		self.assertEqual(entry["leafCount"], "0")
+		self.assertEqual(entry["viewedLeafCount"], "0")
+
+
 if __name__ == "__main__":
 	unittest.main()

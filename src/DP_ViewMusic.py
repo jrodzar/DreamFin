@@ -134,9 +134,11 @@ class DPS_ViewMusic(DP_View):
 				self.resetPoster = False
 				self.setDuration()
 
-				# technical details
-				self.mediaDataArr = self.details["mediaDataArr"][0]
-				self.parts = self.mediaDataArr["Parts"][0]
+				# technical details (guard a track with no media source)
+				mediaSources = self.details.get("mediaDataArr") or [{}]
+				self.mediaDataArr = mediaSources[0] if mediaSources else {}
+				parts = self.mediaDataArr.get("Parts") or [{}]
+				self.parts = parts[0] if parts else {}
 
 				self["bitrate"].setText(self.mediaDataArr.get("bitrate", " - "))
 				self["audioChannels"].setText(self.mediaDataArr.get("audioChannels", " - "))
@@ -161,7 +163,10 @@ class DPS_ViewMusic(DP_View):
 					self.changeBackdrop = False
 
 		else:
-			raise Exception
+			# unexpected music type: fall back instead of crashing the view
+			printl("unexpected music type: %s" % self.details.get("type"), self, "W")
+			self.pname = self.details.get("ratingKey", "temp")
+			self.bname = self.pname
 
 		# now gather information for pictures
 		self.getPictureInformationToLoad()

@@ -90,9 +90,11 @@ class DPS_ViewMovies(DP_View):
 		self["genre"].setText(encodeThat(self.details.get("genre", " - ")))
 		self["year"].setText(str(self.details.get("year", " - ")))
 
-		# technical details
-		self.mediaDataArr = self.details["mediaDataArr"][0]
-		self.parts = self.mediaDataArr["Parts"][0]
+		# technical details (guard a movie that carries no media source)
+		mediaSources = self.details.get("mediaDataArr") or [{}]
+		self.mediaDataArr = mediaSources[0] if mediaSources else {}
+		parts = self.mediaDataArr.get("Parts") or [{}]
+		self.parts = parts[0] if parts else {}
 
 		self["videoCodec"].setText(self.mediaDataArr.get("videoCodec", " - "))
 		self["bitrate"].setText(self.mediaDataArr.get("bitrate", " - "))

@@ -120,7 +120,7 @@ class DPS_ViewShows(DP_View):
 			printl("is ShowSeasons", self, "D")
 			printl("self.mediaContainer: " + str(self.mediaContainer), self, "D")
 
-			if self.mediaContainer["title2"] == self.details["title"]:
+			if self.mediaContainer.get("title2") == self.details.get("title"):
 				self.grandparentTitle = str(self.mediaContainer.get("title1", " "))
 			else:
 				self.grandparentTitle = str(self.mediaContainer.get("title2", " "))
@@ -160,9 +160,11 @@ class DPS_ViewShows(DP_View):
 					self["grandparentTitle"].setText(self.grandparentTitle)
 					#self.setTitle(self.grandparentTitle)
 
-			# technical details
-			self.mediaDataArr = self.details["mediaDataArr"][0]
-			self.parts = self.mediaDataArr["Parts"][0]
+			# technical details (an episode with no media file has no sources)
+			mediaSources = self.details.get("mediaDataArr") or [{}]
+			self.mediaDataArr = mediaSources[0] if mediaSources else {}
+			parts = self.mediaDataArr.get("Parts") or [{}]
+			self.parts = parts[0] if parts else {}
 
 			self["videoCodec"].setText(self.mediaDataArr.get("videoCodec", " - "))
 			self["bitrate"].setText(self.mediaDataArr.get("bitrate", " - "))
@@ -173,11 +175,11 @@ class DPS_ViewShows(DP_View):
 			self["audioCodec"].setText(self.mediaDataArr.get("audioCodec", " - "))
 			self["file"].setText(encodeThat(self.parts.get("file", " - ")))
 
-			self.bname = self.details["ratingKey"]
+			self.bname = self.details.get("ratingKey", " ")
 			if self.details["currentViewMode"] == "ShowEpisodesDirect":
-				self.pname = self.details["grandparentRatingKey"]
+				self.pname = self.details.get("grandparentRatingKey", self.bname)
 			else:
-				self.pname = self.details["parentRatingKey"]
+				self.pname = self.details.get("parentRatingKey", self.bname)
 
 			if self.currentViewType == "Backdrop":
 				#we change this because the backdrops of episodes are low quality and will be very pixi
@@ -205,7 +207,11 @@ class DPS_ViewShows(DP_View):
 			self.filterableContent = True
 
 		else:
-			raise Exception
+			# unexpected view mode (e.g. while leaving): fall back to the item id
+			# for the picture cache keys instead of crashing the whole view
+			printl("unexpected currentViewMode: %s" % self.details.get("currentViewMode"), self, "W")
+			self.bname = self.details.get("ratingKey", " ")
+			self.pname = self.details.get("ratingKey", " ")
 
 		# now gather information for pictures
 		self.getPictureInformationToLoad()

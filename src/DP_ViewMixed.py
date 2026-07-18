@@ -95,9 +95,11 @@ class DPS_ViewMixed(DP_View):
 			self["genre"].setText(encodeThat(self.details.get("genre", " - ")))
 			self["year"].setText(str(self.details.get("year", " - ")))
 
-			# technical details
-			self.mediaDataArr = self.details["mediaDataArr"][0]
-			self.parts = self.mediaDataArr["Parts"][0]
+			# technical details (guard items that carry no media source)
+			mediaSources = self.details.get("mediaDataArr") or [{}]
+			self.mediaDataArr = mediaSources[0] if mediaSources else {}
+			parts = self.mediaDataArr.get("Parts") or [{}]
+			self.parts = parts[0] if parts else {}
 
 			self["videoCodec"].setText(self.mediaDataArr.get("videoCodec", " - "))
 			self["bitrate"].setText(self.mediaDataArr.get("bitrate", " - "))
@@ -146,7 +148,27 @@ class DPS_ViewMixed(DP_View):
 			self.hideMediaFunctions()
 
 		else:
-			raise Exception
+			# any other container that can appear in a mixed/recently-added list
+			# (series, folders, boxsets): render the basic info panel instead of
+			# raising and crashing the whole view.
+			self.changeBackdrop = True
+			self.changePoster = True
+
+			if "ratingKey" in self.details:
+				self.pname = self.details["ratingKey"]
+				self.bname = self.details["ratingKey"]
+			else:
+				self.pname = "temp"
+				self.bname = "temp"
+
+			self["title"].setText(encodeThat(self.details.get("title", " ")))
+			self["tag"].setText(encodeThat(self.details.get("tagline", " ")))
+			self["shortDescription"].setText(encodeThat(self.details.get("summary", " ")))
+			self["studio"].setText(encodeThat(self.details.get("studio", " ")))
+			self["genre"].setText(encodeThat(self.details.get("genre", " - ")))
+			self["year"].setText(str(self.details.get("year", " - ")))
+
+			self.hideMediaFunctions()
 
 		self.toggleVisibitlyForType(self.details.get("type"))
 
