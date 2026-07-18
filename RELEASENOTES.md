@@ -1,9 +1,18 @@
-DreamFin 0.1.0 — release notes
+DreamFin 0.1.1 — release notes
 ==============================
 
-First release of **DreamFin**, an Emby/Jellyfin client for Enigma2 forked from
-DreamPlex. It reuses the DreamPlex user interface and replaces the Plex backend
-with an Emby/Jellyfin one. See `README.md` for setup, lineage and attribution.
+**DreamFin** is an Emby/Jellyfin client for Enigma2 forked from DreamPlex. It
+reuses the DreamPlex user interface and replaces the Plex backend with an
+Emby/Jellyfin one. See `README.md` for setup, lineage and attribution.
+
+Fixed in 0.1.1
+--------------
+
+- The TV-show views no longer crash on items with no runtime. Series, seasons,
+  artists and albums have no duration, and formatting that empty value used to
+  raise an error that aborted the view refresh — which showed up as a green
+  screen when browsing the series list and as series with no cover art and no
+  metadata. Movies and episodes were unaffected.
 
 What's in it
 ------------

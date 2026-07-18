@@ -5,6 +5,13 @@ DreamFin is a fork of DreamPlex (a Plex client for Enigma2) with the Plex
 backend replaced by an Emby/Jellyfin one. See `RELEASENOTES.md` for the full
 release notes and `README.md` for lineage and attribution.
 
+0.1.1 — bugfix
+--------------
+* Fixed a crash (and missing artwork/metadata) in the TV-show views: items
+  with no runtime — series, seasons, artists, albums — carry an empty
+  duration, which used to raise `int('')` while formatting it and abort the
+  whole view refresh. Movies/episodes were unaffected.
+
 0.1.0 — first release
 ---------------------
 * Emby and Jellyfin backend (`DP_EmbyLibrary.py`) with automatic server-type
