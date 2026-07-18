@@ -160,7 +160,7 @@ class DPS_Mappings(Screen):
 			functionList.append((serverpaths, serverpaths, indexCount, ))
 			indexCount += 1
 
-		self.session.openWithCallback(self.setSelectedRemotePath, ChoiceBox, title=_("Select plex folder"), list=functionList)
+		self.session.openWithCallback(self.setSelectedRemotePath, ChoiceBox, title=_("Select folder"), list=functionList)
 #		self.session.openWithCallback(self.setLocalPathCallback, DPS_PathSelector, "/", "mapping")
 
 		printl("", self, "C")

@@ -1,62 +1,49 @@
-=== 1.06 ===
-- fixed #56: theme stops playing on leave
+DreamFin 0.1.0 — release notes
+==============================
 
-=== 1.05 ===
-- fixed direct play location check for windows server
-- added some code to prevent misconfiguration in direct play ( slashes and backslashes)
-- fixed order (plex defaults are untouched now :-)
-- fixed newest and recently added in tv shows
-- fixed gs when option live tv is enabled
-- fixed streamed mode (buffer drained)
-- fixed update function
-- fixed media selection if more than one version is available
-- fixed yellow button toggle name direct local mode 
-- added font details to xml for skinners
-- several clean ups
+First release of **DreamFin**, an Emby/Jellyfin client for Enigma2 forked from
+DreamPlex. It reuses the DreamPlex user interface and replaces the Plex backend
+with an Emby/Jellyfin one. See `README.md` for setup, lineage and attribution.
 
-=== 1.04a (bugfix release) ===
-- fixed gs in tvshow section
+What's in it
+------------
 
-=== 1.04 ===
-- fixed direct local with UNC path
-- fixed direct local for plex on windows
-- new choicebox if there is more than one version of the media in plex
-- new function show location of file => menu key
-- new views (long list and backdroplist) thx to tobi79ac for skinning :-) => blue key
-- complete new mapping handler for direct local
-- new show seen/unseen count for tvshows
-- several bugfixes
-- new update location => bintray
+- **Emby and Jellyfin**, auto-detected. Add a server by host name or IP and the
+  plugin figures out which backend it is talking to; the UI recolours to match
+  (green for Emby, lilac for Jellyfin, lilac by default).
+- **Authentication** with username/password (token cached, single silent
+  re-auth on 401) or a server **API key**. HTTPS on 443/8920 with TLS SNI kept
+  for name-based reverse proxies.
+- **Browsing** of movies, TV shows (seasons → episodes), music
+  (artists → albums → tracks) and mixed folders, with a client-side synthesized
+  filter menu (All / Unwatched / Recently Added / On Deck / By Genre / By Year /
+  By Decade / Search), server-side artwork resizing and unwatched counts.
+- **Playback**: direct streaming and HLS transcoding (h264 / HEVC), a version
+  selector for multi-source items, audio/subtitle selection with burn-in for
+  image subtitles when transcoding, and trailers where the server exposes them.
+- **Watch state**: resume position round-trips with the server, progress is
+  reported during playback, and watched / unwatched toggles sync both ways.
+- Runs on **OpenATV 6.4 (Python 2.7)** and **6.5+/7.x (Python 3)**.
 
-=== 1.03 ===
-- UI tweaks
-- added Help
-- added About
-- fixed when live tv stop is disabled
+Known limitations
+-----------------
 
-=== 1.02 ===
-- added update function
-- fixed naviagtion in tvshows
-- removed buffer settings (didnt work)
-- fixed quality issue playback mode "transcoded"
-- options show up only when needed according to other options
-- direct local mode is now also available for plex on windows
-- added logrotator to have log even after greenscreen
-- several bugfixes and tweaks
+- **Direct Local** playback needs an **admin API key**: Emby/Jellyfin hide
+  `MediaSources[].Path` from non-admin users, so a non-admin login cannot
+  resolve a local file path. Use *Streamed* or *Transcoded* otherwise.
+- **HEVC direct decode** depends on the receiver: where the box cannot decode
+  the source, use *Transcoded* (the server re-encodes to h264, or to HEVC where
+  the box supports it).
+- **Music** needs a music library on the server; on servers without one that
+  section is empty.
+- Playback controls follow the DreamPlex conventions: **STOP** ends playback
+  (the EXIT-to-stop binding is off by default in the DreamFin settings).
 
-=== 1.01 ===
+Developed and verified against real **Emby 4.9** and **Jellyfin 10.11** servers
+on an Octagon SF8008 running OpenATV 6.4 and 7.6, with an offline test suite
+(mock Emby/Jellyfin backend) green on Python 2.7 and Python 3.
 
-- added fastScroll feature
-- fixed onDeck and recentlyViewed in TvShows
-- added option: stop live tv on startup
-- added option: summerize Sections
-- impletmented media menu
-- new feature media menu => mark as watched, unwachted and refresh library section
-- small skin tweaks
-- little bugfixes
+----
 
-=== 1.00 ===
-- new hd skin (big thx to IPMAN)
-- removed sd and xd skin for now
-- tons of bugfixes
-- another tons of bugfixes
+The DreamPlex release history is preserved upstream at
+https://github.com/oe-alliance/DreamPlex.

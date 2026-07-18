@@ -187,7 +187,7 @@ def getViewsFromSkinParams(myType):
 					config.plugins.dreamfin.skin.value = "default"
 					config.plugins.dreamfin.skin.save()
 					configfile.save()
-					Notifications.AddNotification(MessageBox, "DreamPlex crashed due to a skin error!\nSwitching back to default in settings.\n", type=MessageBox.TYPE_INFO, timeout=10)
+					Notifications.AddNotification(MessageBox, "DreamFin crashed due to a skin error!\nSwitching back to default in settings.\n", type=MessageBox.TYPE_INFO, timeout=10)
 				else:
 					printl("this value: " + str(value) + "is misssing ....", "DP_ViewFactory::getViewsFromSkinParams", "D")
 					raise Exception

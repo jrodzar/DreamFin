@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
-"""Build an installable DreamPlex IPK without any external tooling.
+"""Build an installable DreamFin IPK without any external tooling.
 
-Produces the exact layout opkg-build (and therefore the OpenATV feed)
-ships: an outer tar.gz containing ./debian-binary, ./control.tar.gz and
+Produces the exact layout opkg-build ships: an outer tar.gz containing
+./debian-binary, ./control.tar.gz and
 ./data.tar.gz. Runs on a bare Python 3 (or 2.7) interpreter - no ar, no
 msgfmt, no opkg-utils needed - so the package can be built on Windows.
 
@@ -310,7 +310,7 @@ def build_control_members(version):
 
 
 def main(argv=None):
-	parser = argparse.ArgumentParser(description="build the DreamPlex ipk")
+	parser = argparse.ArgumentParser(description="build the DreamFin ipk")
 	parser.add_argument("--outdir", default=os.path.join(REPO_ROOT, "dist"))
 	parser.add_argument("--version-suffix", default="+dev" + time.strftime("%Y%m%d"),
 					help="appended to the plugin version (default: +devYYYYMMDD)")

@@ -1,6 +1,6 @@
 #!/bin/sh
-# stale bytecode from a previously installed version (the feed ships
-# compiled bytecode) must never shadow the fixed sources
+# stale bytecode from a previously installed version must never shadow
+# the freshly installed sources (a reinstall/upgrade can leave .pyc behind)
 PLUGIN_DIR=/usr/lib/enigma2/python/Plugins/Extensions/DreamFin
 find "$PLUGIN_DIR" -name "*.pyc" -exec rm -f {} + 2>/dev/null
 find "$PLUGIN_DIR" -name "*.pyo" -exec rm -f {} + 2>/dev/null

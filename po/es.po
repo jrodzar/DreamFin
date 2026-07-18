@@ -593,18 +593,18 @@ msgstr "Sobre"
 
 #: /hdd/workspaces/DreamPlex/src/DP_MainMenu.py:457
 msgid ""
-"Plexserver seems to be offline. Start with Wake on Lan settings? \n"
+"The server seems to be offline. Start with Wake on Lan settings? \n"
 "\n"
 "Please note: \n"
 "If you press yes the spinner will run for "
-msgstr "El servidor Plex parece estar fuera de línea. ¿Iniciar con los ajustes de Wake on Lan?\n\nNota:\nSi pulsa Sí, el indicador girará durante "
+msgstr "El servidor parece estar fuera de línea. ¿Iniciar con los ajustes de Wake on Lan?\n\nNota:\nSi pulsa Sí, el indicador girará durante "
 
 #: /hdd/workspaces/DreamPlex/src/DP_MainMenu.py:467
 msgid ""
-"Plexserver seems to be offline. Please check your your settings or "
+"The server seems to be offline. Please check your settings or "
 "connection!\n"
 " Retry?"
-msgstr "El servidor Plex parece estar fuera de línea. ¡Verifique la configuración o la conexión!\n¿Reintentar?"
+msgstr "El servidor parece estar fuera de línea. ¡Verifique la configuración o la conexión!\n¿Reintentar?"
 
 #: /hdd/workspaces/DreamPlex/src/DP_Player.py:275
 msgid "Error:"
@@ -1181,8 +1181,8 @@ msgid "> Show liveTv in Views instead of backdrops"
 msgstr "> Mostrar TV en Directo en las vistas en lugar de fondos"
 
 #: /hdd/workspaces/DreamPlex/src/DP_Settings.py:152
-msgid "> Show additional data for plex.tv sections"
-msgstr "> Mostrar datos adicionales para las secciones plex.tv"
+msgid "> Show additional data for sections"
+msgstr "> Mostrar datos adicionales para las secciones"
 
 #: /hdd/workspaces/DreamPlex/src/DP_Settings.py:154
 msgid "> Detail type for additional data"
@@ -1636,8 +1636,8 @@ msgstr "Sincronizador del Servidor"
 msgid "System Server"
 msgstr "Servidor del Sistema"
 
-msgid "Select plex folder"
-msgstr "Seleccione carpeta de Plex"
+msgid "Select folder"
+msgstr "Seleccione carpeta"
 
 msgid "use for Mapping"
 msgstr "usar para el Mapeo"
@@ -1711,8 +1711,8 @@ msgstr "Cambie el puerto según sus necesidades."
 msgid "Enable only if needed. Slows down rapidly."
 msgstr "Actívelo solo si es necesario. Ralentiza bastante."
 
-msgid "Enable trailer function. Only works with PlexPass or YYTrailer plugin."
-msgstr "Activa los tráilers. Solo con PlexPass o el plugin YYTrailer."
+msgid "Enable trailer function (plays the trailers the server provides)."
+msgstr "Activa los tráilers (reproduce los que ofrece el servidor)."
 
 msgid "If server summerize is off you can here add additional information for better overview."
 msgstr "Si el resumen de servidores está desactivado, añada aquí más información."
@@ -1735,8 +1735,8 @@ msgstr "Reproduce las sintonías de las series automáticamente."
 msgid "Renames filename.eng.srt automatically to filename.srt so e2 is able to read them."
 msgstr "Renombra fichero.eng.srt a fichero.srt para que e2 pueda leerlos."
 
-msgid "Save plex server answers in cache to speed up a bit."
-msgstr "Guarda en caché las respuestas del servidor Plex para ir más rápido."
+msgid "Save server answers in cache to speed up a bit."
+msgstr "Guarda en caché las respuestas del servidor para ir más rápido."
 
 msgid "Search string that should be removed from srt file."
 msgstr "Texto que se eliminará del fichero srt."
@@ -1771,8 +1771,8 @@ msgstr "Detiene la TV en directo. Habilita 'sintonías' y 'vídeos de fondo'."
 msgid "Summerize sections in an additional menu step."
 msgstr "Agrupa las secciones en un paso de menú adicional."
 
-msgid "Summerize servers in an additional menu step. (plex.tv only)"
-msgstr "Agrupa los servidores en un paso adicional. (solo plex.tv)"
+msgid "Summarize servers in an additional menu step."
+msgstr "Agrupa los servidores en un paso adicional."
 
 msgid "Sync this content."
 msgstr "Sincronizar este contenido."

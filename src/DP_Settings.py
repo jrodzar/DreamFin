@@ -123,13 +123,13 @@ class DPS_Settings(Screen, ConfigListScreen, HelpableScreen, DPH_PlexScreen):
 		self.cfglist.append(getConfigListEntry(_("> Boxname"), config.plugins.dreamfin.boxName, _("Enter the name of your box, e.g. Livingroom.")))
 		self.cfglist.append(getConfigListEntry(_("> Used Skin"), config.plugins.dreamfin.skin, _("If you change the skin you have to restart at least the GUI!")))
 		self.cfglist.append(getConfigListEntry(_("> Show Plugin in Main Menu"), config.plugins.dreamfin.showInMainMenu, _("Use this to start the plugin direct in the main menu.")))
-		self.cfglist.append(getConfigListEntry(_("> Use Cache for Sections"), config.plugins.dreamfin.useCache, _("Save plex server answers in cache to speed up a bit.")))
+		self.cfglist.append(getConfigListEntry(_("> Use Cache for Sections"), config.plugins.dreamfin.useCache, _("Save server answers in cache to speed up a bit.")))
 		self.cfglist.append(getConfigListEntry(_("> Use Picture Cache"), config.plugins.dreamfin.usePicCache, _("Use this only if you do have enough space on your hdd drive or flash.")))
 		self.cfglist.append(getConfigListEntry(_("> Show Player Poster on external LCD"), config.plugins.dreamfin.lcd4linux, _("e.g. lcd4linux")))
 
 		# USERINTERFACE SETTINGS
 		self.cfglist.append(getConfigListEntry(_("Userinterface Settings ") + separator, config.plugins.dreamfin.about, _(" ")))
-		self.cfglist.append(getConfigListEntry(_("> Summerize Servers"), config.plugins.dreamfin.summerizeServers, _("Summerize servers in an additional menu step. (plex.tv only)")))
+		self.cfglist.append(getConfigListEntry(_("> Summerize Servers"), config.plugins.dreamfin.summerizeServers, _("Summarize servers in an additional menu step.")))
 		self.cfglist.append(getConfigListEntry(_("> Summerize Sections"), config.plugins.dreamfin.summerizeSections, _("Summerize sections in an additional menu step.")))
 		self.cfglist.append(getConfigListEntry(_("> Show Filter for Section"), config.plugins.dreamfin.showFilter, _("Show additional filter in an additional menu step e.g. OnDeck")))
 		self.cfglist.append(getConfigListEntry(_("> Show Seen/Unseen count in TvShows"), config.plugins.dreamfin.showUnSeenCounts, _("Calculate and show them for tv shows.")))
@@ -160,7 +160,7 @@ class DPS_Settings(Screen, ConfigListScreen, HelpableScreen, DPH_PlexScreen):
 			if not config.plugins.dreamfin.stopLiveTvOnStartup.value:
 				self.cfglist.append(getConfigListEntry(_("> Show liveTv in Views instead of backdrops"), config.plugins.dreamfin.liveTvInViews, _("Show live tv while you are navigating through your libs.")))
 
-		self.cfglist.append(getConfigListEntry(_("> Show additional data for plex.tv sections"), config.plugins.dreamfin.showDetailsInList, _("If server summerize is off you can here add additional information for better overview.")))
+		self.cfglist.append(getConfigListEntry(_("> Show additional data for sections"), config.plugins.dreamfin.showDetailsInList, _("If server summerize is off you can here add additional information for better overview.")))
 		if config.plugins.dreamfin.showDetailsInList.value:
 			self.cfglist.append(getConfigListEntry(_("> Detail type for additional data"), config.plugins.dreamfin.showDetailsInListDetailType, _("Specifiy the type of additional data.")))
 

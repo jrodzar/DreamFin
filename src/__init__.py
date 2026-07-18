@@ -183,7 +183,7 @@ def initServerEntryConfig():
 	config.plugins.dreamfin.Entries[i].dns = ConfigText(default="my.dns.url", visible_width=50, fixed_size=False)
 	config.plugins.dreamfin.Entries[i].port = ConfigInteger(default=defaultPort, limits=(1, 65555))
 	config.plugins.dreamfin.Entries[i].playbackType = ConfigSelection(default="0", choices=[("0", _("Streamed")), ("1", _("Transcoded")), ("2", _("Direct Local"))])
-	config.plugins.dreamfin.Entries[i].loadExtraData = ConfigSelection(default="0", choices=[("0", "None"), ("1", "Plex Pass"), ("2", "YTTrailer")])
+	config.plugins.dreamfin.Entries[i].loadExtraData = ConfigSelection(default="0", choices=[("0", "None"), ("1", "Server"), ("2", "YTTrailer")])
 
 	# EMBY/JELLYFIN
 	config.plugins.dreamfin.Entries[i].serverType = ConfigSelection(default="auto", choices=[("auto", _("Auto")), ("emby", "Emby"), ("jellyfin", "Jellyfin")])

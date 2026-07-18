@@ -1,152 +1,117 @@
-DreamPlex — fork for modern Plex Media Server
-==============================================
+DreamFin — Emby/Jellyfin client for Enigma2
+===========================================
 
-Plex client for Enigma2 (OpenATV and friends), forked from
-[oe-alliance/DreamPlex](https://github.com/oe-alliance/DreamPlex) to make it
-work again with current Plex Media Server releases, on **both**
-OpenATV 6.4 (Python 2.7) and OpenATV 6.5+/7.x (Python 3).
+DreamFin is a media client for Enigma2 receivers (OpenATV and friends) that
+browses and plays your **Emby** and **Jellyfin** libraries on the TV. It is a
+fork of [DreamPlex](https://github.com/oe-alliance/DreamPlex) — the Plex
+client for Enigma2 — with the Plex backend replaced by an Emby/Jellyfin one,
+reusing the mature DreamPlex user interface almost unchanged.
 
-What was broken and what this fork fixes
-----------------------------------------
+Runs on **both** OpenATV 6.4 (Python 2.7) and OpenATV 6.5+/7.x (Python 3).
 
-**1. "No data in this section!" when opening any library**
+The plugin installs alongside DreamPlex — it is a separate package
+(`enigma2-plugin-extensions-dreamfin`) with its own settings, skins and menu
+entry, so you can keep both.
 
-With the default setting *Show filter for sections* enabled (and always for
-music sections), the plugin asks the server for the legacy secondary
-navigation of a section (`GET /library/sections/<id>`) and builds its menu
-from the `<Directory>` children (All / Unwatched / By Genre / ...). Modern
-PMS releases no longer answer with those children, so every library appeared
-empty; only the global "New" / "On Deck" rows kept working because they use a
-direct content endpoint.
+What it does
+------------
 
-The fork detects the empty answer and **synthesizes the filter menu on the
-client**, with the same entries the server used to send:
+* **Emby and Jellyfin, auto-detected.** Add a server by host name or IP; the
+  plugin queries `/System/Info/Public` and figures out whether it is talking
+  to Emby or Jellyfin. Each server type gets its own accent colour (see
+  *Automatic theme* below).
+* **Authentication that fits a set-top box.** Username/password login with the
+  access token cached in the settings (a single silent re-auth on a 401), or
+  paste a **server API key** that wins over everything else. Connections go
+  over HTTPS on port 443/8920 with the host name kept for TLS SNI, so
+  name-based reverse proxies work.
+* **Full library browsing.** Movies, TV shows (seasons → episodes), music
+  (artists → albums → tracks) and mixed folders. When a section has no
+  server-provided sub-menu the plugin **synthesizes the filter menu on the
+  client**:
+  * Movies: All, Unwatched, Recently Added, Recently Released, On Deck,
+    By Genre, By Year, By Decade, Search
+  * Shows: All, Unwatched, Recently Added, On Deck, By Genre, By Year, Search
+  * Music: All Artists, Recently Added, By Genre, Search
 
-* Movies: All, Unwatched, Recently Added, Recently Released, On Deck,
-  By Genre, By Year, By Decade, Search
-* Shows: All, Unwatched, Recently Added, On Deck, By Genre, By Year, Search
-* Music: All Artists, Recently Added, By Genre, Search
-
-Old servers that still send their own menu keep being used unchanged.
-Drilling into a filter value (a genre, a year...) now follows the `fastKey`
-attribute of the server answer (`/library/sections/<id>/all?genre=<id>`),
-because the legacy `<section>/genre/<id>` path no longer exists either.
-
-**2. Transcoding only worked on OpenATV 6.4**
-
-The Python 3 port left `transcode()` iterating the m3u8 master playlist as
-*bytes*: the `#` comment check compared an integer with a string (always
-true) and the URL formatting injected `b'...'` fragments, so the player
-received a corrupt URL on every Python 3 image. The fork decodes the playlist
-before parsing (works on py2 and py3), removes the long-dead 2010
-`X-Plex-Access-Key/Time/Code` request signature, sends the `X-Plex-Token`
-both while prefetching and **inside the final playback URL** (the media
-player cannot send headers), and falls back to handing GStreamer the
-tokenized `start.m3u8` if no media playlist can be parsed.
-
-**3. Robustness extras**
-
-* New per-server **"Access Token (optional)"** field (IP/DNS connections):
-  paste an X-Plex-Token and it wins over any other token source. This lets
-  the plugin work against servers that require authentication without going
-  through plex.tv on the box.
-* Playback URLs for raw streaming also carry the token now, and a missing
-  token no longer crashes playback (`url + None`).
-* `doRequest()` follows HTTP redirects (301/302/303/307/308, absolute and
-  relative `Location`, up to 3 hops).
-* Big libraries are fetched **paginated** (`X-Plex-Container-Start/Size`,
-  200 items per page) and merged, instead of relying on one giant answer.
-* Parser guards for answers of modern servers (missing `title2`, poster
-  downloads without a known token, unparseable payloads are logged).
+  Posters and backdrops are fetched at the size the skin needs (server-side
+  resize), unwatched counts are shown, and genre/year/decade drill-downs and
+  search hit the matching Emby/Jellyfin endpoints.
+* **Direct play and transcoding.** Stream the original file, or let the server
+  transcode to an HLS stream (h264 or, where the box decodes it, HEVC) when
+  the source is too heavy. A version selector appears when an item has more
+  than one media source, audio and subtitle tracks can be picked (with
+  burn-in for image subtitles when transcoding), and trailers play where the
+  server exposes them.
+* **Watch state that round-trips.** Playback position is reported back to the
+  server and the *resume* point comes back the next time you open the item;
+  watched / unwatched toggles sync both ways; a library refresh is available
+  from the context menu.
+* **Automatic theme.** The whole UI recolours to match the server you last
+  entered — **green for Emby, lilac for Jellyfin** (lilac is the fresh-install
+  default). A one-line hint tells you the colours will follow on the next
+  open. The brand mark is a fusion of the two ecosystems: the Jellyfin rounded
+  triangle with the Emby play glyph, in a green→lilac gradient.
 
 Installation
 ------------
 
-Build the package (any OS, only Python needed):
+Build the package (any OS — only Python is needed, no cross-toolchain):
 
     py -3 tools/build_ipk.py        # Windows
     python3 tools/build_ipk.py      # Linux/macOS
 
-Copy the resulting `dist/enigma2-plugin-extensions-dreamplex_*.ipk` to the
-receiver and install it there:
+Copy the resulting IPK to the receiver and install it there:
 
-    scp dist/enigma2-plugin-extensions-dreamplex_*.ipk root@<box-ip>:/tmp/
+    scp dist/enigma2-plugin-extensions-dreamfin_*.ipk root@<box-ip>:/tmp/
     ssh root@<box-ip>
-    opkg install /tmp/enigma2-plugin-extensions-dreamplex_*.ipk
+    opkg install /tmp/enigma2-plugin-extensions-dreamfin_*.ipk
 
-Then restart the enigma2 GUI. The package uses the same name as the OpenATV
-feed package and a higher version, so it cleanly **upgrades an existing feed
-installation** and survives `opkg upgrade` runs (the feed would need to
-publish something newer than `2.3.1` to replace it; pin it with
-`opkg flag hold enigma2-plugin-extensions-dreamplex` if you want to be sure).
+Then restart the Enigma2 GUI. Works on OpenATV 6.4 (Python 2.7) and
+OpenATV 6.5/7.x (Python 3). The plugin needs the `six` module, which both
+image generations ship by default; if it is ever missing:
+`opkg install python-six` (6.4) or `opkg install python3-six` (6.5+).
 
-Works on OpenATV 6.4 (Python 2.7) and OpenATV 6.5/7.x (Python 3). The plugin
-needs the `six` module, which both image generations ship by default; if it
-is ever missing: `opkg install python-six` (6.4) or `opkg install
-python3-six` (6.5+).
+Setting up a server
+-------------------
 
-How to get your X-Plex-Token
-----------------------------
+Open **DreamFin** from the main menu → *System* → add a server entry:
 
-Only needed if your server requires authentication for local connections
-(Plex settings → Network → *List of IP addresses and networks that are
-allowed without auth* is empty) and you connect by IP/DNS without plex.tv:
+* **Server type** — leave on *auto* to detect Emby vs Jellyfin, or force one.
+* **Address / port** — the host name or IP of your server, and its port
+  (usually `443` for a reverse-proxied HTTPS server, `8096`/`8920` otherwise).
+* **Username / password** — a normal server user; the token is cached after
+  the first login.
+* **API key (optional)** — a server API key, used instead of username/password
+  when present.
 
-1. Open Plex Web in a browser, play any item of your server.
-2. Click the ⋮ menu of the item → *Get Info* → *View XML*.
-3. Look at the address bar of the opened tab: it ends with
-   `...&X-Plex-Token=xxxxxxxxxxxxxxxxxxxx`. That value is your token.
-4. In DreamPlex: server settings → *Access Token (optional)* → enter it.
+Note on *Direct Local* playback: Emby/Jellyfin hide `MediaSources[].Path` from
+non-admin users, so a non-admin login cannot resolve a local file path. Use an
+**admin API key** if you rely on Direct Local; otherwise use *Streamed* or
+*Transcoded*.
 
-(Official article: support.plex.tv → "Finding an authentication token".)
-
-Verification checklist after installing
----------------------------------------
-
-* About screen shows version 2.3.1.
-* Movies: All / Unwatched / Recently Added / On Deck list content; By Genre →
-  pick a genre → movies of that genre appear; Search finds a known title.
-* Shows: All → seasons → episodes; Recently Added lists the latest episodes
-  and seasons.
-* Music: artists → albums → tracks.
-* Global "New" and "On Deck" rows still work.
-* Playback *Streamed* plays.
-* Playback *Transcoded* plays **and** a transcode session shows up on the
-  PMS dashboard (both on a 6.4 and a 7.x box if you have them).
-* With server auth hardened (empty no-auth list) and the Access Token field
-  filled, all of the above still works.
-* Logs if something fails: enable `debugMode` + `writeDebugFile` in the
-  plugin settings → `/tmp/dreamplex.log`; GUI crashlogs live in
-  `/home/root/logs/`.
-
-Known limitations
------------------
-
-* Plex servers with *Secure connections: Required* and no local-network
-  exemption are not supported (the plugin talks plain `http` to the PMS;
-  API redirects to https are followed, playback is not).
-* The `/library/sections/<id>/search?type=N` endpoint is kept for the Search
-  entries; on servers where it ever disappears the search entry would come
-  back empty (the filter/browse entries are unaffected).
-* **Some boxes/networks cannot reach plex.tv reliably.** plex.tv is a
-  round-robin of AWS IPs; on some networks part of that pool is
-  unreachable or the connection is flaky, so a *plex.tv* connection type
-  can time out (the box's plain TLS to other hosts is fine — this is
-  network reachability to plex.tv, not OpenSSL). The plugin now retries and
-  reports the error instead of crashing. Reliable workaround: use an
-  **IP/DNS** connection to the server with the **Access Token** field
-  filled — direct HTTP to the PMS is unaffected.
+Troubleshooting logs: enable `debugMode` + `writeDebugFile` in the plugin
+settings to write `dreamplex.log` under the plugin log folder (default
+`/tmp/` if `/hdd` is not mounted); GUI crashlogs live in `/home/root/logs/`.
 
 Development
 -----------
 
-Offline test suite (no receiver, no PMS needed — a mock server is included):
+An offline test suite is included — no receiver and no server needed, a mock
+Emby/Jellyfin backend answers the requests:
 
-    py -3 -m unittest discover -s tests
-    py -3 tools/run_checks.py       # byte-compile + py2-syntax gate
+    py -3 -m unittest discover -s tests          # Python 3
+    <py27>/python -m unittest discover -s tests  # Python 2.7 portable
+    py -3 tools/run_checks.py                     # byte-compile + py2 gate + skin-path lint
+    py -3 tools/build_ipk.py                      # build the IPK into dist/
 
-Skins (big thanks to the skinners :-)
--------------------------------------
+Both suites are expected green on Python 3 and Python 2.7 before every commit.
+
+Skins
+-----
+
+The bundled skins descend from the DreamPlex skinning work — big thanks to the
+skinners:
 
 * Blockbuster — http://www.vuplus-support.org/wbb3/index.php?page=Thread&threadID=69568
 * YouPlex-Blue/Green/Purple/Red, Plex_Experience — https://github.com/OpenViX/DreamPlexSkins
@@ -154,14 +119,37 @@ Skins (big thanks to the skinners :-)
 License and attribution
 -----------------------
 
-GPL-2 (see `src/LICENSE.txt`), like the original. DreamPlex was written by
-**DonDavici** (2012), ported to Python 3 and maintained by **jbleyel** and
-the **oe-alliance** / OpenViX teams, with parts based on hippojay's plexbmc.
-This fork only fixes compatibility with modern Plex Media Server releases;
-all credit for the plugin itself belongs to the original authors.
+GPL-2.0-or-later (see `src/LICENSE.txt`), like the original. This is a
+derivative work; the files keep their original `DP_*` names and copyright
+headers on purpose, both to stay diffable against the upstream DreamPlex tree
+and to honour the GPL's authorship requirements.
 
-The modern-PMS fixes in this fork - root-cause analysis against a live
-server, the offline test harness, the fixes themselves and the on-receiver
-verification - were researched, implemented and tested by **Claude**
-(Anthropic's Claude Fable 5 model), directed by **jrodzar**. Every commit
-carries the corresponding `Co-Authored-By` trailer.
+Lineage:
+
+* **DreamPlex** was written by **DonDavici** (2012), ported to Python 3 and
+  maintained by **jbleyel** and the **oe-alliance** / **OpenViX** teams, with
+  parts based on **hippojay**'s plexbmc.
+* **DreamFin** replaces the Plex backend with an Emby/Jellyfin one and adds the
+  automatic per-server theme, keeping the DreamPlex UI. The Emby/Jellyfin
+  backend, the offline test harness, the automatic theme and logos, and the
+  on-receiver verification were implemented by **Claude** (Anthropic),
+  directed by **jrodzar**. Every commit carries the corresponding
+  `Co-Authored-By` trailer.
+
+Statement of changes (relative to DreamPlex)
+--------------------------------------------
+
+* Removed the Plex backend (`DP_PlexLibrary.py`), the plex.tv account plumbing,
+  the Companion/remote-agent and home-users code, and the autotools/GDM build
+  scaffolding.
+* Added `DP_EmbyLibrary.py`: a JSON transport (redirects, bounded timeouts,
+  TLS with SNI in DNS mode), Emby/Jellyfin authentication and server-type
+  detection, section and item parsers, a client-side synthesized filter menu,
+  transcoding with a quality table and stream selection, and playback
+  reporting / resume / watched state.
+* Renamed the package, config namespace, gettext domain, on-disk paths and
+  skin variant files from `dreamplex` to `dreamfin`.
+* Added the automatic per-server accent theme (green Emby / lilac Jellyfin) and
+  the fusion brand mark, plus the tooling that generates them.
+* Refreshed the translation catalogs so the strings are server-neutral, and
+  neutralised the Plex-specific wording that remained.

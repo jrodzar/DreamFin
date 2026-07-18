@@ -90,17 +90,17 @@ class DPS_About(Screen):
 
 		content = ""
 		content += "Information\n\n"
-		content += "DreamPlex - a plex client for Enigma2 \n"
+		content += "DreamFin - an Emby/Jellyfin client for Enigma2 \n"
 		content += "Version: \t" + getVersion() + "\n\n"
-		content += "Author: \t DonDavici and jbleyel\n"
+		content += "Emby/Jellyfin backend & theme:\n"
+		content += "\t Claude (Anthropic), directed by jrodzar\n"
+		content += "\n"
+		content += "Based on DreamPlex by:\n"
+		content += "\t DonDavici, jbleyel\n"
+		content += "\t oe-alliance / OpenViX\n"
 		content += "\n"
 		content += "Skin: \t" + getSkinAuthors() + "\n"
-		content += "\n"
-		content += "Contributors: \t wezhunter\n"
-		content += "\t andyblac \n"
-		content += "\t rossi2000 \n"
-		content += "\t jbleyel \n"
-		content += "\n\nIf you like my work you can buy me a beer :-) \n\ndondavici@gmail.com"
+		content += "Contributors: \t wezhunter, andyblac, rossi2000"
 
 		printl("", self, "C")
 		return content
@@ -111,10 +111,11 @@ class DPS_About(Screen):
 	def getRightText(self):
 		printl("", self, "S")
 
-		content = "Visit the DreamPlex Wiki!"
-		content += "\n\n https://github.com/DonDavici/DreamPlex/wiki"
+		content = "Emby/Jellyfin client for Enigma2,"
+		content += "\nforked from DreamPlex."
 		content += "\n\n\nFind the git repository here!"
-		content += "\n\n   https://github.com/oe-alliance/DreamPlex"
+		content += "\n\n   https://github.com/jrodzar/DreamFin"
+		content += "\n\n\nLicense: GPL-2.0-or-later"
 
 		printl("", self, "C")
 		return content
