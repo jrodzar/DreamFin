@@ -1,9 +1,19 @@
-DreamFin 0.1.2 — release notes
+DreamFin 0.1.3 — release notes
 ==============================
 
 **DreamFin** is an Emby/Jellyfin client for Enigma2 forked from DreamPlex. It
 reuses the DreamPlex user interface and replaces the Plex backend with an
 Emby/Jellyfin one. See `README.md` for setup, lineage and attribution.
+
+Fixed in 0.1.3
+--------------
+
+- No more green-screen crash when browsing the episodes of a series.
+- "Recently added" loads again (the server's Latest endpoint 500'd when the
+  pager appended a StartIndex).
+- No crash when leaving the "Recently added" / mixed view, which can contain
+  series as well as movies.
+- General robustness pass on the show, mixed, movie and music views.
 
 Fixed in 0.1.2
 --------------

@@ -5,6 +5,17 @@ DreamFin is a fork of DreamPlex (a Plex client for Enigma2) with the Plex
 backend replaced by an Emby/Jellyfin one. See `RELEASENOTES.md` for the full
 release notes and `README.md` for lineage and attribution.
 
+0.1.3 — bugfix
+--------------
+* Fixed a green-screen crash when navigating episodes of a series (episode
+  entries were missing the parent/grandparent ids the show view reads).
+* "Recently added" no longer shows "No data": the ``/Items/Latest`` endpoint
+  is a bare-array, non-pageable endpoint that 500s when a StartIndex is added.
+* Fixed a crash when leaving the mixed / "Recently added" view, which can list
+  series — the view raised on any non movie/episode/season type.
+* Hardened the show/mixed/movie/music views against items with no media source
+  and unexpected view modes.
+
 0.1.2 — bugfix
 --------------
 * TV shows and seasons now load their community rating (and cast). Emby only
