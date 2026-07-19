@@ -5,6 +5,23 @@ DreamFin is a fork of DreamPlex (a Plex client for Enigma2) with the Plex
 backend replaced by an Emby/Jellyfin one. See `RELEASENOTES.md` for the full
 release notes and `README.md` for lineage and attribution.
 
+0.1.4 — bugfix
+--------------
+* Search no longer always returns "No data": the term is stripped and
+  URL-encoded (a trailing space produced an invalid request URL).
+* "Recently added" and other limited queries are fetched in a single request
+  instead of being paged through the whole (tens-of-thousands-strong) library,
+  which hung the plugin.
+* The subtitle menu (TEXT) no longer crashes: a method-name typo, a missing
+  by-id lookup, and a subtitle row missing its ``forced`` key each green-screened.
+* "Recently added" and "Recently released" (movies, shows, music) were sorted
+  alphabetically instead of by date — the listing URL carried a second SortBy
+  the server ignored in favour of the default SortName. The date sort is now
+  the only one, so these lists show the newest first.
+* Hardened the media-pixmap handlers against a Movie/Episode with no media
+  source (a metadata-only entry): reading its media info no longer indexes an
+  empty list into a green screen.
+
 0.1.3 — bugfix
 --------------
 * Fixed a green-screen crash when navigating episodes of a series (episode
