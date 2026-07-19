@@ -1,9 +1,23 @@
-DreamFin 0.1.4 — release notes
+DreamFin 0.1.5 — release notes
 ==============================
 
 **DreamFin** is an Emby/Jellyfin client for Enigma2 forked from DreamPlex. It
 reuses the DreamPlex user interface and replaces the Plex backend with an
 Emby/Jellyfin one. See `README.md` for setup, lineage and attribution.
+
+Fixed in 0.1.5
+--------------
+
+- **Artwork no longer blanks out while scrolling.** Without the picture cache
+  (the default) every row wrote its poster and backdrop to the same shared
+  file, so scrolling — which fetches one image per row — made the concurrent
+  downloads clobber each other and leave random blank or wrong artwork that
+  only a re-visit fixed. Each item now caches to its own file (de-duplicated,
+  reused on revisit, truncated downloads rejected), so posters and backdrops
+  load reliably.
+- The spinner's **"Loading…" caption** followed a hard-coded amber; it now uses
+  the server accent (green for Emby, lilac for Jellyfin), like the counter next
+  to it.
 
 Fixed in 0.1.4
 --------------
