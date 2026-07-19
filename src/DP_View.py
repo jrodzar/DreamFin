@@ -3223,10 +3223,22 @@ class DP_View(DPH_Screen, DPH_ScreenHelper, DPH_MultiColorFunctions, DPH_Filter)
 	#===========================================================================
 	#
 	#===========================================================================
+	def _firstMediaData(self):
+		# mediaDataArr is empty for an item the server returns with no
+		# MediaSources (a metadata-only / "coming soon" Movie or Episode); the
+		# media-pixmap handlers below index [0] unconditionally, so guard it here
+		# and degrade to "unknown" instead of an IndexError green screen (same
+		# shape as buildMediaDataArr's own 'videoStream or {}' fallback).
+		arr = self.details.get("mediaDataArr")
+		return arr[0] if arr else {}
+
+	#===========================================================================
+	#
+	#===========================================================================
 	def handleSoundPixmaps(self):
 		printl("", self, "S")
 
-		audio = self.details["mediaDataArr"][0].get("audioCodec", "unknown").upper()
+		audio = self._firstMediaData().get("audioCodec", "unknown").upper()
 		printl("audioCodec: " + str(audio), self, "D")
 
 		if audio == "DCA":
@@ -3277,7 +3289,7 @@ class DP_View(DPH_Screen, DPH_ScreenHelper, DPH_MultiColorFunctions, DPH_Filter)
 	def handleSoundChannelsPixmaps(self):
 		printl("", self, "S")
 
-		soundchannels = self.details["mediaDataArr"][0].get("audioChannels", "unknown").upper()
+		soundchannels = self._firstMediaData().get("audioChannels", "unknown").upper()
 		printl("soundchannels: " + str(soundchannels), self, "D")
 
 		if soundchannels == "2":  # 2.0
@@ -3324,7 +3336,7 @@ class DP_View(DPH_Screen, DPH_ScreenHelper, DPH_MultiColorFunctions, DPH_Filter)
 	def handleResolutionPixmaps(self):
 		printl("", self, "S")
 
-		resolution = self.details["mediaDataArr"][0].get("videoResolution", "unknown").upper()
+		resolution = self._firstMediaData().get("videoResolution", "unknown").upper()
 		printl("videoResolution: " + str(resolution), self, "D")
 
 		if resolution == "1080":
@@ -3363,7 +3375,7 @@ class DP_View(DPH_Screen, DPH_ScreenHelper, DPH_MultiColorFunctions, DPH_Filter)
 	def handleAspectPixmaps(self):
 		printl("", self, "S")
 
-		aspect = self.details["mediaDataArr"][0].get("aspectRatio", "unknown").upper()
+		aspect = self._firstMediaData().get("aspectRatio", "unknown").upper()
 		printl("aspectRatio: " + str(aspect), self, "D")
 
 		if aspect == "1.33":
@@ -3398,7 +3410,7 @@ class DP_View(DPH_Screen, DPH_ScreenHelper, DPH_MultiColorFunctions, DPH_Filter)
 	def handleCodecPixmaps(self):
 		printl("", self, "S")
 		# we take always the first entry. later we have to chech which one is selected
-		codec = self.details["mediaDataArr"][0].get("videoCodec", "unknown").upper()
+		codec = self._firstMediaData().get("videoCodec", "unknown").upper()
 		printl("videoCodec: " + str(codec), self, "D")
 
 		if codec == "VC1":

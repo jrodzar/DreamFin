@@ -212,6 +212,30 @@ class TestTrailers(TranscodeTestCase):
 		self.assertEqual(parts, [])
 
 
+class TestMediaDataArr(TranscodeTestCase):
+	"""buildMediaDataArr is the source of self.details['mediaDataArr']. It
+	returns [] for an item the server sends with no MediaSources (a metadata-
+	only 'coming soon' Movie/Episode). The media-pixmap handlers in DP_View
+	index [0], so the empty case has to stay representable here - that is what
+	_firstMediaData() guards against instead of an IndexError green screen."""
+
+	def test_no_media_sources_yields_empty_arr(self):
+		self.assertEqual(self.lib.buildMediaDataArr({"Id": "x", "Type": "Movie"}), [])
+		self.assertEqual(self.lib.buildMediaDataArr({"Id": "y", "MediaSources": []}), [])
+
+	def test_media_source_yields_one_entry_with_stream_data(self):
+		arr = self.lib.buildMediaDataArr({"Id": "z", "MediaSources": [{
+			"Id": "s0", "Container": "mkv", "Bitrate": 8000000,
+			"MediaStreams": [
+				{"Type": "Video", "Codec": "h264", "Width": 1920, "Height": 1080},
+				{"Type": "Audio", "Codec": "ac3", "Channels": 6},
+			],
+		}]})
+		self.assertEqual(len(arr), 1)
+		self.assertEqual(arr[0]["videoCodec"], "h264")
+		self.assertEqual(arr[0]["audioCodec"], "ac3")
+
+
 class TestTranscodedPlayerData(TranscodeTestCase):
 
 	def test_playbacktype_1_playurl_is_a_transcode_url(self):
