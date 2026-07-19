@@ -645,11 +645,18 @@ class EmbyLibrary(object):
 	#
 	#===============================================================================
 	def buildItemsUrl(self, sectionId, includeItemTypes, extra=""):
-		"""The canonical 'all items of this section' listing URL."""
+		"""The canonical 'all items of this section' listing URL.
+
+		Default sort is SortName ascending, but a caller can override it by
+		putting its own SortBy in ``extra`` (Recently Added/Released). Emby and
+		Jellyfin both honour the FIRST SortBy when the query has duplicates, so
+		the default one must NOT be emitted in that case or the caller's sort is
+		silently dropped and the list comes back alphabetical."""
+		sort = "" if "SortBy=" in extra else "&SortBy=SortName&SortOrder=Ascending"
 		url = self.getContentUrl(
 			"/Users/%s/Items?ParentId=%s&Recursive=true&IncludeItemTypes=%s"
-			"&SortBy=SortName&SortOrder=Ascending&Fields=%s"
-			% (self.g_userId, sectionId, includeItemTypes, DEFAULT_ITEM_FIELDS))
+			"%s&Fields=%s"
+			% (self.g_userId, sectionId, includeItemTypes, sort, DEFAULT_ITEM_FIELDS))
 		if extra:
 			url += extra
 		return url

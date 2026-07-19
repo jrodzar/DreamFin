@@ -187,6 +187,34 @@ class TestSynthesizedFilter(unittest.TestCase):
 		# content entries carry the section plugin route
 		self.assertEqual(byKey["all"][2], "movieEntry")
 
+	def test_recently_added_and_released_sort_by_date_only(self):
+		# regression: buildItemsUrl hard-codes SortBy=SortName, and Recently
+		# Added/Released append their own SortBy=DateCreated/PremiereDate. When
+		# both land in the query Emby AND Jellyfin honour the FIRST SortBy
+		# (SortName), so the filters came back alphabetical instead of
+		# newest-first (reproduced on screen and against both live servers).
+		# The date sort must be the ONLY SortBy in these URLs.
+		lib = self._lib()
+
+		cases = (
+			(section_root("movie"), {"recentlyAdded": "DateCreated", "newest": "PremiereDate"}),
+			(section_root("show", "54436"), {"recentlyAdded": "DateCreated"}),
+			(section_root("artist", "777"), {"recentlyAdded": "DateCreated"}),
+		)
+		for section, expectedSorts in cases:
+			byKey = dict((e[3]["key"], e) for e in lib.getSectionFilter(section))
+			for key, sortField in expectedSorts.items():
+				url = byKey[key][3]["contentUrl"]
+				self.assertEqual(url.count("SortBy="), 1,
+								"%s must carry exactly one SortBy: %s" % (key, url))
+				self.assertIn("SortBy=" + sortField, url)
+				self.assertNotIn("SortBy=SortName", url)
+
+		# the plain listings must still default to the alphabetical SortName
+		byKey = dict((e[3]["key"], e) for e in lib.getSectionFilter(section_root("movie")))
+		self.assertIn("SortBy=SortName", byKey["all"][3]["contentUrl"])
+		self.assertIn("SortBy=SortName", byKey["all?unwatched=1"][3]["contentUrl"])
+
 	def test_show_menu_keys_and_urls(self):
 		lib = self._lib()
 		menu = lib.getSectionFilter(section_root("show", "54436"))
