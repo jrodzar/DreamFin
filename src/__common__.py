@@ -33,6 +33,7 @@ import time
 import uuid
 import glob
 import threading
+from collections import deque
 from six import PY2
 
 from enigma import addFont, loadPNG, loadJPG, getDesktop
@@ -1072,6 +1073,28 @@ def loadPicture(filename):
 	printl2("filename: " + str(filename), "__common__::loadPicture", "D")
 	printl2("", "__common__::loadPicture", "C")
 	return ptr
+
+#===========================================================================
+#
+#===========================================================================
+
+# Ephemeral (no-cache) artwork is keyed per item now, so a long scroll would
+# otherwise pile up files in the tmpfs log dir. Keep a bounded LRU of what we
+# wrote and drop the oldest; a persistent cache (usePicCache) is never routed
+# here.
+_ephemeralArt = deque()
+
+
+def rememberEphemeralArt(path, cap=300):
+	if not path or path in _ephemeralArt:
+		return
+	_ephemeralArt.append(path)
+	while len(_ephemeralArt) > cap:
+		old = _ephemeralArt.popleft()
+		try:
+			os.remove(old)
+		except OSError:
+			pass
 
 #===========================================================================
 #

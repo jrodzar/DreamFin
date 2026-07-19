@@ -1,13 +1,17 @@
 # -*- coding: utf-8 -*-
 """Pure helpers in __common__ that the UI relies on."""
 
+import os
+import shutil
+import tempfile
 import unittest
 
 from tests import helpers
 
 helpers.setup_environment()
 
-from src.__common__ import getRatingValue, buildMediaChoiceName, isCompleteImage, durationToTime  # noqa: E402
+from src.__common__ import getRatingValue, buildMediaChoiceName, isCompleteImage, durationToTime, rememberEphemeralArt  # noqa: E402
+from src.__common__ import _ephemeralArt  # noqa: E402
 
 
 class TestDurationToTime(unittest.TestCase):
@@ -124,6 +128,53 @@ class TestIsCompleteImage(unittest.TestCase):
 
 	def test_unknown_format_is_accepted(self):
 		self.assertTrue(isCompleteImage(b"GIF89a" + b"\x00" * 200))
+
+
+class TestEphemeralArtLRU(unittest.TestCase):
+	"""No-cache artwork is keyed per item now (a shared "temp" file made
+	concurrent downloads clobber each other while scrolling -> blank art). The
+	LRU keeps the tmpfs log dir from filling on a long scroll by deleting the
+	oldest files once past the cap."""
+
+	def setUp(self):
+		_ephemeralArt.clear()
+		self.tmp = tempfile.mkdtemp()
+
+	def tearDown(self):
+		_ephemeralArt.clear()
+		shutil.rmtree(self.tmp, ignore_errors=True)
+
+	def _mk(self, name):
+		p = os.path.join(self.tmp, name)
+		with open(p, "wb") as fd:
+			fd.write(b"x")
+		return p
+
+	def test_prunes_oldest_past_cap(self):
+		paths = [self._mk("art%d.jpg" % i) for i in range(5)]
+		for p in paths:
+			rememberEphemeralArt(p, cap=3)
+
+		# only the newest 3 survive on disk; the 2 oldest were deleted
+		self.assertFalse(os.path.exists(paths[0]))
+		self.assertFalse(os.path.exists(paths[1]))
+		for p in paths[2:]:
+			self.assertTrue(os.path.exists(p))
+		self.assertEqual(list(_ephemeralArt), paths[2:])
+
+	def test_same_path_is_not_tracked_twice(self):
+		p = self._mk("a.jpg")
+		rememberEphemeralArt(p, cap=3)
+		rememberEphemeralArt(p, cap=3)
+		self.assertEqual(list(_ephemeralArt), [p])
+
+	def test_eviction_of_a_vanished_file_does_not_raise(self):
+		gone = self._mk("gone.jpg")
+		rememberEphemeralArt(gone, cap=2)
+		os.remove(gone)  # disappears before it is evicted
+		rememberEphemeralArt(self._mk("b.jpg"), cap=2)
+		rememberEphemeralArt(self._mk("c.jpg"), cap=2)  # evicts the vanished one
+		self.assertNotIn(gone, list(_ephemeralArt))
 
 
 if __name__ == "__main__":

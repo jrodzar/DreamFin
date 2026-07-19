@@ -64,7 +64,7 @@ from .DPH_Singleton import Singleton
 from .DPH_ScreenHelper import DPH_ScreenHelper, DPH_MultiColorFunctions, DPH_Screen, DPH_Filter
 from .DP_ViewFactory import getNoneDirectoryElements, getDefaultDirectoryElementsList, getGuiElements
 
-from .__common__ import printl2 as printl, loadPicture, durationToTime, getLiveTv, encodeThat, checkXmlFile, getXmlContent, getSkinResolution, runInThread, fireAndForget, IMAGE_SIZE_PLACEHOLDER, getRatingValue
+from .__common__ import printl2 as printl, loadPicture, durationToTime, getLiveTv, encodeThat, checkXmlFile, getXmlContent, getSkinResolution, runInThread, fireAndForget, IMAGE_SIZE_PLACEHOLDER, getRatingValue, rememberEphemeralArt, isCompleteImage
 from .__plugin__ import Plugin
 from .__init__ import _, defaultSkinsFolderPath  # _ is translation
 
@@ -96,6 +96,7 @@ class DP_View(DPH_Screen, DPH_ScreenHelper, DPH_MultiColorFunctions, DPH_Filter)
 	image_prefix = ""
 	whatPoster = None
 	whatBackdrop = None
+	_artInFlight = None  # set of artwork paths currently downloading (de-dupe)
 	myParams = None
 	seenUrl = None
 	unseenUrl = None
@@ -2715,32 +2716,20 @@ class DP_View(DPH_Screen, DPH_ScreenHelper, DPH_MultiColorFunctions, DPH_Filter)
 	def showPoster(self, forceShow=False):
 		printl("", self, "S")
 
-		if forceShow:
-			if self.whatPoster is not None:
+		# forceShow comes from a completed download for THIS row. Otherwise
+		# reuse the file if we already have it (instant on revisit, and no
+		# duplicate download) and only fetch when it is missing. A 0-byte file
+		# (e.g. a failed/partial write) counts as a miss.
+		if self.whatPoster is not None:
+			haveFile = fileExists(self.whatPoster) and os.path.getsize(self.whatPoster) > 0
 
+			if forceShow or haveFile:
 				self.EXpicloadPoster.startDecode(self.whatPoster, 0, 0, False)
-
 				ptr = self.EXpicloadPoster.getData()
-
 				if ptr is not None:
 					self["poster"].instance.setPixmap(ptr)
-
-		elif self.usePicCache:
-			# a 0-byte cache file (e.g. a missing /hdd mount) must not be
-			# served as a blank poster - treat it as a cache miss
-			if self.whatPoster is not None and fileExists(self.whatPoster) and os.path.getsize(self.whatPoster) > 0:
-
-				self.EXpicloadPoster.startDecode(self.whatPoster, 0, 0, False)
-
-				ptr = self.EXpicloadPoster.getData()
-
-				if ptr is not None:
-					self["poster"].instance.setPixmap(ptr)
-
 			else:
 				self.downloadPoster()
-		else:
-			self.downloadPoster()
 
 		printl("", self, "C")
 		return
@@ -2751,31 +2740,17 @@ class DP_View(DPH_Screen, DPH_ScreenHelper, DPH_MultiColorFunctions, DPH_Filter)
 	def showBackdrop(self, forceShow=False):
 		printl("", self, "S")
 
-		if forceShow:
-			if self.whatBackdrop is not None:
+		# see showPoster: reuse the on-disk file when we have it, else fetch
+		if self.whatBackdrop is not None:
+			haveFile = fileExists(self.whatBackdrop) and os.path.getsize(self.whatBackdrop) > 0
 
+			if forceShow or haveFile:
 				self.EXpicloadBackdrop.startDecode(self.whatBackdrop, 0, 0, False)
-
 				ptr = self.EXpicloadBackdrop.getData()
-
 				if ptr is not None:
 					self["backdrop"].instance.setPixmap(ptr)
-
-		elif self.usePicCache:
-			# ignore a 0-byte cache file (see showPoster) and re-download
-			if self.whatBackdrop is not None and fileExists(self.whatBackdrop) and os.path.getsize(self.whatBackdrop) > 0:
-
-				self.EXpicloadBackdrop.startDecode(self.whatBackdrop, 0, 0, False)
-
-				ptr = self.EXpicloadBackdrop.getData()
-
-				if ptr is not None:
-					self["backdrop"].instance.setPixmap(ptr)
-
 			else:
 				self.downloadBackdrop()
-		else:
-			self.downloadBackdrop()
 
 		printl("", self, "C")
 
@@ -2805,16 +2780,13 @@ class DP_View(DPH_Screen, DPH_ScreenHelper, DPH_MultiColorFunctions, DPH_Filter)
 		printl("self.posterWidth:" + str(self.posterWidth), self, "D")
 		printl("self.posterHeight:" + str(self.posterHeight), self, "D")
 
-		if "thumb" in self.details:
-			if self.details["thumb"] != "":
-				download_url = self.details["thumb"]
-				download_url = download_url.replace(IMAGE_SIZE_PLACEHOLDER, '&maxWidth=' + self.posterWidth + '&maxHeight=' + self.posterHeight)
-				printl("download url: " + download_url, self, "D")
-				# the backend transport handles TLS/SNI; twisted's
-				# downloadPage cannot (hello Cloudflare handshake failure)
-				self._downloadImage(download_url, self.whatPoster, lambda: self.showPoster(forceShow=True))
-			else:
-				self.noPicData()
+		if "thumb" in self.details and self.details["thumb"] != "":
+			download_url = self.details["thumb"]
+			download_url = download_url.replace(IMAGE_SIZE_PLACEHOLDER, '&maxWidth=' + self.posterWidth + '&maxHeight=' + self.posterHeight)
+			printl("download url: " + download_url, self, "D")
+			# the backend transport handles TLS/SNI; twisted's downloadPage
+			# cannot (hello Cloudflare handshake failure)
+			self._fetchArt(download_url, self.whatPoster, self._posterFetched)
 		else:
 			self.noPicData()
 
@@ -2828,14 +2800,11 @@ class DP_View(DPH_Screen, DPH_ScreenHelper, DPH_MultiColorFunctions, DPH_Filter)
 		printl("self.backdropWidth:" + str(self.backdropWidth), self, "D")
 		printl("self.backdropHeight:" + str(self.backdropHeight), self, "D")
 
-		if "art" in self.details:
-			if self.details["art"] != "":
-				download_url = self.details["art"]
-				download_url = download_url.replace(IMAGE_SIZE_PLACEHOLDER, '&maxWidth=' + self.backdropWidth + '&maxHeight=' + self.backdropHeight)
-				printl("download url: " + download_url, self, "D")
-				self._downloadImage(download_url, self.whatBackdrop, lambda: self.showBackdrop(forceShow=True))
-			else:
-				self.noPicData()
+		if "art" in self.details and self.details["art"] != "":
+			download_url = self.details["art"]
+			download_url = download_url.replace(IMAGE_SIZE_PLACEHOLDER, '&maxWidth=' + self.backdropWidth + '&maxHeight=' + self.backdropHeight)
+			printl("download url: " + download_url, self, "D")
+			self._fetchArt(download_url, self.whatBackdrop, self._backdropFetched)
 		else:
 			self.noPicData()
 
@@ -2846,15 +2815,18 @@ class DP_View(DPH_Screen, DPH_ScreenHelper, DPH_MultiColorFunctions, DPH_Filter)
 	#===========================================================================
 	def _downloadImage(self, url, targetPath, onReady):
 		"""Fetch an artwork URL through the backend transport (off the
-		main loop) and show it via onReady once the file is written.
+		main loop) and call onReady(ok) on the main loop once done.
 
 		Writes to a temp file and renames into place, so a failed or
 		partial download never leaves a 0-byte target that the picture
-		cache would later serve as a blank image.
+		cache would later serve as a blank image. The staging file is keyed
+		to the target, so with per-item targets two rows never share it.
 		"""
 		def work():
 			payload = Singleton().getBackendInstance().doRequest(url)
-			if not payload:
+			# reject an empty or truncated fetch (a half JPEG decodes to a
+			# blank/grey image) so the caller retries instead of caching junk
+			if not payload or not isCompleteImage(payload):
 				return False
 			tmpPath = targetPath + ".part"
 			fd = open(tmpPath, "wb")
@@ -2866,10 +2838,48 @@ class DP_View(DPH_Screen, DPH_ScreenHelper, DPH_MultiColorFunctions, DPH_Filter)
 			return True
 
 		def onDone(ok, error):
-			if ok and error is None:
-				onReady()
+			onReady(bool(ok) and error is None)
 
 		runInThread(work, onDone)
+
+	#==============================================================================
+	#
+	#==============================================================================
+	def _fetchArt(self, url, targetPath, onReady):
+		"""De-duplicated artwork fetch. The refresh path asks for the same
+		poster/backdrop several times per row; skip if a download for this
+		exact file is already in flight, then deliver onReady(targetPath, ok)."""
+		if targetPath is None:
+			return
+		if self._artInFlight is None:
+			self._artInFlight = set()
+		if targetPath in self._artInFlight:
+			return
+		self._artInFlight.add(targetPath)
+
+		def done(ok):
+			self._artInFlight.discard(targetPath)
+			onReady(targetPath, ok)
+
+		self._downloadImage(url, targetPath, done)
+
+	def _posterFetched(self, path, ok):
+		if not ok:
+			return
+		if not self.usePicCache:
+			rememberEphemeralArt(path)
+		# only paint if this is still the row under the cursor, so a slow
+		# download that finished after the user scrolled never shows here
+		if self.whatPoster == path:
+			self.showPoster(forceShow=True)
+
+	def _backdropFetched(self, path, ok):
+		if not ok:
+			return
+		if not self.usePicCache:
+			rememberEphemeralArt(path)
+		if self.whatBackdrop == path:
+			self.showBackdrop(forceShow=True)
 
 	#==============================================================================
 	#
@@ -3475,10 +3485,16 @@ class DP_View(DPH_Screen, DPH_ScreenHelper, DPH_MultiColorFunctions, DPH_Filter)
 	def getPictureInformationToLoad(self):
 		printl("", self, "S")
 
-		# if pic cache is not configured we set a name that will not exist to force download each time from server
+		# Without a persistent cache we STILL need a unique file per item: a
+		# single shared "temp" name made every row overwrite the same
+		# <server>_temp jpg, so concurrent downloads while scrolling clobbered
+		# each other and left blank/wrong artwork. Key it by the item id (the
+		# files are pruned by the ephemeral LRU); only fall back to "temp" when
+		# the row has no id.
 		if not self.usePicCache:
-			self.pname = "temp"
-			self.bname = "temp"
+			itemId = self.details.get("ratingKey") if isinstance(self.details, dict) else None
+			self.pname = itemId or "temp"
+			self.bname = itemId or "temp"
 			self.mediaPath = config.plugins.dreamfin.logfolderpath.value
 
 		printl("bname: " + str(self.bname), self, "D")
