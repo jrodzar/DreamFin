@@ -1958,6 +1958,9 @@ class EmbyLibrary(object):
 					"id": jsonToStr(stream.get("Index")),
 					"partid": sourceId,
 					"selected": "1" if stream.get("IsDefault") else "",
+					# the subtitle menu labels forced tracks; without this key it
+					# used to KeyError('forced') and crash the TEXT menu
+					"forced": "1" if stream.get("IsForced") else "",
 				})
 		return rows
 

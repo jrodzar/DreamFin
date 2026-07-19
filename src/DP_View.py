@@ -2470,7 +2470,7 @@ class DP_View(DPH_Screen, DPH_ScreenHelper, DPH_MultiColorFunctions, DPH_Filter)
 			else:
 				formatText = ""
 
-			forced = item['forced']
+			forced = item.get('forced')
 			if forced:
 				forcedText = " forced"
 			else:

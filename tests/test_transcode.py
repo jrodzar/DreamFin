@@ -179,6 +179,11 @@ class TestAudioSubtitleStreams(TranscodeTestCase):
 		subs = self.lib.getSubtitleById("srv", MOVIE_ID)
 		self.assertEqual(len(subs), 1)
 		self.assertEqual(subs[0]["id"], "3")
+		# the subtitle menu reads each of these keys directly (item['forced']
+		# etc.); a missing one is a KeyError crash on the box, which is exactly
+		# what 'forced' did during the QA sweep.
+		for key in ("language", "languageCode", "id", "partid", "selected", "forced"):
+			self.assertIn(key, subs[0])
 
 	def test_set_index_stores_int_and_bad_value_clears(self):
 		self.lib.setAudioById("srv", "2", "src-0")
