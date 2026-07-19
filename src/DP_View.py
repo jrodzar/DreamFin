@@ -2447,7 +2447,7 @@ class DP_View(DPH_Screen, DPH_ScreenHelper, DPH_MultiColorFunctions, DPH_Filter)
 			self.media_id = selection[1]['ratingKey']
 			self.server = selection[1]['server']
 
-			self.subtitlesList = Singleton().getBackendInstance().getSubtitlesById(self.server, self.media_id)
+			self.subtitlesList = Singleton().getBackendInstance().getSubtitleById(self.server, self.media_id)
 
 		printl("", self, "C")
 

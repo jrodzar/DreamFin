@@ -1983,6 +1983,14 @@ class EmbyLibrary(object):
 	def getSelectedEmbeddedSubtitleData(self):
 		return None
 
+	def getSelectedSubtitleDataById(self, server=None, itemId=None, forcedOnly=False):
+		"""Forced-subtitle auto-preselection for the transcode path. Not
+		implemented for the Emby/Jellyfin backend (subtitles are chosen
+		explicitly via the TEXT menu -> setSubtitleById); return None so the
+		player skips it instead of crashing with AttributeError when the
+		'useForcedSubtitles' + transcode config path calls this."""
+		return None
+
 	def getLastResponse(self):
 		return self.lastResponse or self.lastError
 

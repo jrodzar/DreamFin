@@ -230,5 +230,23 @@ class TestSeriesTheme(PlaybackBase):
 		self.assertEqual(lib.getThemeUrl(series_id), "")
 
 
+class TestPlaybackUiContract(unittest.TestCase):
+	"""The inherited views call these backend methods by name; a rename or typo
+	is an AttributeError crash on the box (the QA sweep hit getSubtitlesById vs
+	getSubtitleById on the TEXT menu, and a missing getSelectedSubtitleDataById
+	on the forced-subtitles transcode path). Lock the surface the UI relies on."""
+
+	def test_backend_exposes_the_playback_ui_surface(self):
+		lib = helpers.make_emby_instance()
+		for name in ("getAudioById", "getSubtitleById", "setAudioById",
+					"setSubtitleById", "getSelectedSubtitleDataById",
+					"getSelectedEmbeddedSubtitleData", "getMediaOptionsToPlay",
+					"playLibraryMedia", "setSelectedVersion", "setPlaybackType",
+					"reportPlaybackStart", "reportProgress", "reportStopped",
+					"markWatched", "markUnwatched", "getThemeUrl", "getItemUrl"):
+			self.assertTrue(callable(getattr(lib, name, None)),
+						"EmbyLibrary is missing UI-called method: " + name)
+
+
 if __name__ == "__main__":
 	unittest.main()
