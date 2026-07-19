@@ -1,9 +1,30 @@
-DreamFin 0.1.3 — release notes
+DreamFin 0.1.4 — release notes
 ==============================
 
 **DreamFin** is an Emby/Jellyfin client for Enigma2 forked from DreamPlex. It
 reuses the DreamPlex user interface and replaces the Plex backend with an
 Emby/Jellyfin one. See `README.md` for setup, lineage and attribution.
+
+Fixed in 0.1.4
+--------------
+
+- **Search works again.** The search box padded the term with trailing spaces,
+  which produced a request the server rejected — so a search always came back
+  empty ("No data").
+- **"Recently added" no longer hangs the plugin.** A query that already asks for
+  a fixed number of items (recently added, on deck) was still paged through the
+  whole library; on a library with tens of thousands of episodes it walked the
+  lot and locked up on "Loading…". These are now fetched in a single request.
+- **The subtitle menu (the TEXT button) no longer green-screens.** Opening it
+  crashed on a method-name mismatch, a missing lookup and a subtitle row missing
+  a field; all three are fixed and the forced-subtitle path with it.
+- **"Recently added" and "Recently released" show the newest first again.** For
+  movies, shows and music these lists were coming back in alphabetical order —
+  the request carried two conflicting sort keys and the server kept the wrong
+  one. They now sort by date as intended.
+- **No crash on an item with no media.** Showing the technical badges of a
+  metadata-only entry (a "coming soon" movie or episode with no file) no longer
+  green-screens.
 
 Fixed in 0.1.3
 --------------
