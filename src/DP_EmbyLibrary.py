@@ -880,8 +880,11 @@ class EmbyLibrary(object):
 					self.buildItemsUrl(sectionId, "Series")),
 				(_("Unwatched"), "all?unwatched=1", None, None,
 					self.buildItemsUrl(sectionId, "Series", "&Filters=IsUnplayed")),
+				# Grouped by series: return the shows (not loose episodes) sorted
+				# by DateLastContentAdded so a series bubbles up when it gets a new
+				# episode. Renders like "All Shows" (see DP_LibShows.loadLibrary).
 				(_("Recently Added"), "recentlyAdded", None, None,
-					self.buildItemsUrl(sectionId, "Episode", "&SortBy=DateCreated&SortOrder=Descending&Limit=100")),
+					self.buildItemsUrl(sectionId, "Series", "&SortBy=DateLastContentAdded&SortOrder=Descending&Limit=100")),
 				(_("On Deck"), "onDeck", None, None,
 					self.getContentUrl("/Shows/NextUp?ParentId=%s&UserId=%s&Fields=%s"
 						% (sectionId, self.g_userId, DEFAULT_ITEM_FIELDS))),

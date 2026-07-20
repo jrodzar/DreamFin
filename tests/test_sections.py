@@ -198,7 +198,7 @@ class TestSynthesizedFilter(unittest.TestCase):
 
 		cases = (
 			(section_root("movie"), {"recentlyAdded": "DateCreated", "newest": "PremiereDate"}),
-			(section_root("show", "54436"), {"recentlyAdded": "DateCreated"}),
+			(section_root("show", "54436"), {"recentlyAdded": "DateLastContentAdded"}),
 			(section_root("artist", "777"), {"recentlyAdded": "DateCreated"}),
 		)
 		for section, expectedSorts in cases:
@@ -226,7 +226,10 @@ class TestSynthesizedFilter(unittest.TestCase):
 		byKey = dict((e[3]["key"], e) for e in menu)
 		self.assertIn("IncludeItemTypes=Series", byKey["all"][3]["contentUrl"])
 		self.assertIn("/Shows/NextUp", byKey["onDeck"][3]["contentUrl"])
-		self.assertIn("IncludeItemTypes=Episode", byKey["recentlyAdded"][3]["contentUrl"])
+		# recentlyAdded is grouped by series: it returns Series (not loose
+		# episodes) sorted by DateLastContentAdded, so it browses like "all".
+		self.assertIn("IncludeItemTypes=Series", byKey["recentlyAdded"][3]["contentUrl"])
+		self.assertIn("SortBy=DateLastContentAdded", byKey["recentlyAdded"][3]["contentUrl"])
 		self.assertEqual(byKey["all"][2], "showEntry")
 
 	def test_music_menu_keys_and_urls(self):

@@ -13,8 +13,10 @@ helpers.setup_environment()
 AUTH_PATH = "/Users/AuthenticateByName"
 
 # DP_LibShows switches these keys into the direct episode browser; the
-# synthesized menu must keep producing them verbatim
-ROUTED_KEYS = ("onDeck", "recentlyAdded", "newest", "recentlyViewed")
+# synthesized menu must keep producing them verbatim. "recentlyAdded" is NOT
+# here on purpose - it is grouped by series and browses like the show list
+# (see test_recently_added_shows_group_by_series).
+ROUTED_KEYS = ("onDeck", "newest", "recentlyViewed")
 
 
 def section_root(sectionType, sectionId="40"):
@@ -52,6 +54,17 @@ class TestFilterMenuContract(unittest.TestCase):
 			source = fd.read()
 		for literal in ROUTED_KEYS:
 			self.assertIn('"%s"' % literal, source)
+
+	def test_recently_added_shows_group_by_series(self):
+		"""recentlyAdded for series must NOT be routed into the direct episode
+		browser: the backend returns Series (grouped by show), so DP_LibShows
+		lets it fall back to the "show" view and browse like the full list.
+		If it were special-cased to ShowEpisodesDirect the Series items would be
+		rendered as (unplayable) episodes."""
+		path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "src", "DP_LibShows.py")
+		with io.open(path, encoding="utf-8") as fd:
+			source = fd.read()
+		self.assertNotIn('"recentlyAdded"', source)
 
 	def test_movie_menu_keeps_the_routed_literals(self):
 		lib = self._lib()

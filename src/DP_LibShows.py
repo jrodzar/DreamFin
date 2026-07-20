@@ -58,7 +58,12 @@ class DP_LibShows(DP_LibMain):
 		if entryData is None:
 			entryData = self.initalEntryData
 
-		if str(entryData.get('key')) == "onDeck" or str(entryData.get('key')) == "recentlyViewed" or str(entryData.get('key')) == "newest" or str(entryData.get('key')) == "recentlyAdded":
+		# The episode-based lists (onDeck/recentlyViewed/newest) render as a flat,
+		# directly-playable episode list. Recently-added is deliberately NOT here:
+		# the backend now returns Series grouped by show (DateLastContentAdded), so
+		# it falls back to the section type (show) and browses like the full show
+		# list - clicking a series opens its seasons instead of playing an episode.
+		if str(entryData.get('key')) in ("onDeck", "recentlyViewed", "newest"):
 			entryData["nextViewMode"] = "ShowEpisodesDirect"
 			entryData["currentViewMode"] = "ShowEpisodesDirect"
 		self.currentViewMode = "ShowEpisodesDirect"
