@@ -24,6 +24,7 @@
 	<guiElement name="seenPic" path="/usr/lib/enigma2/python/Plugins/Extensions/DreamFin/skins/default_FHD/icons/seen-fs8.png" />
 	<guiElement name="startedPic" path="/usr/lib/enigma2/python/Plugins/Extensions/DreamFin/skins/default_FHD/icons/started-fs8.png" />
 	<guiElement name="unseenPic" path="/usr/lib/enigma2/python/Plugins/Extensions/DreamFin/skins/default_FHD/icons/unseen-fs8.png" />
+	<guiElement name="newPic" path="/usr/lib/enigma2/python/Plugins/Extensions/DreamFin/skins/default_FHD/icons/new-fs8.png" />
 
 	<guiElement name="key_red" path="/usr/lib/enigma2/python/Plugins/Extensions/DreamFin/skins/default_FHD/buttons/btn_red-fs8.png" />
 	<guiElement name="key_green" path="/usr/lib/enigma2/python/Plugins/Extensions/DreamFin/skins/default_FHD/buttons/btn_green-fs8.png" />

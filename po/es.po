@@ -1874,3 +1874,9 @@ msgstr "Usuario con el que iniciar sesión. No hace falta si defines una clave A
 msgid "DreamFin colours will match this server the next time you open the plugin."
 msgstr "Los colores de DreamFin coincidirán con este servidor la próxima vez que abras el plugin."
 
+
+msgid "> Mark recently added content (days)"
+msgstr "> Marcar contenido añadido recientemente (días)"
+
+msgid "Badge content added within this many days. 'Off' disables it. Uses the library add date, not the release date."
+msgstr "Marca el contenido añadido en este número de días. 'Off' lo desactiva. Usa la fecha de alta en la biblioteca, no la de estreno."

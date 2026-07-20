@@ -86,6 +86,10 @@ config.plugins.dreamfin.stopLiveTvOnStartup = ConfigYesNo()
 # box may not have - a missing mount left 0-byte poster files)
 config.plugins.dreamfin.useCache = ConfigYesNo(default=False)
 config.plugins.dreamfin.usePicCache = ConfigYesNo(default=False)
+# badge recently-added content in the lists (by DateCreated / DateLastMediaAdded,
+# never the premiere/air date); window in days, "0" turns the badge off. Labels
+# stay plain strings: the _() translator is not defined yet at module import.
+config.plugins.dreamfin.newContentDays = ConfigSelection(default="7", choices=[("0", "Off"), ("3", "3 days"), ("7", "7 days"), ("14", "14 days"), ("30", "30 days"), ("60", "60 days"), ("90", "90 days")])
 config.plugins.dreamfin.useBackdropVideos = ConfigYesNo()
 config.plugins.dreamfin.showDetailsInList = ConfigYesNo()
 config.plugins.dreamfin.showDetailsInListDetailType = ConfigSelection(default="1", choices=[("1", "user"), ("2", "server")])

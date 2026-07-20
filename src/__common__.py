@@ -30,6 +30,7 @@ import datetime
 import shutil
 import math
 import time
+import calendar
 import uuid
 import glob
 import threading
@@ -936,6 +937,51 @@ def durationToTime(duration):
 
 	printl2("", "__common__::durationToTime", "C")
 	return "%d:%02d:%02d" % (h, m, s)
+
+#===========================================================================
+#
+#===========================================================================
+
+# no printl2 here: both helpers run once per list item (hot path), so logging
+# them would flood the debug file and slow the whole list build down.
+
+
+def parseServerDate(value):
+	"""Emby/Jellyfin ISO-8601 UTC timestamp ('2026-07-18T04:45:31.0000000Z')
+	-> epoch seconds, or None if missing / unparseable / the year-1
+	'0001-01-01' sentinel some servers emit for an empty DateLastMediaAdded."""
+	if not value or not isinstance(value, str):
+		return None
+	try:
+		epoch = calendar.timegm(time.strptime(value[:19], "%Y-%m-%dT%H:%M:%S"))
+	except (ValueError, TypeError):
+		return None
+	# library-add timestamps are always modern; <= 0 is the 0001 sentinel
+	return epoch if epoch > 0 else None
+
+
+def isRecentlyAdded(dateStrings, nowEpoch, days):
+	"""True if the newest 'added to library' timestamp among dateStrings is
+	within `days` of nowEpoch. `days` <= 0 (or non-numeric) disables it.
+
+	Containers pass (DateLastMediaAdded, DateCreated) so a series/season lights
+	up when it gains content on servers that expose the media-added date
+	(Jellyfin); leaves pass just DateCreated. Release/premiere dates are NEVER
+	passed - "new" means recently added, not recently aired."""
+	try:
+		days = int(days)
+	except (ValueError, TypeError):
+		return False
+	if days <= 0:
+		return False
+	best = None
+	for value in dateStrings:
+		epoch = parseServerDate(value)
+		if epoch is not None and (best is None or epoch > best):
+			best = epoch
+	if best is None:
+		return False
+	return best >= nowEpoch - days * 86400
 
 #===========================================================================
 #

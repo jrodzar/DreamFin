@@ -307,8 +307,9 @@
     <!-- content -->
     <widget source="listview" render="Listbox" zPosition="8" position="950,62" size="950,640" scrollbarMode="showNever" foregroundColor="grey" foregroundColorSelected="foreground" backgroundColor="background" transparent="1" selectionPixmap="/usr/lib/enigma2/python/Plugins/Extensions/DreamFin/skins/default_FHD/accent_jellyfin/images/focus_list.png" backgroundPixmap="/usr/lib/enigma2/python/Plugins/Extensions/DreamFin/skins/default_FHD/images/sel_bg.png">
       <convert type="TemplatedMultiContent">
-				{"template": [ MultiContentEntryText(pos = (40,0), size = (910,40), flags = RT_HALIGN_LEFT | RT_VALIGN_CENTER, text = 0),
-				MultiContentEntryPixmapAlphaTest(pos = (0,4), size = (24,24), png = 3) ],
+				{"template": [ MultiContentEntryText(pos = (40,0), size = (870,40), flags = RT_HALIGN_LEFT | RT_VALIGN_CENTER, text = 0),
+				MultiContentEntryPixmapAlphaTest(pos = (0,4), size = (24,24), png = 3),
+				MultiContentEntryPixmapAlphaTest(pos = (916,4), size = (24,24), png = 5) ],
 				"fonts": [gFont("OpenSans", 27)],
 				"itemHeight": 40,
 				"scrollbarMode": "showNever"
@@ -410,8 +411,9 @@
     <widget name="pagination" transparent="1" zPosition="50" halign="left" position="800,8" size="70,42" font="OpenSans; 30" foregroundColor="accent" backgroundColor="background" />
        <widget source="listview" render="Listbox" zPosition="8" position="15,611" size="535,400" scrollbarMode="showNever" foregroundColor="grey" foregroundColorSelected="foreground" backgroundColor="background" transparent="1" selectionPixmap="/usr/lib/enigma2/python/Plugins/Extensions/DreamFin/skins/default_FHD/accent_jellyfin/images/focus_list.png" backgroundPixmap="/usr/lib/enigma2/python/Plugins/Extensions/DreamFin/skins/default_FHD/images/sel_bg.png">
       <convert type="TemplatedMultiContent">
-				{"template": [ MultiContentEntryText(pos = (40,0), size = (535,40), flags = RT_HALIGN_LEFT | RT_VALIGN_CENTER, text = 0),
-				MultiContentEntryPixmapAlphaTest(pos = (0,4), size = (24,24), png = 3) ],
+				{"template": [ MultiContentEntryText(pos = (40,0), size = (455,40), flags = RT_HALIGN_LEFT | RT_VALIGN_CENTER, text = 0),
+				MultiContentEntryPixmapAlphaTest(pos = (0,4), size = (24,24), png = 3),
+				MultiContentEntryPixmapAlphaTest(pos = (501,4), size = (24,24), png = 5) ],
 				"fonts": [gFont("OpenSans", 27)],
 				"itemHeight": 40,
 				"scrollbarMode": "showNever"

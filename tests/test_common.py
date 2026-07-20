@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
 """Pure helpers in __common__ that the UI relies on."""
 
+import calendar
 import os
 import shutil
 import tempfile
+import time
 import unittest
 
 from tests import helpers
@@ -12,6 +14,7 @@ helpers.setup_environment()
 
 from src.__common__ import getRatingValue, buildMediaChoiceName, isCompleteImage, durationToTime, rememberEphemeralArt  # noqa: E402
 from src.__common__ import _ephemeralArt  # noqa: E402
+from src.__common__ import parseServerDate, isRecentlyAdded  # noqa: E402
 
 
 class TestDurationToTime(unittest.TestCase):
@@ -33,6 +36,60 @@ class TestDurationToTime(unittest.TestCase):
 
 	def test_none_duration_does_not_raise(self):
 		self.assertEqual(durationToTime(None), " - ")
+
+
+NOW = calendar.timegm((2026, 7, 20, 12, 0, 0, 0, 0, 0))
+
+
+def _ago(days):
+	"""An Emby/Jellyfin-shaped UTC timestamp `days` before the fixed NOW."""
+	return time.strftime("%Y-%m-%dT%H:%M:%S.0000000Z", time.gmtime(NOW - int(days * 86400)))
+
+
+class TestParseServerDate(unittest.TestCase):
+	def test_valid_utc_timestamp_to_epoch(self):
+		self.assertEqual(parseServerDate("2026-07-20T12:00:00.0000000Z"), NOW)
+
+	def test_missing_or_garbage_is_none(self):
+		for value in ("", None, "not-a-date", 12345, "2026-13-40T99:99:99Z"):
+			self.assertIsNone(parseServerDate(value))
+
+	def test_year_one_sentinel_is_none(self):
+		# Jellyfin emits this for an empty DateLastMediaAdded (e.g. some seasons)
+		self.assertIsNone(parseServerDate("0001-01-01T00:00:00.0000000Z"))
+
+
+class TestIsRecentlyAdded(unittest.TestCase):
+	"""'new' = recently ADDED to the library, within the configured window."""
+
+	def test_recent_leaf_is_new(self):
+		self.assertTrue(isRecentlyAdded((None, _ago(2)), NOW, 7))
+
+	def test_old_leaf_is_not_new(self):
+		self.assertFalse(isRecentlyAdded((None, _ago(30)), NOW, 7))
+
+	def test_window_boundary_is_inclusive(self):
+		self.assertTrue(isRecentlyAdded((None, _ago(7)), NOW, 7))
+		self.assertFalse(isRecentlyAdded((None, _ago(8)), NOW, 7))
+
+	def test_media_added_bubbles_an_old_container_up(self):
+		# series added long ago but with a fresh episode: DateLastMediaAdded wins
+		self.assertTrue(isRecentlyAdded((_ago(2), _ago(400)), NOW, 7))
+
+	def test_null_media_added_falls_back_to_date_created(self):
+		sentinel = "0001-01-01T00:00:00.0000000Z"
+		self.assertTrue(isRecentlyAdded((sentinel, _ago(2)), NOW, 7))
+		self.assertFalse(isRecentlyAdded((sentinel, _ago(30)), NOW, 7))
+
+	def test_zero_days_disables_the_badge(self):
+		self.assertFalse(isRecentlyAdded((None, _ago(0)), NOW, 0))
+
+	def test_non_numeric_or_negative_window_is_off(self):
+		self.assertFalse(isRecentlyAdded((None, _ago(1)), NOW, -5))
+		self.assertFalse(isRecentlyAdded((None, _ago(1)), NOW, "abc"))
+
+	def test_no_valid_dates_is_not_new(self):
+		self.assertFalse(isRecentlyAdded((None, "", "0001-01-01T00:00:00.0000000Z"), NOW, 7))
 
 
 class TestMediaChoiceName(unittest.TestCase):

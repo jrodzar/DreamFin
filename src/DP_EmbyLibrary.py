@@ -26,6 +26,7 @@ import json
 import socket
 import ssl
 import sys
+import time
 import traceback
 
 from six import PY2
@@ -41,7 +42,7 @@ else:
 
 from Components.config import config
 
-from .__common__ import printl2 as printl, getUUID, getVersion, IMAGE_SIZE_PLACEHOLDER
+from .__common__ import printl2 as printl, getUUID, getVersion, IMAGE_SIZE_PLACEHOLDER, isRecentlyAdded
 from .__plugin__ import Plugin, getPlugin
 from .__init__ import _  # _ is translation
 
@@ -55,7 +56,7 @@ from .__init__ import _  # _ is translation
 # without People the same page takes 0.36s. Lists therefore show no
 # director/cast; the per-item detail fetch below carries them instead.
 DEFAULT_ITEM_FIELDS = ("Overview,Genres,Studios,MediaSources,"
-					"DateCreated,PremiereDate,ProductionYear,"
+					"DateCreated,DateLastMediaAdded,PremiereDate,ProductionYear,"
 					"RecursiveItemCount,ChildCount,Taglines")
 
 # fields for single-item detail requests (selection refresh, pre-playback)
@@ -1059,6 +1060,20 @@ class EmbyLibrary(object):
 	# UI can see leaves this section as a native str (utf-8 bytes on py2)
 	#===============================================================================
 
+	def _nowEpoch(self):
+		"""Current UTC epoch, wrapped so tests can pin 'now'."""
+		return time.time()
+
+	def _newContentDays(self):
+		"""The 'mark recently added' window in days (0 = feature off)."""
+		try:
+			return int(config.plugins.dreamfin.newContentDays.value)
+		except (AttributeError, ValueError, TypeError):
+			return 7
+
+	#===============================================================================
+	#
+	#===============================================================================
 	def itemToEntryData(self, item):
 		"""Map one Emby/Jellyfin item onto the entryData dictionary shape
 		the inherited UI reads. Caller adds server/viewModes/tagType."""
@@ -1087,6 +1102,14 @@ class EmbyLibrary(object):
 			"writer": self._joinPeople(item, "Writer"),
 			"country": self._joinNames(item.get("ProductionLocations")),
 		}
+
+		# "new" = recently ADDED to the library (DateCreated for leaves;
+		# DateLastMediaAdded lets a series/season bubble up on new content where
+		# the server exposes it - Jellyfin does, Emby does not). Never the
+		# premiere/air date. Window comes from settings; "0" days turns it off.
+		entryData["isNew"] = "1" if isRecentlyAdded(
+			(item.get("DateLastMediaAdded"), item.get("DateCreated")),
+			self._nowEpoch(), self._newContentDays()) else "0"
 
 		taglines = item.get("Taglines")
 		if taglines:

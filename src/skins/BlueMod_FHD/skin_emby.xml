@@ -384,8 +384,9 @@
 	<!-- content -->
 		<widget source="listview" render="Listbox" zPosition="8" position="930,72" size="970,580" scrollbarMode="showOnDemand" enableWrapAround="1"  scrollbarSliderBorderWidth="2" scrollbarWidth="10" scrollbarSliderForegroundColor="blue" scrollbarSliderBorderColor="scrollbarcolor" alphatest="blend" transparent="1" foregroundColor="grey1" backgroundColor="background" foregroundColorSelected="white" backgroundColorSelected="background" selectionPixmap="/usr/lib/enigma2/python/Plugins/Extensions/DreamFin/skins/BlueMod_FHD/images/focus_list.png" backgroundPixmap="/usr/lib/enigma2/python/Plugins/Extensions/DreamFin/skins/default_FHD/images/sel_bg.png"> 
 			<convert type="TemplatedMultiContent">
-				{"template": [ MultiContentEntryText(pos = (40,0), size = (920,45), flags = RT_HALIGN_LEFT | RT_VALIGN_CENTER, text = 0),
-				MultiContentEntryPixmapAlphaTest(pos = (4,8), size = (24,24), png = 3) ],
+				{"template": [ MultiContentEntryText(pos = (40,0), size = (890,45), flags = RT_HALIGN_LEFT | RT_VALIGN_CENTER, text = 0),
+				MultiContentEntryPixmapAlphaTest(pos = (4,8), size = (24,24), png = 3),
+				MultiContentEntryPixmapAlphaTest(pos = (936,8), size = (24,24), png = 5) ],
 				"fonts": [gFont("OpenSans", 30)],
 				"itemHeight": 45,
 				}
@@ -486,8 +487,9 @@
 		<widget name="pagination" transparent="1" zPosition="50" halign="left" position="660,990" size="70,34" font="OpenSans; 24" backgroundColor="background" />
 		<widget source="listview" render="Listbox" zPosition="8" position="15,600" size="535,425" scrollbarMode="showNever" foregroundColor="grey1" backgroundColorSelected="background" foregroundColorSelected="white" backgroundColor="background" transparent="1" selectionPixmap="/usr/lib/enigma2/python/Plugins/Extensions/DreamFin/skins/BlueMod_FHD/images/focus_list.png" backgroundPixmap="/usr/lib/enigma2/python/Plugins/Extensions/DreamFin/skins/default_FHD/images/sel_bg.png">
 			<convert type="TemplatedMultiContent">
-				{"template": [ MultiContentEntryText(pos = (40,0), size = (535,40), flags = RT_HALIGN_LEFT | RT_VALIGN_CENTER, text = 0),
-				MultiContentEntryPixmapAlphaTest(pos = (4,8), size = (24,24), png = 3) ],
+				{"template": [ MultiContentEntryText(pos = (40,0), size = (455,40), flags = RT_HALIGN_LEFT | RT_VALIGN_CENTER, text = 0),
+				MultiContentEntryPixmapAlphaTest(pos = (4,8), size = (24,24), png = 3),
+				MultiContentEntryPixmapAlphaTest(pos = (501,8), size = (24,24), png = 5) ],
 				"fonts": [gFont("OpenSans", 30)],
 				"itemHeight": 42,
 				"scrollbarMode": "showNever"

@@ -1828,6 +1828,7 @@ class DP_View(DPH_Screen, DPH_ScreenHelper, DPH_MultiColorFunctions, DPH_Filter)
 		#printl("listViewList: " + str(listViewList), self, "S")
 		newList = []
 		undefinedIcon = loadPicture('/usr/lib/enigma2/python/Plugins/Extensions/DreamFin/skins/default/images/picreset.png')
+		newPicObj = getattr(self, "newPic", None)
 
 		for listViewEntry in listViewList:
 			viewState = str(listViewEntry[3])
@@ -1846,7 +1847,13 @@ class DP_View(DPH_Screen, DPH_ScreenHelper, DPH_MultiColorFunctions, DPH_Filter)
 				else:
 					viewState = undefinedIcon
 
-			content = (listViewEntry[0], listViewEntry[1], listViewEntry[2], viewState, listViewEntry[4])
+			# tuple position 5 is the recently-added badge: the pixmap for items
+			# flagged isNew by the backend, else None (the skin template renders
+			# png=5, and a None png draws nothing). entryData lives at [1].
+			entryData = listViewEntry[1] if isinstance(listViewEntry[1], dict) else {}
+			newPix = newPicObj if (newPicObj is not None and entryData.get("isNew") == "1") else None
+
+			content = (listViewEntry[0], listViewEntry[1], listViewEntry[2], viewState, listViewEntry[4], newPix)
 			newList.append(content)
 
 		printl("", self, "C")
@@ -2967,6 +2974,13 @@ class DP_View(DPH_Screen, DPH_ScreenHelper, DPH_MultiColorFunctions, DPH_Filter)
 
 		self.unseenPic = loadPicture(str(self.guiElements["unseenPic"]))
 		printl("self.unseenPic: " + str(self.unseenPic), self, "D")
+
+		# recently-added badge; optional so skins whose params predate it just
+		# render no badge instead of crashing on a missing guiElement
+		self.newPic = None
+		if "newPic" in self.guiElements:
+			self.newPic = loadPicture(str(self.guiElements["newPic"]))
+		printl("self.newPic: " + str(self.newPic), self, "D")
 
 		printl("", self, "C")
 

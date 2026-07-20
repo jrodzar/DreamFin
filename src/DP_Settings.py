@@ -133,6 +133,7 @@ class DPS_Settings(Screen, ConfigListScreen, HelpableScreen, DPH_PlexScreen):
 		self.cfglist.append(getConfigListEntry(_("> Summerize Sections"), config.plugins.dreamfin.summerizeSections, _("Summerize sections in an additional menu step.")))
 		self.cfglist.append(getConfigListEntry(_("> Show Filter for Section"), config.plugins.dreamfin.showFilter, _("Show additional filter in an additional menu step e.g. OnDeck")))
 		self.cfglist.append(getConfigListEntry(_("> Show Seen/Unseen count in TvShows"), config.plugins.dreamfin.showUnSeenCounts, _("Calculate and show them for tv shows.")))
+		self.cfglist.append(getConfigListEntry(_("> Mark recently added content (days)"), config.plugins.dreamfin.newContentDays, _("Badge content added within this many days. 'Off' disables it. Uses the library add date, not the release date.")))
 		self.cfglist.append(getConfigListEntry(_("> Start with Filtermode"), config.plugins.dreamfin.startWithFilterMode, _("Start with filtermode in any media view.")))
 		self.cfglist.append(getConfigListEntry(_("> Exit function in Player"), config.plugins.dreamfin.exitFunction, _("Specifiy what the exit button in the player should do.")))
 

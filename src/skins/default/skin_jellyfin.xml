@@ -304,8 +304,9 @@
 		<!-- content -->
 		<widget source="listview" render="Listbox" zPosition="8" position="630,62" size="640,363" scrollbarMode="showNever" foregroundColor="#5C5C5C" foregroundColorSelected="#ffffff" backgroundColor="#212121" transparent="1" selectionPixmap="/usr/lib/enigma2/python/Plugins/Extensions/DreamFin/skins/default/accent_jellyfin/images/focus_list-fs8.png" backgroundPixmap="/usr/lib/enigma2/python/Plugins/Extensions/DreamFin/skins/default/images/sel_bg-fs8.png">
 			<convert type="TemplatedMultiContent">
-				{"template": [ MultiContentEntryText(pos = (40,0), size = (623,30), flags = RT_HALIGN_LEFT | RT_VALIGN_CENTER, text = 0),
-				MultiContentEntryPixmapAlphaTest(pos = (0,4), size = (24,24), png = 3) ],
+				{"template": [ MultiContentEntryText(pos = (40,0), size = (560,30), flags = RT_HALIGN_LEFT | RT_VALIGN_CENTER, text = 0),
+				MultiContentEntryPixmapAlphaTest(pos = (0,4), size = (24,24), png = 3),
+				MultiContentEntryPixmapAlphaTest(pos = (606,4), size = (24,24), png = 5) ],
 				"fonts": [gFont("OpenSans", 18)],
 				"itemHeight": 30,
 				"scrollbarMode": "showNever"
@@ -425,8 +426,9 @@
 
 		<widget source="listview" render="Listbox" zPosition="8" position="15,243" size="535,420" scrollbarMode="showNever" foregroundColor="#5C5C5C" foregroundColorSelected="#ffffff" backgroundColor="#212121" transparent="1" selectionPixmap="/usr/lib/enigma2/python/Plugins/Extensions/DreamFin/skins/default/accent_jellyfin/images/focus_list-fs8.png" backgroundPixmap="/usr/lib/enigma2/python/Plugins/Extensions/DreamFin/skins/default/images/sel_bg-fs8.png">
 			<convert type="TemplatedMultiContent">
-				{"template": [ MultiContentEntryText(pos = (40,0), size = (535,30), flags = RT_HALIGN_LEFT | RT_VALIGN_CENTER, text = 0),
-				MultiContentEntryPixmapAlphaTest(pos = (0,4), size = (24,24), png = 3) ],
+				{"template": [ MultiContentEntryText(pos = (40,0), size = (455,30), flags = RT_HALIGN_LEFT | RT_VALIGN_CENTER, text = 0),
+				MultiContentEntryPixmapAlphaTest(pos = (0,4), size = (24,24), png = 3),
+				MultiContentEntryPixmapAlphaTest(pos = (501,4), size = (24,24), png = 5) ],
 				"fonts": [gFont("OpenSans", 20)],
 				"itemHeight": 35,
 				"scrollbarMode": "showNever"
