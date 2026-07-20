@@ -5,6 +5,20 @@ DreamFin is a fork of DreamPlex (a Plex client for Enigma2) with the Plex
 backend replaced by an Emby/Jellyfin one. See `RELEASENOTES.md` for the full
 release notes and `README.md` for lineage and attribution.
 
+0.1.6 — features
+----------------
+* "Recently added" in a TV-show library now groups by series instead of listing
+  loose episodes from different shows — the query returns series (most recently
+  added first, a show rising when it gains an episode) and opening one goes to
+  its seasons, like the rest of the show list.
+* Recently-added content is flagged with an amber sparkle to the right of the
+  title, for every item type; a show/season carries the mark too so it can be
+  followed down to the new episode. "New" means recently *added* (not release
+  date). The window is configurable in the settings (Off / 3 / 7 / 14 / 30 / 60
+  / 90 days, default 7).
+* BlueMod skin: a poster placeholder is drawn behind the player poster so the
+  frame is not empty while the artwork loads.
+
 0.1.5 — bugfix
 --------------
 * Artwork stopped blanking out at random while scrolling. Without the picture
