@@ -539,6 +539,7 @@
 		<eLabel position="0,0" zPosition="-2" size="1283,40" backgroundColor="background40" transparent="0" />
     <!-- clock -->
 		<panel name="clockpanel" />
+		<ePixmap pixmap="/usr/lib/enigma2/python/Plugins/Extensions/DreamFin/skins/default/images/cover-movie-fs8.png" position="0,450" size="195,268" zPosition="48" alphatest="blend" transparent="1" />
 		<widget name="poster" transparent="1" zPosition="49" position="0,450" size="195,268" alphatest="blend" />
 		<widget source="mediaTitle" render="Label" zPosition="4" position="210,443" size="1070,42" font="OpenSans; 30" halign="left" valign="top" noWrap="1" foregroundColor="accent" backgroundColor="background40" transparent="1" />
 		<widget name="endingTime" zPosition="10" position="1140,443" transparent="1" size="180,42" valign="top" font="OpenSans;30" foregroundColor="accent" backgroundColor="background40" noWrap="1" />
