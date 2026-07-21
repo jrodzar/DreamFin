@@ -193,7 +193,7 @@ class DPS_Mappings(Screen):
 			if self.choice:
 				self.setRemotePathCallback(self.choice)
 			else:
-				self.session.openWithCallback(self.setRemotePathCallback, VirtualKeyBoard, title=(_("Enter your remote path segment here:")), text="C:\Videos or /volume1/videos or \\\\SERVER\\Videos\\")
+				self.session.openWithCallback(self.setRemotePathCallback, VirtualKeyBoard, title=(_("Enter your remote path segment here:")), text="C:\\Videos or /volume1/videos or \\\\SERVER\\Videos\\")
 		else:
 			self.session.open(MessageBox, _("Adding new mapping was not completed"), MessageBox.TYPE_INFO)
 			self.close()
