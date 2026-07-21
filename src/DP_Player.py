@@ -64,7 +64,7 @@ from .DPH_Singleton import Singleton
 #from .DP_Summary import DreamplexPlayerSummary
 from .DPH_ScreenHelper import DPH_ScreenHelper
 
-from .__common__ import printl2 as printl, buildMediaChoiceName, encodeThat, runInThread, fireAndForget, IMAGE_SIZE_PLACEHOLDER, isCompleteImage
+from .__common__ import printl2 as printl, buildMediaChoiceName, encodeThat, runInThread, fireAndForget, IMAGE_SIZE_PLACEHOLDER, isCompleteImage, PlaybackClock
 from .__init__ import _  # _ is translation
 
 
@@ -154,6 +154,7 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 	isVisible = False
 	playbackType = None
 	timelineWatcher = None
+	playbackClock = None
 	whatPoster = None
 	subtitleStreams = None
 	subtitleLanguageCode = None
@@ -977,6 +978,19 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 		self.timelineWatcher = eTimer()
 		self.timelineWatcher.callback.append(self.updateTimeline)
 
+		# our own clock: during transcoded HLS the decoder never has a position
+		# to offer. It starts AT the resume point, not at zero, so the first
+		# report says where playback really begins - otherwise the server shows
+		# the media as restarted from the beginning until a later report catches up
+		startAt = 0
+		try:
+			if self.resume and self.resumeStamp:
+				startAt = int(self.resumeStamp)
+		except (TypeError, ValueError):
+			startAt = 0
+		self.playbackClock = PlaybackClock()
+		self.playbackClock.start(startAt)
+
 		if self.multiUserServer:
 			printl("we are a multiuser server", self, "D")
 			self.multiUser = True
@@ -997,6 +1011,9 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 		if self.timelineWatcher is not None:
 			self.timelineWatcher.stop()
 
+		if self.playbackClock is not None:
+			self.playbackClock.pause()
+
 		super(DP_Player, self).pauseService()
 
 		printl("", self, "C")
@@ -1012,6 +1029,9 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 
 		if self.transcoderHeartbeat is not None:
 			self.transcoderHeartbeat.stop()
+
+		if self.playbackClock is not None:
+			self.playbackClock.resume()
 
 		if self.timelineWatcher is not None:
 			self.timelineWatcher.start(30000, False)
@@ -1397,11 +1417,25 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 		printl("", self, "S")
 
 		try:
-			currentTime = int(self.getPlayPosition()[1] / 90000)
-			totalTime = int(self.getPlayLength()[1] / 90000)
+			# decoder when it knows, our own clock in transcoded HLS. Reading
+			# the decoder blindly used to leave currentTime negative here (the
+			# pts is meaningless until the service is up), which fell through
+			# to the "End of file" branch below and marked the media watched
+			# without anybody having watched it
+			currentTime = self.getPlaybackPosition()
+			totalTime = self.getMediaDuration()
+			valid = currentTime is not None and currentTime > 0 and totalTime > 0
+
+			if not EOF and not valid:
+				printl("no valid play position yet, reporting nothing", self, "D")
+				printl("", self, "C")
+				return
+
+			if currentTime is None:
+				currentTime = 0
 			printl("progress data available, ...", self, "D")
 
-			if not EOF and currentTime is not None and currentTime > 0 and totalTime is not None and totalTime > 0:
+			if not EOF and currentTime > 0 and totalTime > 0:
 				progress = currentTime / float(totalTime / 100.0)
 				printl("played time is %s secs of %s @ %s%%" % (currentTime, totalTime, progress), self, "I")
 			else:
@@ -1502,11 +1536,20 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 	def updateTimeline(self):
 		printl("", self, "S")
 
+		# same sources as handleProgress(): the decoder says nothing during
+		# transcoded HLS, so the clock carries the position and the server
+		# metadata carries the length. Reporting the raw pts sent the periodic
+		# report out with a garbage (negative) time, which the server drops
+		currentTime = self.getPlaybackPosition()
+		totalTime = self.getMediaDuration()
+
+		if currentTime is None or currentTime < 0 or totalTime <= 0:
+			printl("no valid play position yet, skipping this report", self, "D")
+			return
+
 		try:
-			currentTime = int(self.getPlayPosition()[1] / 90000)
-			totalTime = int(self.getPlayLength()[1] / 90000)
 			progress = int((float(currentTime) / float(totalTime)) * 100)
-		except:
+		except (ZeroDivisionError, ValueError):
 			return
 
 		if self.calculateEndingTime:
@@ -1541,13 +1584,103 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 	#===========================================================================
 	#
 	#===========================================================================
+	def getMediaDuration(self):
+		"""Media length in SECONDS, from the metadata the server sent.
+
+		getPlayLength() has nothing to say about a transcoded HLS stream, so
+		taking the length from the decoder silences every report while
+		transcoding. The server gave us the duration when the media was opened
+		(videoData carries it in milliseconds); the decoder is only the
+		fallback, for plain files whose metadata had no duration.
+		"""
+		try:
+			duration = self.videoData.get("duration") if isinstance(self.videoData, dict) else None
+			if duration:
+				seconds = int(int(duration) / 1000)
+				if seconds > 0:
+					return seconds
+		except (TypeError, ValueError):
+			pass
+
+		try:
+			length = self.getPlayLength()
+			if length[0] == 0 and length[1] > 0:
+				return int(length[1] / 90000)
+		except Exception:
+			pass
+
+		return 0
+
+	#===========================================================================
+	#
+	#===========================================================================
+	def getPlaybackPosition(self):
+		"""Seconds into the media: the decoder when it knows, our clock when
+		it does not.
+
+		getPlayPosition() returns (result, pts) and the pts only means
+		something when result is 0 - which during transcoded HLS is never, so
+		there the PlaybackClock estimate is all there is. When the decoder IS
+		valid (plain files) it wins, and the clock is resynced to it so both
+		stay together.
+		"""
+		try:
+			position = self.getPlayPosition()
+			if position[0] == 0:
+				seconds = int(position[1] / 90000)
+				if seconds >= 0:
+					if self.playbackClock is not None:
+						self.playbackClock.syncTo(seconds)
+					return seconds
+		except Exception:
+			pass
+
+		if self.playbackClock is not None:
+			return self.playbackClock.tell()
+
+		return None
+
+	#===========================================================================
+	#
+	#===========================================================================
+	def doSeek(self, pts):
+		# keep the clock on the jump target: without this a resume seek or a
+		# skip would leave the estimate behind, and the reported position with
+		# it (this is the "far seek reports a low position" follow-up)
+		if self.playbackClock is not None:
+			try:
+				self.playbackClock.syncTo(int(pts) / 90000)
+			except (TypeError, ValueError):
+				pass
+
+		super(DP_Player, self).doSeek(pts)
+
+	#===========================================================================
+	#
+	#===========================================================================
+	def doSeekRelative(self, pts):
+		# the skip keys go through here, not through doSeek()
+		if self.playbackClock is not None:
+			try:
+				self.playbackClock.add(int(pts) / 90000)
+			except (TypeError, ValueError):
+				pass
+
+		super(DP_Player, self).doSeekRelative(pts)
+
+	#===========================================================================
+	#
+	#===========================================================================
 	def getPlayerState(self):
 		printl("", self, "S")
 		params = {}
 
 		try:
-			currentTime = self.getPlayPosition()[1] / 90000
-			totalTime = self.getPlayLength()[1] / 90000
+			currentTime = self.getPlaybackPosition()
+			totalTime = self.getMediaDuration()
+
+			if currentTime is None or totalTime <= 0:
+				raise Exception("no valid play position yet")
 
 			params["duration"] = str(totalTime * 1000)
 
