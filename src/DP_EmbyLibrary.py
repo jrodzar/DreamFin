@@ -105,6 +105,26 @@ UNI_QUALITY_TABLE = {
 }
 DEFAULT_UNI_QUALITY = (1024, 768, 2000000)  # matches uniQuality default "3"
 
+# The same ladder for hevc output would waste it. hevc carries the same
+# picture in clearly less bitrate, so reusing the h264 steps spends the whole
+# gain on picture quality and leaves the frame where it was - 3 Mbps would
+# still ask for 720p when it comfortably holds 1080p. This ladder keeps the
+# h264 bitrates and buys a bigger frame at every step instead, and the top
+# steps go past the 1080p ceiling that only h264 needs.
+UNI_QUALITY_HEVC_TABLE = {
+	"0": (576, 320, 320000),
+	"1": (720, 480, 720000),
+	"2": (1280, 720, 1500000),
+	"3": (1280, 720, 2000000),
+	"4": (1920, 1080, 3000000),
+	"5": (1920, 1080, 4000000),
+	"6": (2560, 1440, 8000000),
+	"7": (3840, 2160, 10000000),
+	"8": (3840, 2160, 12000000),
+	"9": (3840, 2160, 20000000),
+}
+DEFAULT_UNI_QUALITY_HEVC = (1280, 720, 2000000)  # matches uniQualityHevc default "3"
+
 # ticks are 100 ns units: 10**4 ticks per millisecond
 TICKS_PER_MS = 10000
 
@@ -1872,8 +1892,21 @@ class EmbyLibrary(object):
 	# builds that choke on the m3u8.
 	#===============================================================================
 
+	def getTranscodeVideoCodec(self):
+		"""Output codec picked for this server, h264 when unset."""
+		return jsonToStr(getattr(self.g_serverConfig, "transcodeVideoCodec", _emptyConfig("h264")).value) or "h264"
+
 	def getUniversalTranscoderSettings(self):
-		"""(MaxWidth, MaxHeight, VideoBitrate) for the picked uniQuality."""
+		"""(MaxWidth, MaxHeight, VideoBitrate) for the picked quality.
+
+		Each codec has its own ladder - see UNI_QUALITY_HEVC_TABLE for why hevc
+		does not reuse the h264 one. A server entry written before that ladder
+		existed carries no uniQualityHevc and falls back to its default step.
+		"""
+		if self.getTranscodeVideoCodec() == "hevc":
+			quality = jsonToStr(getattr(self.g_serverConfig, "uniQualityHevc", _emptyConfig("3")).value)
+			return UNI_QUALITY_HEVC_TABLE.get(quality, DEFAULT_UNI_QUALITY_HEVC)
+
 		quality = jsonToStr(getattr(self.g_serverConfig, "uniQuality", _emptyConfig("3")).value)
 		return UNI_QUALITY_TABLE.get(quality, DEFAULT_UNI_QUALITY)
 
@@ -1884,7 +1917,7 @@ class EmbyLibrary(object):
 		sourceId = self.g_currentMediaSourceId or ""
 		# h264 for max compatibility (older gstreamer / 6.4); hevc for better
 		# quality at a lower bitrate on boxes that decode HEVC (per server)
-		videoCodec = jsonToStr(getattr(self.g_serverConfig, "transcodeVideoCodec", _emptyConfig("h264")).value) or "h264"
+		videoCodec = self.getTranscodeVideoCodec()
 		params = [
 			("DeviceId", self.g_sessionID),
 			("MediaSourceId", sourceId),

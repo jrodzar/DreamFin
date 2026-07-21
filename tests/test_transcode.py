@@ -14,7 +14,7 @@ from tests.embymock import MockEmby
 
 helpers.setup_environment()
 
-from src.DP_EmbyLibrary import UNI_QUALITY_TABLE  # noqa: E402
+from src.DP_EmbyLibrary import UNI_QUALITY_TABLE, UNI_QUALITY_HEVC_TABLE  # noqa: E402
 
 AUTH_PATH = "/Users/AuthenticateByName"
 EMBY_UID = "user0000000000000000000000000001"
@@ -56,6 +56,74 @@ class TestQualityTable(TranscodeTestCase):
 	def test_table_is_complete(self):
 		for key in "0123456789":
 			self.assertIn(key, UNI_QUALITY_TABLE)
+
+
+class _Val(object):
+	"""Minimal stand-in for a ConfigSelection (just the .value)."""
+
+	def __init__(self, value):
+		self.value = value
+
+
+class TestHevcQualityLadder(TranscodeTestCase):
+	"""hevc gets its own ladder: the same bitrates as h264 but a bigger frame
+	at every step, and top steps past the 1080p ceiling only h264 needs."""
+
+	def test_h264_ladder_is_untouched(self):
+		self.lib.g_serverConfig.transcodeVideoCodec.value = "h264"
+		self.lib.g_serverConfig.uniQuality.value = "4"
+		self.assertEqual(self.lib.getUniversalTranscoderSettings(), (1280, 720, 3000000))
+
+	def test_hevc_uses_its_own_ladder(self):
+		self.lib.g_serverConfig.transcodeVideoCodec.value = "hevc"
+		self.lib.g_serverConfig.uniQualityHevc.value = "4"
+		# same 3 mbps as h264 step 4, but a 1080p frame instead of 720p
+		self.assertEqual(self.lib.getUniversalTranscoderSettings(), (1920, 1080, 3000000))
+
+	def test_hevc_goes_beyond_the_h264_ceiling(self):
+		self.lib.g_serverConfig.transcodeVideoCodec.value = "hevc"
+		self.lib.g_serverConfig.uniQualityHevc.value = "7"
+		self.assertEqual(self.lib.getUniversalTranscoderSettings(), (3840, 2160, 10000000))
+
+	def test_unknown_hevc_quality_falls_back_to_the_hevc_default(self):
+		self.lib.g_serverConfig.transcodeVideoCodec.value = "hevc"
+		self.lib.g_serverConfig.uniQualityHevc.value = "999"
+		self.assertEqual(self.lib.getUniversalTranscoderSettings(), (1280, 720, 2000000))
+
+	def test_server_entry_written_before_this_setting_still_works(self):
+		# an entry saved by an older version carries no uniQualityHevc at all;
+		# it must fall back to the hevc default step, not to the h264 ladder
+		old = _Val(None)
+		old.transcodeVideoCodec = _Val("hevc")
+		old.uniQuality = _Val("7")  # would be 1920x1080@10mbps on the h264 ladder
+		self.lib.g_serverConfig = old
+		self.assertEqual(self.lib.getUniversalTranscoderSettings(), (1280, 720, 2000000))
+
+	def test_hevc_table_is_complete(self):
+		for key in "0123456789":
+			self.assertIn(key, UNI_QUALITY_HEVC_TABLE)
+
+	def test_same_bitrate_and_never_a_smaller_picture(self):
+		"""The design rule: hevc spends its efficiency on resolution, so each
+		step keeps the h264 bitrate and never asks for a smaller frame."""
+		for key in UNI_QUALITY_TABLE:
+			h264W, h264H, h264Rate = UNI_QUALITY_TABLE[key]
+			hevcW, hevcH, hevcRate = UNI_QUALITY_HEVC_TABLE[key]
+			self.assertEqual(hevcRate, h264Rate, "step %s changed the bitrate" % key)
+			self.assertGreaterEqual(hevcW * hevcH, h264W * h264H, "step %s shrank the frame" % key)
+
+	def test_hevc_ladder_reaches_the_transcode_url(self):
+		self.lib.g_serverConfig.transcodeVideoCodec.value = "hevc"
+		self.lib.g_serverConfig.uniQualityHevc.value = "6"
+		self.mock.add_raw("/Videos/%s/master.m3u8" % MOVIE_ID, "application/x-mpegURL",
+			"#EXTM3U\n#EXT-X-STREAM-INF:BANDWIDTH=8000000\nmain.m3u8\n")
+		self.lib.transcode(MOVIE_ID, "http://ignored")
+
+		q = self.mock.requests_for("/Videos/%s/master.m3u8" % MOVIE_ID)[0]["query"]
+		self.assertEqual(q.get("VideoCodec"), ["hevc"])
+		self.assertEqual(q.get("MaxWidth"), ["2560"])
+		self.assertEqual(q.get("MaxHeight"), ["1440"])
+		self.assertEqual(q.get("VideoBitrate"), ["8000000"])
 
 
 class TestTranscodeUrl(TranscodeTestCase):

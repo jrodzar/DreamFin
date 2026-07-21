@@ -234,12 +234,19 @@ def initServerEntryConfig():
 	# / OpenATV 6.4), hevc for better quality at a lower bitrate on boxes that
 	# decode HEVC (e.g. the SF8008); the server still needs the HEVC encoder
 	config.plugins.dreamfin.Entries[i].transcodeVideoCodec = ConfigSelection(default="h264", choices=[("h264", "H.264"), ("hevc", _("HEVC (H.265)"))])
+	# hevc carries the same picture in clearly less bitrate, so its ladder
+	# spends that on resolution instead of on picture quality: every step asks
+	# for a bigger frame than the h264 one at the same bitrate, and the top
+	# steps go beyond 1080p - see UNI_QUALITY_HEVC_TABLE in DP_EmbyLibrary
+	config.plugins.dreamfin.Entries[i].uniQualityHevc = ConfigSelection(default="3", choices=[("0", _("576x320, 320kbps")), ("1", _("720x480, 720 kbps")), ("2", _("1280x720, 1,5mbps")), ("3", _("1280x720, 2mbps")), ("4", _("1920x1080, 3mbps")), ("5", _("1920x1080, 4mbps")), ("6", _("2560x1440, 8mbps")), ("7", _("3840x2160, 10mbps")), ("8", _("3840x2160, 12mbps")), ("9", _("3840x2160, 20mbps"))])
 
 	printl("=== TRANSCODED ===", "__init__::initServerEntryConfig", "D")
 	printl("universalTranscoder: " + str(config.plugins.dreamfin.Entries[i].universalTranscoder.value), "__init__::initServerEntryConfig", "D")
 	printl("quality: " + str(config.plugins.dreamfin.Entries[i].quality.value), "__init__::initServerEntryConfig", "D")
 	printl("segments: " + str(config.plugins.dreamfin.Entries[i].segments.value), "__init__::initServerEntryConfig", "D")
 	printl("uniQuality: " + str(config.plugins.dreamfin.Entries[i].uniQuality.value), "__init__::initServerEntryConfig", "D")
+	printl("uniQualityHevc: " + str(config.plugins.dreamfin.Entries[i].uniQualityHevc.value), "__init__::initServerEntryConfig", "D")
+	printl("transcodeVideoCodec: " + str(config.plugins.dreamfin.Entries[i].transcodeVideoCodec.value), "__init__::initServerEntryConfig", "D")
 	# TRANSCODED VIA PROXY
 
 	# DIRECT LOCAL
