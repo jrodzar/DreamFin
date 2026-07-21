@@ -26,15 +26,29 @@ sys.path.insert(0, REPO_ROOT)
 def find_credentials():
 	"""Locate servers.json across machines. Order:
 	1. $DREAMFIN_SERVERS (explicit override, any path)
-	2. the shared NAS project folder (credentials live here, off git)
+	2. servers.json inside the shared NAS hub - whose path comes from
+	   $DREAMFIN_NAS or local/nas.txt. The share path is deliberately not
+	   hardcoded here: it would sit in git, and the repo may be published.
 	3. local/servers.json in the repo (per-PC fallback)
-	See CLAUDE.md for the NAS layout.
+
+	The credentials themselves never live in git (local/ is .gitignore'd).
 	"""
 	candidates = []
 	env = os.environ.get("DREAMFIN_SERVERS")
 	if env:
 		candidates.append(env)
-	candidates.append(r"<NAS-HUB>\servers.json")
+	nas = os.environ.get("DREAMFIN_NAS")
+	if not nas:
+		cfg = os.path.join(REPO_ROOT, "local", "nas.txt")
+		if os.path.isfile(cfg):
+			with open(cfg) as fh:
+				for line in fh:
+					line = line.strip()
+					if line and not line.startswith("#"):
+						nas = line
+						break
+	if nas:
+		candidates.append(os.path.join(nas.strip(), "servers.json"))
 	candidates.append(os.path.join(REPO_ROOT, "local", "servers.json"))
 	for path in candidates:
 		if path and os.path.isfile(path):

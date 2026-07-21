@@ -16,7 +16,9 @@ Run with:
 	py -3 tools/sync_nas_docs.py           # push repo -> NAS (end of session)
 	py -3 tools/sync_nas_docs.py --pull    # pull internal docs NAS -> repo
 
-The NAS folder can be overridden with $DREAMFIN_NAS.
+The NAS folder is read from $DREAMFIN_NAS, or from local/nas.txt (a one-line
+file; local/ is .gitignore'd). It is never hardcoded here, so the share path
+stays out of git.
 """
 
 from __future__ import print_function
@@ -27,7 +29,28 @@ import sys
 
 REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-NAS_ROOT = os.environ.get("DREAMFIN_NAS", r"<NAS-HUB>")
+def nasRoot():
+	"""Where the NAS hub lives on THIS machine.
+
+	The share path is deliberately NOT hardcoded: it would sit in git, and the
+	repo may be published. Resolution order:
+	  1. $DREAMFIN_NAS
+	  2. local/nas.txt - a single line with the path (local/ is .gitignore'd)
+	"""
+	env = os.environ.get("DREAMFIN_NAS")
+	if env:
+		return env.strip()
+	cfg = os.path.join(REPO_ROOT, "local", "nas.txt")
+	if os.path.isfile(cfg):
+		with open(cfg) as fh:
+			for line in fh:
+				line = line.strip()
+				if line and not line.startswith("#"):
+					return line
+	return None
+
+
+NAS_ROOT = nasRoot()
 
 # not in git - the NAS copy is the canonical one
 INTERNAL = ["PLAN.md", "CLAUDE.md", os.path.join("doc", "JOURNAL.md")]
@@ -74,9 +97,13 @@ def pull():
 
 
 def main():
+	if not NAS_ROOT:
+		print("NAS hub not configured on this PC.")
+		print("Set $DREAMFIN_NAS, or write the share path into local/nas.txt")
+		return 2
 	if not os.path.isdir(NAS_ROOT):
 		print("NAS hub not reachable: %s" % NAS_ROOT)
-		print("(mount the NAS or set $DREAMFIN_NAS)")
+		print("(mount the NAS, or fix $DREAMFIN_NAS / local/nas.txt)")
 		return 2
 	if "--pull" in sys.argv[1:]:
 		return pull()
