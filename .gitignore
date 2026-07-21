@@ -10,3 +10,9 @@ dist/
 .idea
 # machine-local files (test server credentials, etc.) - never committed
 local/
+
+# internal working docs - canonical copy lives on the NAS hub, never in git
+# (fetch on a fresh PC with: py -3 tools/sync_nas_docs.py --pull)
+CLAUDE.md
+PLAN.md
+doc/JOURNAL.md
