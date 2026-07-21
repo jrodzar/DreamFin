@@ -100,7 +100,7 @@ What's in it
   image subtitles when transcoding, and trailers where the server exposes them.
 - **Watch state**: resume position round-trips with the server, progress is
   reported during playback, and watched / unwatched toggles sync both ways.
-- Runs on **OpenATV 6.4 (Python 2.7)** and **6.5+/7.x (Python 3)**.
+- Runs on **OpenATV 6.4 (Python 2.7)** and **6.5+ / 7.x / 8.0 (Python 3)**.
 
 Known limitations
 -----------------
@@ -117,8 +117,11 @@ Known limitations
   (the EXIT-to-stop binding is off by default in the DreamFin settings).
 
 Developed and verified against real **Emby 4.9** and **Jellyfin 10.11** servers
-on an Octagon SF8008 running OpenATV 6.4 and 7.6, with an offline test suite
-(mock Emby/Jellyfin backend) green on Python 2.7 and Python 3.
+on an Octagon SF8008. Browsing, playback, transcoding and watch-state were
+exercised in depth on **OpenATV 6.4** (Python 2.7) and **7.6** (Python 3); the
+plugin is also installed and smoke-tested on **7.0** and **8.0-beta**. The
+offline test suite (mock Emby/Jellyfin backend) is green on Python 2.7 and
+Python 3.
 
 ----
 

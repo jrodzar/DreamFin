@@ -7,7 +7,8 @@ fork of [DreamPlex](https://github.com/oe-alliance/DreamPlex) — the Plex
 client for Enigma2 — with the Plex backend replaced by an Emby/Jellyfin one,
 reusing the mature DreamPlex user interface almost unchanged.
 
-Runs on **both** OpenATV 6.4 (Python 2.7) and OpenATV 6.5+/7.x (Python 3).
+Runs on **both** OpenATV 6.4 (Python 2.7) and OpenATV 6.5+ / 7.x / **8.0**
+(Python 3) — tested on 6.4, 7.0, 7.6 and 8.0-beta.
 
 The plugin installs alongside DreamPlex — it is a separate package
 (`enigma2-plugin-extensions-dreamfin`) with its own settings, skins and menu
@@ -68,9 +69,12 @@ Copy the resulting IPK to the receiver and install it there:
     opkg install /tmp/enigma2-plugin-extensions-dreamfin_*.ipk
 
 Then restart the Enigma2 GUI. Works on OpenATV 6.4 (Python 2.7) and
-OpenATV 6.5/7.x (Python 3). The plugin needs the `six` module, which both
-image generations ship by default; if it is ever missing:
+OpenATV 6.5 through 8.0 (Python 3.9–3.13). The plugin needs the `six` module,
+which both image generations ship by default; if it is ever missing:
 `opkg install python-six` (6.4) or `opkg install python3-six` (6.5+).
+
+A fresh 7.0 or 8.0 image carries no Emby/Jellyfin account, so add your server
+from the plugin's settings after installing.
 
 Setting up a server
 -------------------
