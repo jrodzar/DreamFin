@@ -42,7 +42,7 @@ else:
 
 from Components.config import config
 
-from .__common__ import printl2 as printl, getUUID, getVersion, IMAGE_SIZE_PLACEHOLDER, isRecentlyAdded
+from .__common__ import printl2 as printl, getUUID, getVersion, IMAGE_SIZE_PLACEHOLDER, isRecentlyAdded, newPlaybackId
 from .__plugin__ import Plugin, getPlugin
 from .__init__ import _  # _ is translation
 
@@ -179,7 +179,10 @@ class EmbyLibrary(object):
 
 		printl("running on " + str(sys.version_info), self, "I")
 
-		self.g_sessionID = getUUID()  # DeviceId reported to the server
+		self.g_sessionID = getUUID()  # DeviceId: the BOX, stable for the whole run
+		# PlaySessionId identifies ONE playback, so the server can tell them
+		# apart in its dashboard; minted again for every media opened below
+		self.g_playSessionId = newPlaybackId()
 		self.g_useFilterSections = config.plugins.dreamfin.showFilter.value
 
 		# server settings
@@ -1762,6 +1765,13 @@ class EmbyLibrary(object):
 		No network here (phase 3 direct play); the URL is already resolved."""
 		printl("myId: " + str(myId), self, "S")
 
+		# one PlaySessionId per playback, minted BEFORE the URL is built so the
+		# transcode request and the progress reports travel under the same
+		# session. Reusing the device id for both made the server see every
+		# playback of the run as the same session.
+		self.g_playSessionId = newPlaybackId()
+		printl("playSessionId: " + str(self.g_playSessionId), self, "D")
+
 		if self.streams is None:
 			self.streams = self.getAudioSubtitlesMedia(self.server, myId, "Video", False)
 
@@ -1794,7 +1804,7 @@ class EmbyLibrary(object):
 			"playbackType": self.serverConfig_playbackType,
 			"connectionType": self.serverConfig_connectionType,
 			"localAuth": False,
-			"transcodingSession": self.g_sessionID,
+			"transcodingSession": self.g_playSessionId,
 			"universalTranscoder": self.serverConfig_universalTranscoder,
 			"videoData": videoData,
 			"mediaData": self.streams.get("mediaData", {}),
@@ -1820,7 +1830,7 @@ class EmbyLibrary(object):
 		body = {
 			"ItemId": jsonToStr(itemId),
 			"MediaSourceId": mediaSourceId or self.g_currentMediaSourceId or jsonToStr(itemId),
-			"PlaySessionId": self.g_sessionID,
+			"PlaySessionId": self.g_playSessionId,
 			"PositionTicks": msToTicks(positionMs),
 			"IsPaused": bool(isPaused),
 			"CanSeek": True,
@@ -1832,7 +1842,7 @@ class EmbyLibrary(object):
 		body = {
 			"ItemId": jsonToStr(itemId),
 			"MediaSourceId": mediaSourceId or self.g_currentMediaSourceId or jsonToStr(itemId),
-			"PlaySessionId": self.g_sessionID,
+			"PlaySessionId": self.g_playSessionId,
 			"PositionTicks": msToTicks(positionMs),
 			"IsPaused": bool(isPaused),
 			"CanSeek": True,
@@ -1843,7 +1853,7 @@ class EmbyLibrary(object):
 		body = {
 			"ItemId": jsonToStr(itemId),
 			"MediaSourceId": mediaSourceId or self.g_currentMediaSourceId or jsonToStr(itemId),
-			"PlaySessionId": self.g_sessionID,
+			"PlaySessionId": self.g_playSessionId,
 			"PositionTicks": msToTicks(positionMs),
 		}
 		return self._postJson("/Sessions/Playing/Stopped", body)
@@ -1921,7 +1931,7 @@ class EmbyLibrary(object):
 		params = [
 			("DeviceId", self.g_sessionID),
 			("MediaSourceId", sourceId),
-			("PlaySessionId", self.g_sessionID),
+			("PlaySessionId", self.g_playSessionId),
 			("VideoCodec", videoCodec),
 			("AudioCodec", "aac,mp3,ac3"),
 			("MaxWidth", jsonToStr(maxWidth)),
@@ -1999,7 +2009,7 @@ class EmbyLibrary(object):
 
 	def stopEncoding(self):
 		"""Tear down the active transcode session (best effort)."""
-		path = "/Videos/ActiveEncodings?DeviceId=%s&PlaySessionId=%s" % (self.g_sessionID, self.g_sessionID)
+		path = "/Videos/ActiveEncodings?DeviceId=%s&PlaySessionId=%s" % (self.g_sessionID, self.g_playSessionId)
 		self.getJson(self.getContentUrl(path), myType="DELETE")
 		return True
 

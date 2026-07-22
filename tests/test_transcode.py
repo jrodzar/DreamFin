@@ -126,6 +126,47 @@ class TestHevcQualityLadder(TranscodeTestCase):
 		self.assertEqual(q.get("VideoBitrate"), ["8000000"])
 
 
+class TestPlaySessionId(TranscodeTestCase):
+	"""PlaySessionId identifies ONE playback; DeviceId identifies the box.
+
+	They used to be the same value, so the server saw every playback of the
+	whole run under a single session.
+	"""
+
+	def test_play_session_id_is_not_the_device_id(self):
+		self.assertTrue(self.lib.g_playSessionId)
+		self.assertNotEqual(self.lib.g_playSessionId, self.lib.g_sessionID)
+
+	def test_every_playback_mints_a_new_one(self):
+		first = self.lib.g_playSessionId
+		self.lib.playLibraryMedia(MOVIE_ID, "http://ignored")
+		second = self.lib.g_playSessionId
+		self.lib.streams = None  # a fresh media
+		self.lib.playLibraryMedia(MOVIE_ID, "http://ignored")
+		third = self.lib.g_playSessionId
+
+		self.assertNotEqual(first, second)
+		self.assertNotEqual(second, third)
+
+	def test_the_device_id_survives_a_playback(self):
+		device = self.lib.g_sessionID
+		self.lib.playLibraryMedia(MOVIE_ID, "http://ignored")
+		self.assertEqual(self.lib.g_sessionID, device, "DeviceId must identify the box, not the playback")
+
+	def test_transcode_and_reports_travel_under_the_same_session(self):
+		# a stream opened under one identity and progress reported under
+		# another leaves the server unable to tie them together
+		self.mock.add_raw("/Videos/%s/master.m3u8" % MOVIE_ID, "application/x-mpegURL",
+			"#EXTM3U\n#EXT-X-STREAM-INF:BANDWIDTH=3000000\nmain.m3u8\n")
+		self.lib.transcode(MOVIE_ID, "http://ignored")
+		fromUrl = self.mock.requests_for("/Videos/%s/master.m3u8" % MOVIE_ID)[0]["query"].get("PlaySessionId")
+
+		self.lib.reportProgress(MOVIE_ID, 1000)
+		fromReport = self.mock.requests_for("/Sessions/Playing/Progress")[-1]["body"]["PlaySessionId"]
+
+		self.assertEqual(fromUrl, [fromReport])
+
+
 class TestTranscodeUrl(TranscodeTestCase):
 
 	def _master(self, body=None):
@@ -150,7 +191,10 @@ class TestTranscodeUrl(TranscodeTestCase):
 		self.assertEqual(q.get("SegmentContainer"), ["ts"])
 		self.assertEqual(q.get("SubtitleMethod"), ["Encode"])
 		self.assertEqual(q.get("MediaSourceId"), ["src-0"])
-		self.assertEqual(q.get("PlaySessionId"), [self.lib.g_sessionID])
+		# the stream travels under the PLAYBACK session, while the box itself
+		# is identified by DeviceId - they used to be the same value
+		self.assertEqual(q.get("PlaySessionId"), [self.lib.g_playSessionId])
+		self.assertEqual(q.get("DeviceId"), [self.lib.g_sessionID])
 		self.assertIn("api_key", q)
 
 	def test_video_codec_can_be_hevc(self):
@@ -208,7 +252,8 @@ class TestStopEncoding(TranscodeTestCase):
 		req = self.mock.requests_for("/Videos/ActiveEncodings")[0]
 		self.assertEqual(req["method"], "DELETE")
 		self.assertEqual(req["query"].get("DeviceId"), [self.lib.g_sessionID])
-		self.assertEqual(req["query"].get("PlaySessionId"), [self.lib.g_sessionID])
+		# tear down THIS playback's encoding, not everything the box ever started
+		self.assertEqual(req["query"].get("PlaySessionId"), [self.lib.g_playSessionId])
 
 	def test_stop_encoding_never_raises_on_a_dead_server(self):
 		self.mock.stop()  # server gone
