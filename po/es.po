@@ -1884,3 +1884,33 @@ msgstr "Marca el contenido añadido en este número de días. 'Off' lo desactiva
 
 msgid "Same bitrates as H.264 but a bigger picture at every step, because HEVC needs clearly less bitrate for the same quality. 1440p and 2160p ask a lot from the server and only pay off with a source of that resolution."
 msgstr "Los mismos bitrates que en H.264 pero con más resolución en cada escalón, porque HEVC necesita bastante menos bitrate para la misma calidad. 1440p y 2160p exigen mucho al servidor y solo compensan si el original tiene esa resolución."
+
+msgid "up to 576x320, 320kbps"
+msgstr "hasta 576x320, 320kbps"
+
+msgid "up to 720x480, 720 kbps"
+msgstr "hasta 720x480, 720 kbps"
+
+msgid "up to 1280x720, 1,5mbps"
+msgstr "hasta 1280x720, 1,5mbps"
+
+msgid "up to 1280x720, 2mbps"
+msgstr "hasta 1280x720, 2mbps"
+
+msgid "up to 1920x1080, 3mbps"
+msgstr "hasta 1920x1080, 3mbps"
+
+msgid "up to 1920x1080, 4mbps"
+msgstr "hasta 1920x1080, 4mbps"
+
+msgid "up to 2560x1440, 8mbps"
+msgstr "hasta 2560x1440, 8mbps"
+
+msgid "up to 3840x2160, 10mbps"
+msgstr "hasta 3840x2160, 10mbps"
+
+msgid "up to 3840x2160, 12mbps"
+msgstr "hasta 3840x2160, 12mbps"
+
+msgid "up to 3840x2160, 20mbps"
+msgstr "hasta 3840x2160, 20mbps"

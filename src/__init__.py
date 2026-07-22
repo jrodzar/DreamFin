@@ -238,7 +238,12 @@ def initServerEntryConfig():
 	# spends that on resolution instead of on picture quality: every step asks
 	# for a bigger frame than the h264 one at the same bitrate, and the top
 	# steps go beyond 1080p - see UNI_QUALITY_HEVC_TABLE in DP_EmbyLibrary
-	config.plugins.dreamfin.Entries[i].uniQualityHevc = ConfigSelection(default="3", choices=[("0", _("576x320, 320kbps")), ("1", _("720x480, 720 kbps")), ("2", _("1280x720, 1,5mbps")), ("3", _("1280x720, 2mbps")), ("4", _("1920x1080, 3mbps")), ("5", _("1920x1080, 4mbps")), ("6", _("2560x1440, 8mbps")), ("7", _("3840x2160, 10mbps")), ("8", _("3840x2160, 12mbps")), ("9", _("3840x2160, 20mbps"))])
+	# "up to": the resolution is a CEILING, not a promise. Measured against real
+	# Emby and Jellyfin servers: what actually comes out depends on the source -
+	# the same step delivered 1920 wide from a 2.9 Mbps source and 1280 from a
+	# 3.7 Mbps one, because the server drops resolution when it has to squeeze
+	# the bitrate below what the source needs.
+	config.plugins.dreamfin.Entries[i].uniQualityHevc = ConfigSelection(default="3", choices=[("0", _("up to 576x320, 320kbps")), ("1", _("up to 720x480, 720 kbps")), ("2", _("up to 1280x720, 1,5mbps")), ("3", _("up to 1280x720, 2mbps")), ("4", _("up to 1920x1080, 3mbps")), ("5", _("up to 1920x1080, 4mbps")), ("6", _("up to 2560x1440, 8mbps")), ("7", _("up to 3840x2160, 10mbps")), ("8", _("up to 3840x2160, 12mbps")), ("9", _("up to 3840x2160, 20mbps"))])
 
 	printl("=== TRANSCODED ===", "__init__::initServerEntryConfig", "D")
 	printl("universalTranscoder: " + str(config.plugins.dreamfin.Entries[i].universalTranscoder.value), "__init__::initServerEntryConfig", "D")
