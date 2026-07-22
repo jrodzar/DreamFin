@@ -226,9 +226,9 @@
 		<!-- menu -->
 		<widget source="menu" render="Listbox" position="630,65" size="630,597" zPosition="2" scrollbarMode="showNever" enableWrapAround="1" transparent="1" foregroundColor="#5C5C5C" foregroundColorSelected="#ffffff" backgroundColor="#212121" selectionPixmap="/usr/lib/enigma2/python/Plugins/Extensions/DreamFin/skins/default/accent_emby/images/focus_settings-fs8.png" backgroundPixmap="/usr/lib/enigma2/python/Plugins/Extensions/DreamFin/skins/default/images/sel_bg-fs8.png">
 			<convert type="TemplatedMultiContent">
-				{"template": [ MultiContentEntryText(pos = (15,0), size = (600,30), flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 0) ],
-				"fonts": [gFont("OpenSans", 20)],
-				"itemHeight": 30,
+				{"template": [ MultiContentEntryText(pos = (15,0), size = (600,38), flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 0) ],
+				"fonts": [gFont("OpenSans", 24)],
+				"itemHeight": 38,
 				"scrollbarMode": "showNever"
 				}
 			</convert>
@@ -239,23 +239,23 @@
 
 
 		<!-- picons -->
-		<widget source="menu" render="Pixmap" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/DreamFin/skins/default/accent_emby/picons/menu_movies.png" zPosition="10" position="80,420" size="256,256" alphatest="blend" >
+		<widget source="menu" render="Pixmap" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/DreamFin/skins/default/accent_emby/picons/menu_movies.png" zPosition="10" position="190,430" size="224,224" scale="1" alphatest="blend" >
 			<convert type="MenuEntryCompare">movieEntry</convert>
 			<convert type="ConditionalShowHide" />
 		</widget>
-		<widget source="menu" render="Pixmap" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/DreamFin/skins/default/accent_emby/picons/menu_shows.png" zPosition="10" position="80,420" size="256,256" alphatest="blend" >
+		<widget source="menu" render="Pixmap" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/DreamFin/skins/default/accent_emby/picons/menu_shows.png" zPosition="10" position="190,430" size="224,224" scale="1" alphatest="blend" >
 			<convert type="MenuEntryCompare">showEntry</convert>
 			<convert type="ConditionalShowHide" />
 		</widget>
-		<widget source="menu" render="Pixmap" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/DreamFin/skins/default/accent_emby/picons/menu_music.png" zPosition="10" position="80,420" size="256,256" alphatest="blend" >
+		<widget source="menu" render="Pixmap" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/DreamFin/skins/default/accent_emby/picons/menu_music.png" zPosition="10" position="190,430" size="224,224" scale="1" alphatest="blend" >
 			<convert type="MenuEntryCompare">musicEntry</convert>
 			<convert type="ConditionalShowHide" />
 		</widget>
-		<widget source="menu" render="Pixmap" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/DreamFin/skins/default/accent_emby/picons/dreamfin.png" zPosition="10" position="80,420" size="256,256" alphatest="blend" >
+		<widget source="menu" render="Pixmap" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/DreamFin/skins/default/accent_emby/picons/dreamfin.png" zPosition="10" position="190,430" size="224,224" scale="1" alphatest="blend" >
 			<convert type="MenuEntryCompare">mixedEntry</convert>
 			<convert type="ConditionalShowHide" />
 		</widget>
-		<widget source="menu" render="Pixmap" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/DreamFin/skins/default/accent_emby/picons/dreamfin.png" zPosition="10" position="80,420" size="256,256" alphatest="blend" >
+		<widget source="menu" render="Pixmap" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/DreamFin/skins/default/accent_emby/picons/dreamfin.png" zPosition="10" position="190,430" size="224,224" scale="1" alphatest="blend" >
 			<convert type="MenuEntryCompare">serverFilter</convert>
 			<convert type="ConditionalShowHide" />
 		</widget>
