@@ -1,9 +1,40 @@
-DreamFin 0.1.6 — release notes
+DreamFin 0.1.7 — release notes
 ==============================
 
 **DreamFin** is an Emby/Jellyfin client for Enigma2 forked from DreamPlex. It
 reuses the DreamPlex user interface and replaces the Plex backend with an
 Emby/Jellyfin one. See `README.md` for setup, lineage and attribution.
+
+New in 0.1.7
+------------
+
+- **Nothing gets marked as watched behind your back.** While a media was still
+  opening, the player read a play position that does not mean anything yet; a
+  negative value made it think it had reached the end, and the item was
+  scrobbled as seen without anybody having watched it.
+- **The server now sees your progress while transcoding.** For a transcoded
+  HLS stream the box has no position to report — it is asked on every tick and
+  answers "don't know" every time — so the plugin keeps its own clock,
+  correcting it against the decoder whenever that one does know. Playback shows
+  up in the server's dashboard and the resume point is stored, both of which
+  used to fail silently while transcoding.
+- **Resuming starts the report where playback starts**, so a resumed film is no
+  longer shown as restarted from the beginning until a later report catches up.
+- **Each playback is its own session.** The id that ties the stream to its
+  progress reports was the receiver's device id, which never changes, so every
+  playback of a session looked like the same one.
+- **A broken plugin can no longer stop the receiver from booting.** If anything
+  fails while the box starts, DreamFin now disables itself for that boot and
+  says so, instead of taking the whole interface down and leaving the receiver
+  in a restart loop.
+- **HEVC transcoding gets its own quality ladder.** Reusing the H.264 one spent
+  the codec's efficiency on picture quality and left the frame where it was —
+  3 Mbps still asked for 720p when HEVC comfortably holds more. The HEVC steps
+  keep the same bitrates and buy a bigger picture instead, and two of them go
+  past the 1080p ceiling that only H.264 needs (1440p and 2160p). The setting
+  lists only the ladder of the codec you picked, and the steps say *up to*: the
+  resolution you set is a ceiling, and what the server delivers within it
+  depends on the source.
 
 New in 0.1.6
 ------------

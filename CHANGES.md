@@ -5,6 +5,32 @@ DreamFin is a fork of DreamPlex (a Plex client for Enigma2) with the Plex
 backend replaced by an Emby/Jellyfin one. See `RELEASENOTES.md` for the full
 release notes and `README.md` for lineage and attribution.
 
+0.1.7 — features and fixes
+--------------------------
+* **Media is no longer marked as watched without being watched.** While the
+  service was still starting the player read a play position that means
+  nothing yet; a negative value failed the "did we get anywhere" test and fell
+  through to the end-of-file path, which scrobbles the item as seen.
+* **Playback progress is reported while transcoding.** For a transcoded HLS
+  stream the decoder has no position to give — it answers "don't know" on
+  every tick — so the plugin now keeps its own clock, synced to the decoder
+  whenever that one does know. The server shows the stream and stores the
+  resume point instead of nothing.
+* **Resuming reports where playback actually starts**, not zero, so the server
+  no longer shows a resumed film as restarted from the beginning.
+* **Every playback is its own session on the server.** The session id sent
+  with the stream and the progress reports was the box's device id, which
+  never changes, so all playbacks looked like one long session.
+* **A failure inside the plugin can no longer stop the receiver from
+  booting.** Both boot entry points are guarded: a broken plugin now disables
+  itself and prints why, instead of taking the whole GUI down with it.
+* **HEVC transcoding has its own quality ladder.** Reusing the H.264 one spent
+  the codec's efficiency on picture quality and left the frame where it was;
+  the HEVC steps keep the same bitrates and ask for a bigger picture instead,
+  with two steps beyond 1080p (1440p and 2160p) that only make sense here. The
+  quality entry lists only the ladder of the codec in use, and its labels say
+  "up to", because what the server actually delivers depends on the source.
+
 0.1.6 — features
 ----------------
 * "Recently added" in a TV-show library now groups by series instead of listing
