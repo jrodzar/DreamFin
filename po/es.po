@@ -1908,9 +1908,3 @@ msgstr "hasta 2560x1440, 8mbps"
 
 msgid "up to 3840x2160, 10mbps"
 msgstr "hasta 3840x2160, 10mbps"
-
-msgid "up to 3840x2160, 12mbps"
-msgstr "hasta 3840x2160, 12mbps"
-
-msgid "up to 3840x2160, 20mbps"
-msgstr "hasta 3840x2160, 20mbps"

@@ -100,17 +100,32 @@ class TestHevcQualityLadder(TranscodeTestCase):
 		self.assertEqual(self.lib.getUniversalTranscoderSettings(), (1280, 720, 2000000))
 
 	def test_hevc_table_is_complete(self):
-		for key in "0123456789":
+		# stops at 7: measured on real servers, 12 and 20 Mbps deliver exactly
+		# what 10 does, so those steps were three ways to ask for one picture
+		for key in "01234567":
 			self.assertIn(key, UNI_QUALITY_HEVC_TABLE)
+		self.assertNotIn("8", UNI_QUALITY_HEVC_TABLE)
+		self.assertNotIn("9", UNI_QUALITY_HEVC_TABLE)
 
 	def test_same_bitrate_and_never_a_smaller_picture(self):
 		"""The design rule: hevc spends its efficiency on resolution, so each
 		step keeps the h264 bitrate and never asks for a smaller frame."""
-		for key in UNI_QUALITY_TABLE:
+		shared = set(UNI_QUALITY_TABLE) & set(UNI_QUALITY_HEVC_TABLE)
+		self.assertTrue(shared)
+		for key in shared:
 			h264W, h264H, h264Rate = UNI_QUALITY_TABLE[key]
 			hevcW, hevcH, hevcRate = UNI_QUALITY_HEVC_TABLE[key]
 			self.assertEqual(hevcRate, h264Rate, "step %s changed the bitrate" % key)
 			self.assertGreaterEqual(hevcW * hevcH, h264W * h264H, "step %s shrank the frame" % key)
+
+	def test_a_step_from_a_longer_ladder_keeps_the_top_quality(self):
+		# the ladder used to reach 9; a setting saved back then must not be
+		# read as "no idea" and silently dropped to the default, which would
+		# quietly downgrade somebody who had picked the very best step
+		self.lib.g_serverConfig.transcodeVideoCodec.value = "hevc"
+		self.lib.g_serverConfig.uniQualityHevc.value = "9"
+		self.assertEqual(self.lib.getUniversalTranscoderSettings(),
+			UNI_QUALITY_HEVC_TABLE["7"])
 
 	def test_hevc_ladder_reaches_the_transcode_url(self):
 		self.lib.g_serverConfig.transcodeVideoCodec.value = "hevc"

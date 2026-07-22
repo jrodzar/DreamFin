@@ -120,10 +120,14 @@ UNI_QUALITY_HEVC_TABLE = {
 	"5": (1920, 1080, 4000000),
 	"6": (2560, 1440, 8000000),
 	"7": (3840, 2160, 10000000),
-	"8": (3840, 2160, 12000000),
-	"9": (3840, 2160, 20000000),
 }
+# it stops at 7 on purpose: measured against real Emby and Jellyfin servers,
+# 12 and 20 Mbps deliver exactly what 10 does (the frame is already the source's
+# own), so the extra steps were three ways to ask for the same picture.
 DEFAULT_UNI_QUALITY_HEVC = (1280, 720, 2000000)  # matches uniQualityHevc default "3"
+# the ladder briefly reached 9 before 8 and 9 were dropped; a server entry saved
+# back then is rescued to the top step instead of falling back to the default
+FORMER_UNI_QUALITY_HEVC_TOP = 9
 
 # ticks are 100 ns units: 10**4 ticks per millisecond
 TICKS_PER_MS = 10000
@@ -1915,7 +1919,20 @@ class EmbyLibrary(object):
 		"""
 		if self.getTranscodeVideoCodec() == "hevc":
 			quality = jsonToStr(getattr(self.g_serverConfig, "uniQualityHevc", _emptyConfig("3")).value)
-			return UNI_QUALITY_HEVC_TABLE.get(quality, DEFAULT_UNI_QUALITY_HEVC)
+			if quality in UNI_QUALITY_HEVC_TABLE:
+				return UNI_QUALITY_HEVC_TABLE[quality]
+			# a value left behind by a build whose ladder had more steps (it used
+			# to reach 9): honour the intent - the best quality - instead of
+			# silently falling back to the default, which would be a downgrade.
+			# Only for steps that really existed: anything else is garbage and
+			# must NOT be read as "give me the heaviest transcode you have".
+			top = max(UNI_QUALITY_HEVC_TABLE, key=int)
+			try:
+				if int(top) < int(quality) <= FORMER_UNI_QUALITY_HEVC_TOP:
+					return UNI_QUALITY_HEVC_TABLE[top]
+			except (TypeError, ValueError):
+				pass
+			return DEFAULT_UNI_QUALITY_HEVC
 
 		quality = jsonToStr(getattr(self.g_serverConfig, "uniQuality", _emptyConfig("3")).value)
 		return UNI_QUALITY_TABLE.get(quality, DEFAULT_UNI_QUALITY)
