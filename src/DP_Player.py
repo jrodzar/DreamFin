@@ -163,6 +163,7 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 	subtitleStreams = None
 	subtitleLanguageCode = None
 	subtitleWatcher = None
+	seekwatcherThread = None
 
 	#mh
 	mhSeekHack = 0
@@ -284,9 +285,18 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 
 	def __evUpdatedInfo(self):
 		if self.resume and self.resumeStamp is not None and self.resumeStamp > 0.0:
+			# evUpdatedInfo fires again and again while playing, and this used to
+			# build a NEW eTimer on every one of them, dropping the previous one
+			# without stopping it. enigma2 dispatches service events SYNCHRONOUSLY
+			# from C++, so the timer being replaced can be the very one whose
+			# callback is on the stack - releasing the last reference to a live
+			# object mid-call. Build it once and reuse it: one watcher is all
+			# this ever wanted. (Restarting a running eTimer is harmless.)
+			if self.seekwatcherThread is None:
+				self.seekwatcherThread = eTimer()
+				self.seekwatcherThread.callback.append(self.seekWatcher)
+
 			self.mhSeekHack = 0
-			self.seekwatcherThread = eTimer()
-			self.seekwatcherThread.callback.append(self.seekWatcher)
 			self.seekwatcherThread.start(900, False)
 			return
 
@@ -1249,18 +1259,42 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 	#===========================================================================
 	#noinspection PyUnusedLocal
 	def seekWatcher(self, *args):
-		printl("", self, "S")
+		"""ONE resume attempt per tick - the eTimer already repeats every 900ms.
 
-		printl("seekWatcher started", self, "I")
+		This used to be `while self.resumeStamp is not None: seekToStartPos();
+		sleep(1)`, and despite its name seekwatcherThread is an eTimer, not a
+		thread: that loop ran on the enigma2 MAIN LOOP and blocked the whole GUI
+		for as long as the resume took - keys pressed meanwhile were not lost,
+		there was simply nobody reading them.
+
+		Measured on the box with this fix in (2026-07-25): resume started at
+		15:42:10.096, BLUE was accepted at 15:42:13.609 and the resume only
+		landed at 15:42:15.024 - the GUI answered a key 1.4s BEFORE the watcher
+		was done, which the old loop made impossible. That also sizes the old
+		freeze honestly: about 5 seconds in the normal case, not the tens of
+		seconds of unresponsiveness seen separately that day, which this does
+		NOT explain and is still open.
+
+		And it could block forever: seekToStartPos() returns WITHOUT clearing
+		resumeStamp when the decoder has no position to give - and whether it
+		gives one depends on the image, not just on the stream - so the loop had
+		no exit and the GUI stayed frozen until the image's hang detector killed
+		enigma2. Same family as the synchronous network I/O that runInThread()
+		moved off the main loop; this explicit sleep was the one left behind.
+
+		Found on the DreamPlex side, 2026-07-25.
+		"""
+		if self.resumeStamp is None:
+			if self.seekwatcherThread is not None:
+				self.seekwatcherThread.stop()
+			return
+
 		try:
-			while self is not None and self.resumeStamp is not None:
-				self.seekToStartPos()
-				sleep(1)
+			self.seekToStartPos()
 		except Exception as e:
-			printl("stopping due to exception in seektostartpos, eg. stopped playback before ready ..." + str(e), self, "W")
-
-		printl("seekWatcher finished ", self, "I")
-		printl("", self, "C")
+			printl("stopping the resume watcher, eg. playback stopped before ready ..." + str(e), self, "W")
+			if self.seekwatcherThread is not None:
+				self.seekwatcherThread.stop()
 
 	#===========================================================================
 	#
@@ -1396,6 +1430,11 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 		# we destroy here all variables to be sure that they are away
 		if self.timelineWatcher is not None:
 			self.timelineWatcher.stop()
+
+		# nobody stopped this one: while a resume was still pending it went on
+		# firing after the player was gone
+		if self.seekwatcherThread is not None:
+			self.seekwatcherThread.stop()
 
 		# we stop playback here
 		self.session.nav.stopService()

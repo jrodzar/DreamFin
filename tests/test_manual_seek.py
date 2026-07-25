@@ -124,5 +124,114 @@ class TestProgressTicker(unittest.TestCase):
 		              "TIMELINE_TICK_MS must be defined")
 
 
+class TestResumeWatcher(unittest.TestCase):
+	"""The resume watcher must never block the enigma2 main loop.
+
+	seekwatcherThread is an eTimer, NOT a thread despite the name, so its
+	callback runs on the main loop. It used to hold a `while resumeStamp is not
+	None: seekToStartPos(); sleep(1)` loop in there, which froze the whole GUI
+	for as long as the resume took - about 5 seconds in the normal case, and
+	with a decoder that never reports a position the loop had no exit at all.
+
+	Verified on the box with the fix in (2026-07-25): BLUE was accepted 1.4s
+	before the resume finished, which the old loop made impossible.
+
+	Found on the DreamPlex side, 2026-07-25.
+	"""
+
+	def setUp(self):
+		path = os.path.join(SRC, "DP_Player.py")
+		with open(path, "rb") as handle:
+			self.tree = ast.parse(handle.read(), filename=path)
+		self.watcher = _function(self.tree, "seekWatcher")
+		self.assertIsNotNone(self.watcher, "seekWatcher() not found")
+
+	def _stops_the_watcher(self, func):
+		for node in ast.walk(func):
+			if (isinstance(node, ast.Call) and isinstance(node.func, ast.Attribute)
+					and node.func.attr == "stop"):
+				target = node.func.value
+				if isinstance(target, ast.Attribute) and target.attr == "seekwatcherThread":
+					return True
+		return False
+
+	def test_the_watcher_does_not_loop_or_sleep(self):
+		"""One attempt per tick: the eTimer already repeats every 900ms."""
+		self.assertFalse(
+			[n for n in ast.walk(self.watcher) if isinstance(n, ast.While)],
+			"seekWatcher() must not loop: it runs on the main loop, so a loop in "
+			"there freezes the GUI for the whole resume")
+
+		slept = [n for n in ast.walk(self.watcher)
+		         if isinstance(n, ast.Call) and isinstance(n.func, ast.Name)
+		         and n.func.id == "sleep"]
+		self.assertFalse(
+			slept,
+			"seekWatcher() must not sleep(): that blocks the enigma2 main loop "
+			"and swallows every key press while it does")
+
+	def test_the_watcher_still_tries_to_resume(self):
+		self.assertIn(
+			"seekToStartPos", _called_names(self.watcher),
+			"seekWatcher() is what drives the resume - it must still attempt it")
+
+	def test_the_watcher_stops_itself_when_there_is_nothing_to_resume(self):
+		self.assertTrue(
+			self._stops_the_watcher(self.watcher),
+			"seekWatcher() must stop its own timer once resumeStamp is cleared, "
+			"or it keeps firing for the whole playback")
+
+	def test_leaving_the_player_stops_the_watcher(self):
+		func = _function(self.tree, "leavePlayerConfirmed")
+		self.assertIsNotNone(func, "leavePlayerConfirmed() not found")
+		self.assertTrue(
+			self._stops_the_watcher(func),
+			"nobody used to stop seekwatcherThread: with a resume still pending "
+			"it went on firing after the player was gone")
+
+	def test_the_timer_is_a_class_attribute(self):
+		"""Every other timer is declared up there; this one was not, so the
+		guards below would raise AttributeError before the first playback."""
+		attributes = set()
+		for node in ast.walk(self.tree):
+			if isinstance(node, ast.ClassDef) and node.name == "DP_Player":
+				for stmt in node.body:
+					if isinstance(stmt, ast.Assign):
+						for target in stmt.targets:
+							if isinstance(target, ast.Name):
+								attributes.add(target.id)
+		self.assertIn(
+			"seekwatcherThread", attributes,
+			"declare seekwatcherThread = None on the class, like timelineWatcher "
+			"and subtitleWatcher")
+
+	def test_only_one_watcher_is_ever_built(self):
+		"""evUpdatedInfo fires over and over; it used to build a NEW eTimer on
+		each one and drop the previous without stopping it - and enigma2
+		dispatches service events synchronously, so the timer being replaced can
+		be the one whose callback is on the stack."""
+		func = _function(self.tree, "__evUpdatedInfo")
+		self.assertIsNotNone(func, "__evUpdatedInfo() not found")
+
+		def timers(node):
+			return [n for n in ast.walk(node)
+			        if isinstance(n, ast.Call) and isinstance(n.func, ast.Name)
+			        and n.func.id == "eTimer"]
+
+		built = timers(func)
+		self.assertTrue(built, "__evUpdatedInfo() is where the resume watcher is built")
+
+		guarded = []
+		for node in ast.walk(func):
+			if isinstance(node, ast.If) and "seekwatcherThread" in ast.dump(node.test):
+				for stmt in node.body:
+					guarded.extend(timers(stmt))
+
+		self.assertEqual(
+			len(guarded), len(built),
+			"the eTimer must only be built when there is not one already: guard "
+			"it with `if self.seekwatcherThread is None`")
+
+
 if __name__ == "__main__":
 	unittest.main()
