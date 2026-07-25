@@ -69,7 +69,7 @@ except ImportError:
 #===============================================================================
 # CONSTANTS
 #===============================================================================
-version = "0.1.9"
+version = "0.1.10"
 
 # size literal baked into every image URL the backend hands out; the UI
 # swaps it for the real skin dimensions before downloading (posters,

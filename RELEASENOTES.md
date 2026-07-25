@@ -1,3 +1,34 @@
+DreamFin 0.1.10 — release notes
+===============================
+
+**DreamFin** is an Emby/Jellyfin client for Enigma2 forked from DreamPlex. It
+reuses the DreamPlex user interface and replaces the Plex backend with an
+Emby/Jellyfin one. See `README.md` for setup, lineage and attribution.
+
+New in 0.1.10
+-------------
+
+- **The remote works while a film is resuming.** Picking up where you left off
+  used to lock the interface until it was done: the screen did not move and
+  buttons did nothing. They were not being lost — there was simply nobody
+  reading them, because the wait was running on the one thread the receiver
+  uses for everything. On images where the receiver cannot report a playback
+  position it was worse: nothing came back at all, and the interface stayed
+  frozen until the receiver gave up on the plugin. The wait is a timer now.
+
+- **Waking a server no longer freezes the box.** If your server is off and
+  DreamFin offers to wake it, it waits for the machine to boot — a minute by
+  default, up to three. That wait used to stop the whole interface for its full
+  length. It no longer does. (The message still promises a spinner during the
+  wait. There is no spinner, and there never was; the wording is left for
+  another release.)
+
+Both faults came from the DreamPlex project, DreamFin's upstream, which shares
+this player code and found them while looking into a report sent the other way.
+Checked on real hardware: with the fix in place, a button pressed while a film
+was still resuming was accepted 1.4 seconds before the resume finished — which
+the old code made impossible.
+
 DreamFin 0.1.9 — release notes
 ==============================
 
