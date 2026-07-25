@@ -24,7 +24,7 @@ You should have received a copy of the GNU General Public License
 #=================================
 #IMPORT
 #=================================
-import time
+from enigma import eTimer
 
 from Components.ActionMap import HelpableActionMap
 from Components.Sources.StaticText import StaticText
@@ -64,6 +64,7 @@ class DPS_MainMenu(DPH_Screen, DPH_HorizontalMenu, DPH_ScreenHelper):
 	currentService = None
 	plexInstance = None
 	selectionOverride = None
+	wolTimer = None
 
 	#===========================================================================
 	#
@@ -298,6 +299,12 @@ class DPS_MainMenu(DPH_Screen, DPH_HorizontalMenu, DPH_ScreenHelper):
 	def exit(self):
 		printl("", self, "S")
 
+		# the WoL wait is an eTimer now, so the GUI stays alive while it runs and
+		# the user CAN walk out before it fires. Let it go with the screen, or it
+		# would come back later and check a server for a menu that is gone
+		if self.wolTimer is not None:
+			self.wolTimer.stop()
+
 		# we call here explict to avoid memory blocking if there are still something
 		self.closePlugin()
 
@@ -509,9 +516,38 @@ class DPS_MainMenu(DPH_Screen, DPH_HorizontalMenu, DPH_ScreenHelper):
 	#
 	#===========================================================================
 	def sleepNow(self):
+		"""Give the woken server its head start WITHOUT freezing the GUI.
+
+		This used to be a plain time.sleep(wol_delay), and executeWakeOnLan()
+		is a MessageBox callback: that slept the enigma2 MAIN LOOP for the
+		whole delay - 60 seconds by default here, up to 180 - so nothing moved
+		on screen and not a single key was read until it was over. An eTimer
+		waits just as well and leaves the loop running.
+
+		Same family as the resume watcher (DP_Player::seekWatcher) and as the
+		synchronous network I/O that runInThread() moved off the main loop.
+		Found on the DreamPlex side, 2026-07-25.
+		"""
+		printl("waiting " + str(self.g_woldelay) + "s for the server to come up", self, "S")
+
+		if self.wolTimer is None:
+			self.wolTimer = eTimer()
+			self.wolTimer.callback.append(self.wolWaitFinished)
+
+		# single shot: one wait, then check once
+		self.wolTimer.start(int(self.g_woldelay) * 1000, True)
+
+		printl("", self, "C")
+
+	#===========================================================================
+	#
+	#===========================================================================
+	def wolWaitFinished(self):
 		printl("", self, "S")
 
-		time.sleep(int(self.g_woldelay))
+		if self.wolTimer is not None:
+			self.wolTimer.stop()
+
 		self.checkServerState()
 
 		printl("", self, "C")
