@@ -72,6 +72,10 @@ from .__init__ import _  # _ is translation
 SUBTITLES_ENABLED = False
 SUBTITLES_CONTENT = None
 
+# how often the progress ticker reports to the server. It doubles as the
+# transcode keepalive, so it must keep beating for the whole playback
+TIMELINE_TICK_MS = 5000
+
 
 #===============================================================================
 #
@@ -303,7 +307,7 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 		self.startTimelineWatcher()
 
 		if self.timelineWatcher is not None:
-			self.timelineWatcher.start(5000, False)
+			self.timelineWatcher.start(TIMELINE_TICK_MS, False)
 
 		printl("", self, "C")
 
@@ -769,7 +773,7 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 
 			if self.timelineWatcher is not None:
 				# we start here too because it seems that direct local does not hit the buffer full function
-				self.timelineWatcher.start(5000, False)
+				self.timelineWatcher.start(TIMELINE_TICK_MS, False)
 
 			if self.subtitleWatcher is not None:
 				self.subtitleWatcher.start(10000, False)
@@ -973,6 +977,17 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 	#===========================================================================
 
 	def startTimelineWatcher(self):
+		"""Build the progress ticker (and our clock) and set it going.
+
+		It has to start HERE. It used to be only created here and started
+		elsewhere - by resumePlayerData(), by the direct-local branch of play(),
+		by bufferFull() - and for a streamed or transcoded playback none of
+		those won: resumePlayerData() starts a timer that play() then throws
+		away by calling this again, and the buffer-full event never arrives on
+		an HLS stream. The ticker never beat, so DreamFin reported no progress
+		at all and the PlaybackClock sat there doing nothing (measured on the
+		box 2026-07-25: updateTimeline 0 calls in a whole playback).
+		"""
 		printl("", self, "S")
 
 		self.timelineWatcher = eTimer()
@@ -990,6 +1005,11 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 			startAt = 0
 		self.playbackClock = PlaybackClock()
 		self.playbackClock.start(startAt)
+
+		# 5s like the other places that (used to) start it; updateTimeline
+		# drops the tick by itself while there is no valid position yet, so
+		# starting before the stream is up costs nothing
+		self.timelineWatcher.start(TIMELINE_TICK_MS, False)
 
 		if self.multiUserServer:
 			printl("we are a multiuser server", self, "D")
@@ -1034,7 +1054,7 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 			self.playbackClock.resume()
 
 		if self.timelineWatcher is not None:
-			self.timelineWatcher.start(30000, False)
+			self.timelineWatcher.start(TIMELINE_TICK_MS, False)
 
 		printl("", self, "S")
 	#===========================================================================
@@ -1306,7 +1326,7 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 			self.setSeekState(self.SEEK_STATE_PLAY)
 
 		if self.timelineWatcher is not None:
-			self.timelineWatcher.start(5000, False)
+			self.timelineWatcher.start(TIMELINE_TICK_MS, False)
 
 		#printl("", self, "C")
 
@@ -1814,10 +1834,43 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 	#
 	#===========================================================================
 	def seekToMinute(self, minutes):
-		printl("", self, "S")
+		"""Jump to an absolute minute of the media (the MinuteInput dialog).
 
-		self.resumeStamp = int(minutes) * 60
-		self.seekToStartPos()
+		Works the same transcoding or not: the HLS playlist the server hands
+		out covers the WHOLE media (VOD, with ENDLIST - checked on Emby 4.9 and
+		Jellyfin 10.11), so hlsdemux can move inside it. What used to break the
+		jump was the road, not the seek: see the comment below.
+		"""
+		printl("minutes: " + str(minutes), self, "S")
+
+		if minutes is None:
+			printl("cancelled", self, "C")
+			return
+
+		try:
+			seconds = int(minutes) * 60
+		except (TypeError, ValueError):
+			printl("not a number, ignoring", self, "C")
+			return
+
+		if seconds < 0:
+			seconds = 0
+
+		# never past the end: the server would answer an empty stream and the
+		# decoder would sit on a dead playlist
+		duration = self.getMediaDuration()
+		if duration and seconds >= duration:
+			seconds = max(0, int(duration) - 10)
+			printl("clamped to " + str(seconds) + "s (duration " + str(duration) + "s)", self, "D")
+
+		# Straight to the seek, deliberately NOT through seekToStartPos(): that
+		# one first asks the decoder where it is and gives up when it cannot
+		# say, which during a transcode is always - so the jump was silently
+		# dropped and nothing moved. Its retry dance is for resuming at the
+		# start of playback, not for a jump in the middle. doSeek() also pulls
+		# the clock to the target, so the reports follow immediately.
+		self.resumeStamp = None
+		self.doSeek(seconds * 90000)
 
 		printl("", self, "C")
 

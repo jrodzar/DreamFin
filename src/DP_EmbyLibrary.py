@@ -1973,6 +1973,11 @@ class EmbyLibrary(object):
 		its last non-comment line absolutized and given an api_key, with the
 		master URL itself as the fallback (hlsdemux resolves it). When the
 		server entry asks for a progressive stream, hand over /stream.ts.
+
+		The playlist covers the WHOLE media (VOD, with ENDLIST) - measured on
+		Emby 4.9 and Jellyfin 10.11 - so a seek is served by moving inside it,
+		not by asking the server for a new stream: both ignore StartTimeTicks
+		here (identical playlist with and without it, 2026-07-25).
 		"""
 		printl("myId: " + str(myId), self, "S")
 
