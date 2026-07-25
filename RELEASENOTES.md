@@ -1,3 +1,29 @@
+DreamFin 0.1.9 — release notes
+==============================
+
+**DreamFin** is an Emby/Jellyfin client for Enigma2 forked from DreamPlex. It
+reuses the DreamPlex user interface and replaces the Plex backend with an
+Emby/Jellyfin one. See `README.md` for setup, lineage and attribution.
+
+New in 0.1.9
+------------
+
+- **Resuming no longer gives up quietly.** If the receiver could not tell the
+  plugin how long the media was, the routine that jumps to your saved point
+  raised on a value that had never been set. The error was caught by the guard
+  around the whole routine, so nothing was shown and nothing was logged beyond
+  a warning — the film simply started from the beginning. It survives that
+  answer now.
+
+- The log line for a jump printed the name of an internal function instead of
+  the position being sought. Only visible with debug logging on.
+
+Small release: one latent fault and one log line. It exists because the
+DreamPlex project — DreamFin's upstream, which shares this player code — was
+told about the two faults fixed in 0.1.8, confirmed them, fixed them on their
+side, and reported four findings back. This is one of them, plus one more that
+turned up while checking theirs.
+
 DreamFin 0.1.8 — release notes
 ==============================
 

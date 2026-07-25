@@ -5,6 +5,17 @@ DreamFin is a fork of DreamPlex (a Plex client for Enigma2) with the Plex
 backend replaced by an Emby/Jellyfin one. See `RELEASENOTES.md` for the full
 release notes and `README.md` for lineage and attribution.
 
+0.1.9 — fix
+-----------
+* **Resuming could die without a word.** When the player asked the service for
+  the media length and got no answer, a later log line read a variable that had
+  never been set; the error was swallowed by the catch around the whole routine
+  and the film started from the beginning instead of where it was left. Same
+  shape of silent failure as the two faults in 0.1.8, found by the DreamPlex
+  side reporting back after fixing those there.
+* The log line that reported a seek printed the name of a built-in function
+  instead of the position being sought.
+
 0.1.8 — fixes
 -------------
 * **Playback progress was never reported.** The ticker that tells the server
