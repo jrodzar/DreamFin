@@ -1273,6 +1273,12 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 				seek = service and service.seek()
 				if seek is not None:
 
+					# bound before the call: when getLength() fails, r[0] is
+					# truthy and the assignment below never happens - and the
+					# log line further down reads it, so an unbound name would
+					# raise inside the try and kill the resume without a word
+					length = None
+
 					r = seek.getLength()
 					if not r[0]:
 						printl("got duration", self, "D")
@@ -1300,7 +1306,10 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 						return
 
 					elapsed = self.resumeStamp * 90000
-					printl("seeking to " + str(time) + " length " + str(length) + " ", self, "D")
+					# `time` here used to be the imported time() function, so the
+					# line read "seeking to <built-in function time>": say where
+					# we are actually going instead
+					printl("seeking to " + str(self.resumeStamp) + "s length " + str(length), self, "D")
 
 					#mh //if elapsed < 90000:
 					#mh //	printl("skip seeking < 10s", self, "D")
@@ -1639,10 +1648,13 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 		it does not.
 
 		getPlayPosition() returns (result, pts) and the pts only means
-		something when result is 0 - which during transcoded HLS is never, so
-		there the PlaybackClock estimate is all there is. When the decoder IS
-		valid (plain files) it wins, and the clock is resynced to it so both
-		stay together.
+		something when result is 0. Whether it ever is during a transcoded HLS
+		stream turns out to depend on the IMAGE, not just on the stream: the
+		DreamPlex side measured the same box answering (-1, garbage) for a whole
+		playback on OpenATV 8.0, and answering properly on 7.6. So the clock is
+		not a fallback for one exotic case - it is what carries the position
+		wherever the decoder stays quiet. When the decoder IS valid it wins, and
+		the clock is resynced to it so both stay together.
 		"""
 		try:
 			position = self.getPlayPosition()
@@ -1865,10 +1877,13 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 
 		# Straight to the seek, deliberately NOT through seekToStartPos(): that
 		# one first asks the decoder where it is and gives up when it cannot
-		# say, which during a transcode is always - so the jump was silently
-		# dropped and nothing moved. Its retry dance is for resuming at the
-		# start of playback, not for a jump in the middle. doSeek() also pulls
-		# the clock to the target, so the reports follow immediately.
+		# say - and whether it can turns out to depend on the image as much as
+		# on the stream (measured on the DreamPlex side: the same box mute on
+		# OpenATV 8.0, talking on 7.6). Here it stayed quiet, so the jump was
+		# dropped without a word and nothing moved. Going straight removes the
+		# dependency entirely. Its retry dance is for resuming at the START of
+		# playback, not for a jump in the middle. doSeek() also pulls the clock
+		# to the target, so the reports follow immediately.
 		self.resumeStamp = None
 		self.doSeek(seconds * 90000)
 
