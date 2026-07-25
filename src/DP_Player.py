@@ -1270,10 +1270,14 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 		Measured on the box with this fix in (2026-07-25): resume started at
 		15:42:10.096, BLUE was accepted at 15:42:13.609 and the resume only
 		landed at 15:42:15.024 - the GUI answered a key 1.4s BEFORE the watcher
-		was done, which the old loop made impossible. That also sizes the old
-		freeze honestly: about 5 seconds in the normal case, not the tens of
-		seconds of unresponsiveness seen separately that day, which this does
-		NOT explain and is still open.
+		was done, which the old loop made impossible.
+
+		That also sizes the old freeze honestly: about 4-5 seconds, measured
+		repeatedly on 1080 and on 4K, on the old build and on the new one. It is
+		NOT the tens of seconds of dead remote seen separately that morning -
+		that one never reproduced in any condition and is most likely what one
+		confirmed case of it turned out to be: a dialog left open on screen,
+		quietly eating every key.
 
 		And it could block forever: seekToStartPos() returns WITHOUT clearing
 		resumeStamp when the decoder has no position to give - and whether it
