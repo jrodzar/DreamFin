@@ -593,11 +593,12 @@ msgstr "Sobre"
 
 #: /hdd/workspaces/DreamPlex/src/DP_MainMenu.py:457
 msgid ""
-"The server seems to be offline. Start with Wake on Lan settings? \n"
+"The server seems to be offline. Start it with Wake on Lan?\n"
 "\n"
-"Please note: \n"
-"If you press yes the spinner will run for "
-msgstr "El servidor parece estar fuera de línea. ¿Iniciar con los ajustes de Wake on Lan?\n\nNota:\nSi pulsa Sí, el indicador girará durante "
+"Please note:\n"
+"If you press yes, DreamFin waits %s seconds for the server to come up, "
+"according to your settings. The receiver stays usable while it waits."
+msgstr "El servidor parece estar fuera de línea. ¿Encenderlo con Wake on Lan?\n\nNota:\nSi pulsa Sí, DreamFin esperará %s segundos a que arranque, según sus ajustes. El receptor sigue utilizable durante la espera."
 
 #: /hdd/workspaces/DreamPlex/src/DP_MainMenu.py:467
 msgid ""

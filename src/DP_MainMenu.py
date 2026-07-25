@@ -470,7 +470,19 @@ class DPS_MainMenu(DPH_Screen, DPH_HorizontalMenu, DPH_ScreenHelper):
 	def showWakeMessage(self):
 		printl("", self, "S")
 
-		self.session.openWithCallback(self.executeWakeOnLan, MessageBox, _("The server seems to be offline. Start with Wake on Lan settings? \n\nPlease note: \nIf you press yes the spinner will run for " + str(self.g_woldelay) + " seconds. \nAccording to your settings."), MessageBox.TYPE_YESNO)
+		# The old wording promised "the spinner will run for N seconds". It never
+		# could: the spinner is driven by the main loop, and the wait used to
+		# sleep on it - and there is no spinner in this path at all. It also
+		# built the message as _("..." + str(n) + "..."), so the lookup key
+		# carried the number and never matched a catalogue entry: the string has
+		# been untranslatable since the fork. %s keeps it one msgid.
+		self.session.openWithCallback(self.executeWakeOnLan, MessageBox, _(
+			"The server seems to be offline. Start it with Wake on Lan?\n"
+			"\n"
+			"Please note:\n"
+			"If you press yes, DreamFin waits %s seconds for the server to come "
+			"up, according to your settings. The receiver stays usable while it "
+			"waits.") % str(self.g_woldelay), MessageBox.TYPE_YESNO)
 
 		printl("", self, "C")
 
