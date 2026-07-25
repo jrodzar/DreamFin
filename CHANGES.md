@@ -5,6 +5,20 @@ DreamFin is a fork of DreamPlex (a Plex client for Enigma2) with the Plex
 backend replaced by an Emby/Jellyfin one. See `RELEASENOTES.md` for the full
 release notes and `README.md` for lineage and attribution.
 
+0.1.11 — fix
+------------
+* **The Wake on Lan dialog described something that never happened.** It said
+  the spinner would run while the plugin waited for the server; it could not,
+  because the spinner is driven by the same loop the wait used to block — and
+  there is no spinner in that screen at all. It now says what really happens,
+  including the part that only became true in 0.1.10: the receiver stays usable
+  while it waits.
+* **That message is translatable for the first time.** It was assembled by
+  pasting the delay into the middle of the text before looking it up, so the
+  lookup key changed with the number and never matched a catalogue entry — the
+  Spanish translation shipped in every release since the fork has never once
+  been displayed. It is one entry now, and the dialog appears in Spanish.
+
 0.1.10 — fixes
 --------------
 * **The receiver stopped responding while a film was resuming.** Jumping to the
