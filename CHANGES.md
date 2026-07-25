@@ -5,6 +5,22 @@ DreamFin is a fork of DreamPlex (a Plex client for Enigma2) with the Plex
 backend replaced by an Emby/Jellyfin one. See `RELEASENOTES.md` for the full
 release notes and `README.md` for lineage and attribution.
 
+0.1.8 — fixes
+-------------
+* **Playback progress was never reported.** The ticker that tells the server
+  where you are was built but never started: starting it was left to events
+  that never arrive on a streamed or transcoded playback. Nothing reached the
+  server for a whole film — no position on the dashboard, no resume point —
+  and the playback clock added in 0.1.7 was idle the entire time. It now
+  starts where it is built, and reports every five seconds.
+* **Jumping to a minute did nothing while transcoding.** BLUE (or RED) opens
+  the "Minutes" dialog, you type a minute, press OK — and playback carried on
+  as if you had not. The jump asked the decoder where it was first and gave up
+  when it could not say, which during a transcoded stream is always. It now
+  seeks straight away, refuses to land past the end of the film, and copes
+  with the dialog being cancelled.
+* Verified on real hardware against both Emby and Jellyfin.
+
 0.1.7 — features and fixes
 --------------------------
 * **Media is no longer marked as watched without being watched.** While the

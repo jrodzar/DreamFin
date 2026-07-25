@@ -1,3 +1,38 @@
+DreamFin 0.1.8 — release notes
+==============================
+
+**DreamFin** is an Emby/Jellyfin client for Enigma2 forked from DreamPlex. It
+reuses the DreamPlex user interface and replaces the Plex backend with an
+Emby/Jellyfin one. See `README.md` for setup, lineage and attribution.
+
+New in 0.1.8
+------------
+
+- **Your server knows where you are again.** DreamFin was not reporting
+  playback progress at all: the ticker that sends it was created but never
+  started, because starting it had been left to events that never happen on a
+  streamed or transcoded playback. A whole film could play without the server
+  learning anything — nothing on the dashboard, and no resume point when you
+  came back. It now reports every five seconds, from the moment playback
+  begins.
+
+- **Jumping to a minute works.** Press BLUE (or RED) during playback, type a
+  minute, press OK — and until now, while transcoding, absolutely nothing
+  happened. No error, no message: the jump asked the decoder where it was
+  before moving, and a transcoded stream never tells it. The jump now happens
+  straight away, will not land past the end of the film, and leaving the
+  dialog without typing anything is no longer a problem.
+
+Both were checked on a real box against Emby and Jellyfin.
+
+Skin
+----
+
+- The **server menu of the `default` skin** is now a vertical list, like the
+  BlueMod skin, instead of a five-slot horizontal carousel: every library is
+  on screen at once. The logo below the mini-TV was resized and centred, and
+  the FHD variant received the same treatment plus its bottom bar.
+
 DreamFin 0.1.7 — release notes
 ==============================
 
