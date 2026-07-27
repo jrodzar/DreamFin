@@ -43,6 +43,27 @@ except NameError:
 	_TEXT_TYPES = (str,)
 
 
+def _docstringIds(tree):
+	"""ids of the string nodes that are docstrings.
+
+	They are never display text, but they ARE string literals, so they turned up
+	as false 'loose' uses and pushed junk into the exception lists below. Since a
+	long exception list is what hides the next real finding, it is worth removing
+	the noise at the source rather than excusing it.
+	"""
+	found = set()
+	for node in ast.walk(tree):
+		body = getattr(node, "body", None)
+		if not isinstance(body, list) or not body:
+			continue
+		if not isinstance(node, (ast.Module, ast.ClassDef, ast.FunctionDef)):
+			continue
+		first = body[0]
+		if isinstance(first, ast.Expr) and isinstance(first.value, _STR_NODE):
+			found.add(id(first.value))
+	return found
+
+
 def _hasStringLiteral(node):
 	"""A string literal anywhere in an expression tree."""
 	for child in ast.walk(node):
@@ -109,14 +130,23 @@ class TestNoUnmarkedTwin(unittest.TestCase):
 	# TestNoTranslatedSentinel below now catches. An exception added to quieten a
 	# report is an exception that hides the next one. Add only identifiers, and
 	# say why.
-	NOT_DISPLAY_TEXT = (
-		"DreamFin",                          # the plugin name
-		"Emby/Jellyfin client for enigma2",  # its description
-		"/hdd/dreamfin/",                    # default paths
-		"Streamed",                          # playback mode, stored as config
-		"Continue watching",                 # synthesized row: stored in entryData
-		"Recently added",                    # idem
-	)
+	# Matched EXACTLY, never by prefix. An earlier version excused these by
+	# prefix and "DreamFin" quietly swallowed "DreamFin crashed due to a skin
+	# error!..." - a real untranslated MessageBox - along with the product name.
+	#
+	# Each reason must name WHAT is used bare and WHERE IT GOES, so it can be
+	# checked. "looks like a fallback value" is what let "<unknown>" hide here.
+	NOT_DISPLAY_TEXT = {
+		"DreamFin":
+			"the product name. Bare uses are PluginDescriptor(name=) in "
+			"plugin.py, a ConfigText default in __init__.py, and the About "
+			"header. A proper noun, and translating it would be wrong",
+		"Continue watching":
+			"the bare copy goes into entryData['title'] as stored data; the "
+			"copy that reaches the screen, two lines below, is marked",
+		"Recently added":
+			"idem, DP_EmbyLibrary",
+	}
 
 	def test_no_marked_label_is_also_written_bare(self):
 		marked, loose = {}, []
@@ -128,7 +158,7 @@ class TestNoUnmarkedTwin(unittest.TestCase):
 			with open(path, "rb") as handle:
 				tree = ast.parse(handle.read(), filename=path)
 
-			inside = set()
+			inside = _docstringIds(tree)
 			for node in ast.walk(tree):
 				if (isinstance(node, ast.Call) and isinstance(node.func, ast.Name)
 						and node.func.id == "_" and node.args):
@@ -148,13 +178,23 @@ class TestNoUnmarkedTwin(unittest.TestCase):
 						loose.append((name, node.lineno, value))
 
 		offenders = set()
-		for prefix, (markedIn, markedLine) in marked.items():
-			if len(prefix.strip()) < 8 or prefix.startswith(self.NOT_DISPLAY_TEXT):
+		for name, line, value in loose:
+			# EXACT match, not prefix. Matching by prefix caught the real twins
+			# but also flagged the About page, whose text merely starts with the
+			# product name - and DreamPlex measured the same rule giving 86
+			# candidates on their tree, where nobody would keep the list honest.
+			# The twins repeat the fixed part verbatim, so equality is enough.
+			# and long enough to be a phrase: " ", "-" and "\n" are marked
+			# somewhere (padding in a settings label) and appear bare all over
+			# the view builders. Exact matching alone gave 87 candidates, nearly
+			# all of them those.
+			if len(value.strip()) < 8:
 				continue
-			for name, line, value in loose:
-				if value.startswith(prefix):
-					offenders.add("%s:%d (marked at %s:%d)"
-					              % (name, line, markedIn, markedLine))
+			if value in self.NOT_DISPLAY_TEXT or value not in marked:
+				continue
+			markedIn, markedLine = marked[value]
+			offenders.add("%s:%d %r (marked at %s:%d)"
+			              % (name, line, value[:40], markedIn, markedLine))
 
 		self.assertEqual(
 			[], sorted(offenders),

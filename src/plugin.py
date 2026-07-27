@@ -137,9 +137,9 @@ def Plugins(**kwargs):
 	boxResolution = getBoxResolution()
 
 	if boxResolution == "FHD":
-		myList.append(PluginDescriptor(name="DreamFin", description="Emby/Jellyfin client for enigma2", where=[PluginDescriptor.WHERE_PLUGINMENU], icon="pluginLogoHD.png", fnc=main))
+		myList.append(PluginDescriptor(name="DreamFin", description=_("Emby/Jellyfin client for enigma2"), where=[PluginDescriptor.WHERE_PLUGINMENU], icon="pluginLogoHD.png", fnc=main))
 	else:
-		myList.append(PluginDescriptor(name="DreamFin", description="Emby/Jellyfin client for enigma2", where=[PluginDescriptor.WHERE_PLUGINMENU], icon="pluginLogo.png", fnc=main))
+		myList.append(PluginDescriptor(name="DreamFin", description=_("Emby/Jellyfin client for enigma2"), where=[PluginDescriptor.WHERE_PLUGINMENU], icon="pluginLogo.png", fnc=main))
 	myList.append(PluginDescriptor(where=PluginDescriptor.WHERE_AUTOSTART, fnc=Autostart))
 	myList.append(PluginDescriptor(where=PluginDescriptor.WHERE_SESSIONSTART, fnc=sessionStart))
 
