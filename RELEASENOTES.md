@@ -1,3 +1,35 @@
+DreamFin 0.1.12 — release notes
+===============================
+
+**DreamFin** is an Emby/Jellyfin client for Enigma2 forked from DreamPlex. It
+reuses the DreamPlex user interface and replaces the Plex backend with an
+Emby/Jellyfin one. See `README.md` for setup, lineage and attribution.
+
+New in 0.1.12
+-------------
+
+- **The blue button in the library speaks your language now.** Its label
+  pasted the current playback mode into the sentence *before* looking the
+  sentence up, so the text it searched for changed with the mode and matched
+  nothing in the language files. A finished Spanish translation of that label
+  has shipped in every release since the fork without ever being shown.
+
+  The clue was on screen the whole time and easy to walk past: the button read
+  `playback mode 'Transcodificado'` — an English label wrapped around a
+  translated value, because the mode names are listed separately and were
+  being found correctly.
+
+- **The rest of the plugin was swept for the same mistake.** Eleven places ask
+  for something other than a fixed phrase to be translated; only the one above
+  was actually broken. The others pass a library name that came from your
+  server, where translation does nothing in either direction. The page counter
+  was politely asking for "9" and "1/9" to be translated, and has stopped.
+
+Second release in a row fixing a translation that was written years ago and
+never reached the screen. This one came out of a remark from the DreamPlex
+project, DreamFin's upstream, that theirs had the same fault in two places —
+so we went looking for our second, and there it was.
+
 DreamFin 0.1.11 — release notes
 ===============================
 

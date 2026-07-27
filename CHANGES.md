@@ -5,6 +5,22 @@ DreamFin is a fork of DreamPlex (a Plex client for Enigma2) with the Plex
 backend replaced by an Emby/Jellyfin one. See `RELEASENOTES.md` for the full
 release notes and `README.md` for lineage and attribution.
 
+0.1.12 — fix
+------------
+* **The blue button in the library was stuck in English.** Its label pasted the
+  current playback mode into the middle of the text before looking the text up,
+  so what it searched for changed with the mode and never matched a catalogue
+  entry — the same fault fixed for the Wake on Lan dialog in 0.1.11. A finished
+  Spanish translation of the label has shipped since the fork without ever
+  appearing. The giveaway was on screen all along: it read `playback mode
+  'Transcodificado'`, English wrapper around a translated value, because the
+  mode names are listed separately.
+* Swept the rest of the source for the same mistake. Eleven places pass
+  something other than a fixed string for translation, but only that one was a
+  fault; the others hand over a library name from the server, which does nothing
+  either way. The page counter was asking for "9" and "1/9" to be translated
+  and no longer does.
+
 0.1.11 — fix
 ------------
 * **The Wake on Lan dialog described something that never happened.** It said
