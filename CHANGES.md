@@ -5,6 +5,16 @@ DreamFin is a fork of DreamPlex (a Plex client for Enigma2) with the Plex
 backend replaced by an Emby/Jellyfin one. See `RELEASENOTES.md` for the full
 release notes and `README.md` for lineage and attribution.
 
+0.1.14 — fix
+------------
+* **The fast-scroll button now actually reads in Spanish.** 0.1.13 marked those
+  two labels for translation, but the catalogue entries had never been filled
+  in — the entry existed and repeated the English text, so the fix was real and
+  invisible at the same time. They read "FastScroll 'Sí'" and "FastScroll 'No'"
+  now, matching the wording the settings screen already used.
+* The plugin browser shows DreamFin's description untranslated; two of the three
+  places that declare it were missing the mark. Fixed.
+
 0.1.13 — fixes
 --------------
 * **Forced subtitles did not switch themselves on unless the plugin was in
