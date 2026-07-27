@@ -1,3 +1,32 @@
+DreamFin 0.1.13 — release notes
+===============================
+
+**DreamFin** is an Emby/Jellyfin client for Enigma2 forked from DreamPlex. It
+reuses the DreamPlex user interface and replaces the Plex backend with an
+Emby/Jellyfin one. See `README.md` for setup, lineage and attribution.
+
+New in 0.1.13
+-------------
+
+- **Forced subtitles switch themselves on again — in every language.** When a
+  film carries an external forced-subtitle track, DreamFin is supposed to
+  enable it for you. It only did so if the plugin was running in English. The
+  check looked at a label that gets translated for the screen and compared it
+  against fixed English text, so in Spanish and French it never matched and the
+  track stayed off. Nothing was logged, and testing in English pronounced it
+  healthy every time.
+
+- **The blue and green buttons no longer revert to English when pressed.**
+  Those labels are written in two different places — once when the screen is
+  drawn, once when you press the button — and only the first was translated.
+  The label appeared in your language and switched back to English on the first
+  press. 0.1.12 fixed the drawing half of the blue one; this fixes the rest.
+
+Both came from the DreamPlex project, DreamFin's upstream, which shares this
+code. The first is the more serious of the two: everything else this week was
+text that looked wrong, while this one made the plugin behave differently
+depending on the language it was running in.
+
 DreamFin 0.1.12 — release notes
 ===============================
 
