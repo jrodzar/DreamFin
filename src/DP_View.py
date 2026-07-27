@@ -895,7 +895,12 @@ class DP_View(DPH_Screen, DPH_ScreenHelper, DPH_MultiColorFunctions, DPH_Filter)
 		self.setColorFunction(color="red", level="1", functionList=("", self.togglePlayMode))
 		self.setColorFunction(color="green", level="1", functionList=("", self.toggleResumeMode))
 		self.setColorFunction(color="yellow", level="1", functionList=("", self.executeLibraryFunction))  # name is empty because we set it dynamical
-		self.setColorFunction(color="blue", level="1", functionList=(_("playback mode '" + self.playbackModes[self.configuredPlaybackMode][1] + "'"), self.togglePlaybackMode))
+		# the mode name used to be concatenated INSIDE _(), so the msgid carried
+		# it and never matched the catalogue - po/es.po has held a finished
+		# translation of this label that has never been displayed. It showed as
+		# "playback mode 'Transcodificado'": English wrapper, translated value,
+		# because the mode names themselves are marked separately below
+		self.setColorFunction(color="blue", level="1", functionList=(_("playback mode '%s'") % self.playbackModes[self.configuredPlaybackMode][1], self.togglePlaybackMode))
 
 		self.setColorFunction(color="red", level="2", functionList=(_("View '") + str(self.currentViewName) + " '", self.onToggleView))
 		self.setColorFunction(color="green", level="2", functionList=("", self.toggleFastScroll))  # name is empty because we set it dynamical
@@ -2403,8 +2408,12 @@ class DP_View(DPH_Screen, DPH_ScreenHelper, DPH_MultiColorFunctions, DPH_Filter)
 		pageTotal = int(math.ceil((itemsTotal / itemsPerPage) + correctionVal))
 		pageCurrent = int(math.ceil((self["listview"].getIndex() / itemsPerPage) + 0.5))
 
-		self["total"].setText(_(str(itemsTotal)))
-		self["pagination"].setText(_(str(pageCurrent) + "/" + str(pageTotal)))
+		# no _() here: these are a count and a page number. Translating them
+		# looked up "9" and "1/9" in the catalogue, which no catalogue has, so
+		# gettext handed the string straight back - noise with the shape of the
+		# msgid bug above, which is why the guard test flagged it
+		self["total"].setText(str(itemsTotal))
+		self["pagination"].setText("%s/%s" % (pageCurrent, pageTotal))
 
 		printl("", self, "C")
 

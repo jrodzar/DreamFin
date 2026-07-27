@@ -780,8 +780,8 @@ msgstr ""
 "Pulse sobre Exit para retornar."
 
 #: /hdd/workspaces/DreamPlex/src/DP_View.py:751
-msgid "playback mode '"
-msgstr "Modo de Reproducción '"
+msgid "playback mode '%s'"
+msgstr "Modo de Reproducción '%s'"
 
 #: /hdd/workspaces/DreamPlex/src/DP_View.py:753
 msgid "View '"
