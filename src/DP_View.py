@@ -1159,14 +1159,17 @@ class DP_View(DPH_Screen, DPH_ScreenHelper, DPH_MultiColorFunctions, DPH_Filter)
 
 		color = "green"
 
+		# same twin as the blue label: initFastScroll() marks these for
+		# translation when it paints them and this one rewrote them unmarked, so
+		# the green button fell back to English on the first press
 		if self.fastScroll:
 			self.fastScroll = False
-			self["btn_" + color + "Text"].setText("fastScroll 'Off'")
+			self["btn_" + color + "Text"].setText(_("fastScroll 'Off'"))
 			self["info"].hide()
 			self["infoLabel"].hide()
 		else:
 			self.fastScroll = True
-			self["btn_" + color + "Text"].setText("fastScroll 'On'")
+			self["btn_" + color + "Text"].setText(_("fastScroll 'On'"))
 			self["info"].show()
 			self["infoLabel"].show()
 			self["miniTv"].hide()
@@ -1216,7 +1219,14 @@ class DP_View(DPH_Screen, DPH_ScreenHelper, DPH_MultiColorFunctions, DPH_Filter)
 
 		self.playbackMode = self.nextPlaybackMode
 
-		self["btn_" + color + "Text"].setText("playback mode '" + myName + "'")
+		# the TWIN of the label in initColorFunctions(): same text, other code
+		# path - that one paints it on entering the view, this one rewrites it
+		# when the button is pressed. It carried no _() at all, so fixing only
+		# the other one left the label turning back to English on the first
+		# press. Same msgid, so one catalogue entry covers both. Found by
+		# DreamPlex reading around ours; an AST sweep cannot see it, there is no
+		# _() to inspect
+		self["btn_" + color + "Text"].setText(_("playback mode '%s'") % myName)
 
 		printl("", self, "C")
 

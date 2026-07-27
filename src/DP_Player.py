@@ -830,10 +830,18 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 					number = str(x[1])
 					description = "?"
 					myLanguage = _("<unknown>")
+					# myLanguage is a LABEL: it goes on screen, so it is
+					# translated. The forced-subtitle test below used to compare
+					# it against the literal "<unknown>", which only ever matches
+					# in English - es.po turns it into "<desconocido>" and fr.po
+					# into "<inconnu>". Carry the fact in a flag no catalogue can
+					# reach. Found on the DreamPlex side, 2026-07-25
+					languageIsUnknown = True
 					selected = ""
 
 					if x[4] != "und":
 						foundDefined = True  # mh
+						languageIsUnknown = False
 
 						if x[4] in LanguageCodes:
 							myLanguage = LanguageCodes[x[4]][0]
@@ -869,7 +877,7 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 						forceMatch = False
 						if self.plexInstance.getServerConfig().useForcedSubtitles.value:
 							if foundDefined == False:
-								if myLanguage == "<unknown>":
+								if languageIsUnknown:
 									if description == "UTF-8 text":
 										try:
 											if self.playerData[self.currentIndex]['usingExtForcedSubs'] == True:

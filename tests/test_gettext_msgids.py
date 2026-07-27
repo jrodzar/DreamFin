@@ -86,5 +86,157 @@ class TestGettextMsgids(unittest.TestCase):
 			"Use _(\"... %s ...\") % value instead.")
 
 
+class TestNoUnmarkedTwin(unittest.TestCase):
+	"""A label marked for translation in one place and written bare in another.
+
+	The AST guard above cannot see these: there is no _() to inspect. They are
+	found by the text being marked SOMEWHERE, which is the giveaway - if a
+	string is worth translating when the screen is painted, it is worth
+	translating when a keypress rewrites it.
+
+	Four shipped here, all button labels, all the same shape: one method paints
+	the label with _() and its twin rewrites it without. The label came up in
+	Spanish and turned back to English on the first press. DreamPlex found the
+	first pair by reading around ours (2026-07-25); this test found the second.
+	"""
+
+	# marked somewhere, but legitimately used bare elsewhere: these are
+	# identifiers, paths and stored data, not text anybody reads off the screen.
+	#
+	# THIS LIST IS THE WEAK POINT OF THIS TEST, and it has already cost a real
+	# bug: "<unknown>" sat here as "just a fallback value" while it was being
+	# compared against a TRANSLATED copy of itself, which is the fault
+	# TestNoTranslatedSentinel below now catches. An exception added to quieten a
+	# report is an exception that hides the next one. Add only identifiers, and
+	# say why.
+	NOT_DISPLAY_TEXT = (
+		"DreamFin",                          # the plugin name
+		"Emby/Jellyfin client for enigma2",  # its description
+		"/hdd/dreamfin/",                    # default paths
+		"Streamed",                          # playback mode, stored as config
+		"Continue watching",                 # synthesized row: stored in entryData
+		"Recently added",                    # idem
+	)
+
+	def test_no_marked_label_is_also_written_bare(self):
+		marked, loose = {}, []
+
+		for name in sorted(os.listdir(SRC)):
+			if not name.endswith(".py"):
+				continue
+			path = os.path.join(SRC, name)
+			with open(path, "rb") as handle:
+				tree = ast.parse(handle.read(), filename=path)
+
+			inside = set()
+			for node in ast.walk(tree):
+				if (isinstance(node, ast.Call) and isinstance(node.func, ast.Name)
+						and node.func.id == "_" and node.args):
+					arg = node.args[0]
+					if isinstance(arg, _STR_NODE):
+						value = getattr(arg, "s", getattr(arg, "value", None))
+						if isinstance(value, _TEXT_TYPES):
+							inside.add(id(arg))
+							# up to the first placeholder: the fixed part is what
+							# the bare twin repeats
+							marked.setdefault(value.split("%")[0], (name, node.lineno))
+
+			for node in ast.walk(tree):
+				if isinstance(node, _STR_NODE) and id(node) not in inside:
+					value = getattr(node, "s", getattr(node, "value", None))
+					if isinstance(value, _TEXT_TYPES):
+						loose.append((name, node.lineno, value))
+
+		offenders = set()
+		for prefix, (markedIn, markedLine) in marked.items():
+			if len(prefix.strip()) < 8 or prefix.startswith(self.NOT_DISPLAY_TEXT):
+				continue
+			for name, line, value in loose:
+				if value.startswith(prefix):
+					offenders.add("%s:%d (marked at %s:%d)"
+					              % (name, line, markedIn, markedLine))
+
+		self.assertEqual(
+			[], sorted(offenders),
+			"this text is marked for translation elsewhere but written bare "
+			"here: " + ", ".join(sorted(offenders)) + ". A label worth "
+			"translating when the screen is painted is worth translating when a "
+			"keypress rewrites it - otherwise it reverts to English on the "
+			"first press. Wrap it in _(), or add it to NOT_DISPLAY_TEXT if it "
+			"is an identifier rather than something a user reads.")
+
+
+class TestNoTranslatedSentinel(unittest.TestCase):
+	"""A translated string must never be what a comparison depends on.
+
+	`myLanguage = _("<unknown>")` and later `if myLanguage == "<unknown>"`. The
+	label is translated for the screen, so the test only ever matches in
+	English: es.po makes it "<desconocido>", fr.po "<inconnu>". External forced
+	subtitles stopped auto-enabling in exactly those languages, and nowhere
+	else - which is why testing in English pronounced it fine.
+
+	This is the sharp end of the family. The other two tests here are about text
+	looking wrong; this one is about the plugin BEHAVING differently depending on
+	the language it is running in, silently.
+
+	The rule that finds it, from the DreamPlex side (2026-07-25): a literal that
+	is marked for translation somewhere AND appears as a comparison operand.
+	They measured the alternatives on their tree - matching by prefix gave 86
+	candidates and matching by equality 38, both unmaintainable, while this one
+	gave 9 candidates and the one real bug. Here it gives five, all identifiers.
+
+	Carry the fact in a flag instead. A boolean has no catalogue.
+	"""
+
+	# compared against, and legitimately so: none of these is a message
+	NOT_A_MESSAGE = (
+		" ",        # separator; marked because it pads a settings label
+		"Series",   # item type from the server API
+		"LiveTv",   # data key, stored next to its own translated label
+	)
+
+	def test_no_marked_string_is_used_as_a_sentinel(self):
+		marked, compared = {}, []
+
+		for name in sorted(os.listdir(SRC)):
+			if not name.endswith(".py"):
+				continue
+			path = os.path.join(SRC, name)
+			with open(path, "rb") as handle:
+				tree = ast.parse(handle.read(), filename=path)
+
+			for node in ast.walk(tree):
+				if (isinstance(node, ast.Call) and isinstance(node.func, ast.Name)
+						and node.func.id == "_" and node.args):
+					arg = node.args[0]
+					if isinstance(arg, _STR_NODE):
+						value = getattr(arg, "s", getattr(arg, "value", None))
+						if isinstance(value, _TEXT_TYPES):
+							marked.setdefault(value, (name, node.lineno))
+
+			for node in ast.walk(tree):
+				if not isinstance(node, ast.Compare):
+					continue
+				for side in [node.left] + list(node.comparators):
+					if isinstance(side, _STR_NODE):
+						value = getattr(side, "s", getattr(side, "value", None))
+						if isinstance(value, _TEXT_TYPES):
+							compared.append((name, node.lineno, value))
+
+		offenders = sorted(set(
+			"%s:%d compares %r (marked at %s:%d)" % (name, line, value,
+			                                         marked[value][0], marked[value][1])
+			for name, line, value in compared
+			if value in marked and value not in self.NOT_A_MESSAGE))
+
+		self.assertEqual(
+			[], offenders,
+			"a comparison depends on a string that gets translated: " +
+			", ".join(offenders) + ". The catalogue rewrites it, so the test "
+			"only holds in English and the plugin quietly behaves differently "
+			"in every other language. Keep a boolean beside the label and "
+			"compare that.")
+
+
 if __name__ == "__main__":
 	unittest.main()
