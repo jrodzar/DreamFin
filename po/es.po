@@ -1014,8 +1014,17 @@ msgstr "Introduzca el texto de búsqueda: "
 
 #: /hdd/workspaces/DreamPlex/src/DP_Settings.py:109
 #: /hdd/workspaces/DreamPlex/src/DP_Server.py:385
+#: src/DP_View.py:915
 msgid "General Settings"
 msgstr "Configuración General"
+
+#: src/DP_View.py:911
+msgid "refresh Library"
+msgstr "Actualizar Biblioteca"
+
+#: src/DP_View.py:914
+msgid "Server Settings"
+msgstr "Ajustes del Servidor"
 
 #: /hdd/workspaces/DreamPlex/src/DP_Settings.py:109
 #: /hdd/workspaces/DreamPlex/src/DP_Settings.py:112

@@ -393,6 +393,53 @@ def loadPlexPlugins():
 #===============================================================================
 #
 #===============================================================================
+_ownCatalogueBound = False
+
+
+def _bindOwnCatalogue():
+	"""Make sure our own catalogue is reachable before the first lookup.
+
+	THE FOURTH LEG. Checking a translation was three things - the .mo rebuilt
+	into the package, the entry present, the entry actually translated - and all
+	three can be verified on the package. This one cannot: it is about WHEN the
+	lookup happens.
+
+	bindtextdomain lives in localeInit(), reached from prepareEnvironment() in
+	the Autostart callback. But enigma2 calls Plugins() to read the plugin list
+	FIRST - Plugins() is what registers that very Autostart - so at that moment
+	the domain is not bound, dgettext hands the msgid back, and the fallback
+	gettext() does not have our strings either. That is why the plugin browser
+	showed DreamFin's description in English however well translated it was.
+	Proved on the box by the DreamPlex side, with our own entry sitting in the
+	same list as their control (2026-07-25).
+
+	Safe on the boot path, which is the part worth being careful about:
+	  * it starts nothing new - _() is ALREADY called inside Plugins(), on the
+	    unconditional branch, so with any configuration;
+	  * everything the bind needs already runs successfully at that same moment
+	    in this module's top level (resolveFilename(SCOPE_PLUGINS) at line ~57,
+	    gettext and language imported above);
+	  * a failure is swallowed and reported. Plugins() has no try/except of its
+	    own, so nothing may escape towards it: the worst case is the state we
+	    had before;
+	  * the flag is set BEFORE the risky call, so a permanent failure does not
+	    retry on every single translation - _() runs constantly while a library
+	    is being drawn.
+	localeInit() still binds later exactly as it always did.
+	"""
+	global _ownCatalogueBound
+
+	if _ownCatalogueBound:
+		return
+
+	_ownCatalogueBound = True                 # before the risky part, on purpose
+	try:
+		gettext.bindtextdomain(
+			"DreamFin", "%s%s" % (resolveFilename(SCOPE_PLUGINS), "Extensions/DreamFin/locale/"))
+	except Exception as e:
+		print("[DreamFin] could not bind the translation catalogue: %s" % str(e))
+
+
 def localeInit():
 	printl("", "__init__::localeInit", "S")
 
@@ -496,6 +543,9 @@ def _(txt):
 
 	if len(txt) == 0:
 		return ""
+
+	_bindOwnCatalogue()
+
 	text = gettext.dgettext("DreamFin", txt)
 	if text == txt:
 		text = gettext.gettext(txt)
