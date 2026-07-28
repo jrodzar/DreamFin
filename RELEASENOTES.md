@@ -32,24 +32,38 @@ Emby/Jellyfin one. See `README.md` for setup, lineage and attribution.
 New in 0.1.13
 -------------
 
-- **Forced subtitles switch themselves on again — in every language.** When a
-  film carries an external forced-subtitle track, DreamFin is supposed to
-  enable it for you. It only did so if the plugin was running in English. The
-  check looked at a label that gets translated for the screen and compared it
-  against fixed English text, so in Spanish and French it never matched and the
-  track stayed off. Nothing was logged, and testing in English pronounced it
-  healthy every time.
-
 - **The blue and green buttons no longer revert to English when pressed.**
   Those labels are written in two different places — once when the screen is
   drawn, once when you press the button — and only the first was translated.
   The label appeared in your language and switched back to English on the first
   press. 0.1.12 fixed the drawing half of the blue one; this fixes the rest.
 
+- **A subtitle check no longer depends on the language.** The test that
+  recognises an external forced-subtitle track compared a label against fixed
+  English text — and that label is translated for the screen, so the test could
+  only ever hold in English. It carries a flag now, which no translation can
+  rewrite.
+
 Both came from the DreamPlex project, DreamFin's upstream, which shares this
-code. The first is the more serious of the two: everything else this week was
-text that looked wrong, while this one made the plugin behave differently
-depending on the language it was running in.
+code.
+
+### A correction to this entry
+
+These notes first said the subtitle fault stopped forced subtitles from
+switching themselves on in Spanish and French, and called it the more serious of
+the two. **That was wrong, and no user was affected.**
+
+Reaching that code also requires the player to have downloaded an external
+forced-subtitle file, and this plugin's Emby/Jellyfin backend never does that —
+it is Plex machinery that was not carried over. The flag it checks is set to
+false in the single place it is assigned, and appears nowhere else in the
+source, so the branch cannot run at all, in any language.
+
+The fix is still worth having: it removes a dependency on the translation
+catalogue that would have caused exactly the described fault the day that
+download is implemented. What was wrong was the claim about its impact, which
+was inferred from the language alone without checking the second condition the
+code requires. Reported by the DreamPlex project, and confirmed here.
 
 DreamFin 0.1.12 — release notes
 ===============================

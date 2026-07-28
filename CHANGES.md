@@ -17,11 +17,18 @@ release notes and `README.md` for lineage and attribution.
 
 0.1.13 — fixes
 --------------
-* **Forced subtitles did not switch themselves on unless the plugin was in
-  English.** The check that spots an external forced subtitle track compared a
-  label against fixed English text — but that label is translated for the
-  screen, so in Spanish and French it never matched and the track was left off.
-  It worked in English, which is where testing tends to happen.
+* **A subtitle check only worked in English.** The test that recognises an
+  external forced subtitle track compared a label against fixed English text,
+  and that label is translated for the screen — so it could only ever hold in
+  English. It carries a flag now instead, which no catalogue can rewrite.
+  *(Corrected after release: this entry first claimed the fault stopped forced
+  subtitles from switching themselves on in Spanish and French. It did not. That
+  branch also needs the player to have downloaded an external forced subtitle
+  file, and this plugin's Emby/Jellyfin backend never does — the flag it reads
+  is set to false in the one place it is assigned and nowhere else. So no user
+  was affected; the fix removes a language dependency that would have bitten the
+  day that download is implemented. The impact was asserted from the language
+  alone, without checking the second condition.)*
 * **Two button labels fell back to English the moment you pressed them.** The
   blue playback-mode button and the green fast-scroll button are written twice:
   once when the screen is drawn and once when the button is pressed. Only the
