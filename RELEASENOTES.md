@@ -1,3 +1,34 @@
+DreamFin 0.1.15 — release notes
+===============================
+
+**DreamFin** is an Emby/Jellyfin client for Enigma2 forked from DreamPlex. It
+reuses the DreamPlex user interface and replaces the Plex backend with an
+Emby/Jellyfin one. See `README.md` for setup, lineage and attribution.
+
+New in 0.1.15
+-------------
+
+- **DreamFin's description in the plugin browser is translated at last.** It
+  always came out in English no matter how good the translation was, and for a
+  reason nothing in the catalogue could show: the receiver reads its list of
+  plugins before DreamFin has had the chance to say where its own translations
+  live, so anything looked up at that moment came back untouched. The plugin now
+  points at its catalogue the first time it translates anything, which is early
+  enough.
+
+- **Three buttons in the library screen were never translatable.** The yellow
+  "refresh Library", and one level down the red and green settings buttons. They
+  went unnoticed for years for a rather human reason: their neighbours on the
+  same row *were* translated, so the button bar read half in one language and
+  half in the other — which looks like a translation somebody has not got round
+  to, rather than text that was never offered for translation in the first
+  place.
+
+Both came from the DreamPlex project, DreamFin's upstream. The first was proved
+on real hardware in a way worth recording: their plugin and this one sit next to
+each other in the same list, so when theirs began showing Spanish and this one
+still showed English, the same screen contained both the fix and the control.
+
 DreamFin 0.1.14 — release notes
 ===============================
 
