@@ -77,6 +77,7 @@ def _hasStringLiteral(node):
 class TestGettextMsgids(unittest.TestCase):
 	def test_no_literal_is_concatenated_into_a_msgid(self):
 		offenders = []
+		inspected = 0
 
 		for name in sorted(os.listdir(SRC)):
 			if not name.endswith(".py"):
@@ -90,6 +91,7 @@ class TestGettextMsgids(unittest.TestCase):
 					continue
 				if node.func.id != "_" or not node.args:
 					continue
+				inspected += 1
 				arg = node.args[0]
 				# a bare name/attribute is a no-op, not a broken msgid; what
 				# breaks it is building the key out of a literal plus something
@@ -105,6 +107,12 @@ class TestGettextMsgids(unittest.TestCase):
 			"means the key never matches the catalogue and the text can never "
 			"be translated - silently, because the lookup just returns the key. "
 			"Use _(\"... %s ...\") % value instead.")
+
+		# a guard that stops seeing anything passes exactly like one that works
+		self.assertTrue(
+			inspected >= 50,
+			"only %d _() calls were inspected - the walk has stopped matching "
+			"them, so the assertion above proves nothing" % inspected)
 
 
 class TestNoUnmarkedTwin(unittest.TestCase):
@@ -205,6 +213,12 @@ class TestNoUnmarkedTwin(unittest.TestCase):
 			"first press. Wrap it in _(), or add it to NOT_DISPLAY_TEXT if it "
 			"is an identifier rather than something a user reads.")
 
+		self.assertTrue(
+			len(marked) >= 50 and len(loose) >= 100,
+			"the walk collected %d marked and %d bare literals - too few to be "
+			"real, so it has stopped matching and the assertion above proves "
+			"nothing" % (len(marked), len(loose)))
+
 
 class TestNoTranslatedSentinel(unittest.TestCase):
 	"""A translated string must never be what a comparison depends on.
@@ -276,6 +290,12 @@ class TestNoTranslatedSentinel(unittest.TestCase):
 			"only holds in English and the plugin quietly behaves differently "
 			"in every other language. Keep a boolean beside the label and "
 			"compare that.")
+
+		self.assertTrue(
+			len(marked) >= 50 and len(compared) >= 20,
+			"the walk collected %d marked strings and %d compared literals - "
+			"too few to be real, so it has stopped matching and the assertion "
+			"above proves nothing" % (len(marked), len(compared)))
 
 
 if __name__ == "__main__":
