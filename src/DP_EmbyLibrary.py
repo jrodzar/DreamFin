@@ -507,16 +507,22 @@ class EmbyLibrary(object):
 		if self.serverConfig_accessToken:
 			self.g_accessToken = self.serverConfig_accessToken
 			if not self.g_userId:
+				# A configured user id always wins, even on a forced re-auth:
+				# the key comes from the config and never changes, so asking
+				# the server again could only turn a working setup into a
+				# broken one (resolving needs admin-only /Users).
 				cachedUserId = str(getattr(self.g_serverConfig, "userIdCache", _emptyConfig()).value)
-				if cachedUserId and not force:
+				if cachedUserId:
 					self.g_userId = cachedUserId
 				else:
-					self.g_userId = self._firstUserIdForApiKey()
+					self.lastError = None
+					self.g_userId = self._userIdForApiKey()
 					if self.g_userId:
 						self._saveTokenCache(userId=self.g_userId)
 			ok = bool(self.g_accessToken and self.g_userId)
 			if not ok:
-				self.lastError = _("Could not resolve a user for the configured API key.")
+				if not self.lastError:
+					self.lastError = _("Could not resolve a user for the configured API key.")
 				self.g_accessToken = ""
 			printl("", self, "C")
 			return ok
@@ -572,19 +578,61 @@ class EmbyLibrary(object):
 	#===============================================================================
 	#
 	#===============================================================================
-	def _firstUserIdForApiKey(self):
-		"""API keys are not user-scoped; resolve a user id via /Users."""
+	def _userIdForApiKey(self):
+		"""Resolve WHICH user an API key should act as - never by guessing.
+
+		API keys are not user-scoped, so the id has to come from somewhere.
+		This used to return users[0], which on an admin key silently opens a
+		stranger's library; the configured username is matched instead, and
+		anything ambiguous is an explicit error.
+
+		This is only a fallback: /Users is admin-only on Emby (it answers 403
+		"does not have access to ManageServer" for a normal client account),
+		which is why a provisioned userIdCache is the supported way to pair a
+		key with its user. Emby has no /Users/Me to fall back on either - it
+		answers 500 "Unrecognized Guid format", unlike Jellyfin.
+		"""
 		payload = self.doRequest(self.getContentUrl("/Users"))
 		if payload is False:
+			if self.lastStatus in (401, 403):
+				self.lastError = _("This API key is not allowed to list the users of this server. Configure the user id for this server instead.")
+			else:
+				self.lastError = _("Could not ask the server which users exist.")
 			return ""
+
 		try:
 			users = json.loads(payload.decode("utf-8"))
 			if isinstance(users, dict):  # defensive: some proxies wrap it
 				users = users.get("Items", [])
-			if users:
-				return str(users[0]["Id"])
-		except (ValueError, KeyError, TypeError, UnicodeDecodeError) as ex:
+		except (ValueError, TypeError, UnicodeDecodeError) as ex:
 			printl("could not parse /Users: " + str(ex), self, "W")
+			self.lastError = _("Could not read the user list of this server.")
+			return ""
+
+		users = users or []
+		wanted = self.serverConfig_username.strip().lower()
+
+		if wanted:
+			for user in users:
+				try:
+					if str(user.get("Name", "")).strip().lower() == wanted:
+						return str(user["Id"])
+				except (AttributeError, KeyError, TypeError):
+					continue
+			self.lastError = _("The configured user does not exist on this server.")
+			return ""
+
+		# Without a username there is nothing to match. One single user is
+		# still unambiguous; more than one would be a coin flip.
+		if len(users) == 1:
+			try:
+				return str(users[0]["Id"])
+			except (KeyError, TypeError):
+				pass
+			self.lastError = _("Could not read the user list of this server.")
+			return ""
+
+		self.lastError = _("Configure a username so the API key knows which library to open.")
 		return ""
 
 	#===============================================================================

@@ -1918,3 +1918,18 @@ msgstr "hasta 2560x1440, 8mbps"
 
 msgid "up to 3840x2160, 10mbps"
 msgstr "hasta 3840x2160, 10mbps"
+
+msgid "This API key is not allowed to list the users of this server. Configure the user id for this server instead."
+msgstr "Esta clave API no tiene permiso para listar los usuarios de este servidor. Configura en su lugar el id de usuario de este servidor."
+
+msgid "Could not ask the server which users exist."
+msgstr "No se pudo consultar al servidor qué usuarios existen."
+
+msgid "Could not read the user list of this server."
+msgstr "No se pudo leer la lista de usuarios de este servidor."
+
+msgid "The configured user does not exist on this server."
+msgstr "El usuario configurado no existe en este servidor."
+
+msgid "Configure a username so the API key knows which library to open."
+msgstr "Configura un nombre de usuario para que la clave API sepa qué biblioteca abrir."

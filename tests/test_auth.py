@@ -149,12 +149,112 @@ class TestApiKey(unittest.TestCase):
 		self.assertEqual(request["headers"].get("x-emby-token"), "my-api-key")
 
 	def test_api_key_wins_over_credentials(self):
-		self.mock.add_json("/Users", [{"Name": "admin", "Id": "adminuser0001"}])
+		# the key still short-circuits the login, but the user it acts as has
+		# to be the configured one - see TestApiKeyUserResolution below
+		self.mock.add_json("/Users", [{"Name": "admin", "Id": "adminuser0001"},
+									{"Name": "prova", "Id": "provauser0001"}])
 		lib = helpers.make_emby_instance(self.mock, username="prova", password="secret", apiKey="my-api-key")
 
 		self.assertTrue(lib.authenticate())
 		self.assertEqual(lib.g_accessToken, "my-api-key")
+		self.assertEqual(lib.g_userId, "provauser0001")
 		self.assertEqual(len(self.mock.requests_for(AUTH_PATH)), 0)
+
+
+class TestApiKeyUserResolution(unittest.TestCase):
+	"""An API key is not user-scoped, so DreamFin has to know WHICH user it
+	acts as. Two ways that went wrong, both reported from the fleet:
+
+	  * the provisioning side writes userIdCache along with the key; the
+	    server config screen used to wipe it on every save, after which the
+	    plugin fell back to asking /Users - admin-only on Emby (403
+	    ManageServer for a normal client account) - and died with "Could not
+	    resolve a user for the configured API key.".
+	  * the fallback returned users[0]. With an admin key that silently opens
+	    a stranger's library. Guessing is never acceptable here.
+	"""
+
+	def setUp(self):
+		self.mock = MockEmby().start()
+
+	def tearDown(self):
+		self.mock.stop()
+
+	def test_provisioned_user_id_is_used_without_asking_the_server(self):
+		lib = helpers.make_emby_instance(self.mock, username="", password="",
+										apiKey="my-api-key", userIdCache="provisioned01")
+
+		self.assertTrue(lib.authenticate())
+		self.assertEqual(lib.g_userId, "provisioned01")
+		# the whole point: /Users is never reached, so a client key that
+		# cannot list users still works
+		self.assertEqual(len(self.mock.requests_for("/Users")), 0)
+
+	def test_forced_reauth_keeps_the_provisioned_user_id(self):
+		# a 401 retry must not throw away a working configuration: the key
+		# comes from the config and re-resolving needs the admin-only endpoint
+		lib = helpers.make_emby_instance(self.mock, username="", password="",
+										apiKey="my-api-key", userIdCache="provisioned01")
+
+		self.assertTrue(lib.authenticate(force=True))
+		self.assertEqual(lib.g_userId, "provisioned01")
+		self.assertEqual(len(self.mock.requests_for("/Users")), 0)
+
+	def test_resolution_matches_the_configured_username(self):
+		self.mock.add_json("/Users", [{"Name": "admin", "Id": "adminuser0001"},
+									{"Name": "client", "Id": "clientuser001"},
+									{"Name": "other", "Id": "otheruser0001"}])
+		lib = helpers.make_emby_instance(self.mock, username="client", password="",
+										apiKey="my-api-key")
+
+		self.assertTrue(lib.authenticate())
+		self.assertEqual(lib.g_userId, "clientuser001")
+
+	def test_resolution_is_case_insensitive(self):
+		self.mock.add_json("/Users", [{"Name": "Client", "Id": "clientuser001"}])
+		lib = helpers.make_emby_instance(self.mock, username="client", password="",
+										apiKey="my-api-key")
+
+		self.assertTrue(lib.authenticate())
+		self.assertEqual(lib.g_userId, "clientuser001")
+
+	def test_never_falls_back_to_the_first_user(self):
+		# the security bug: admin is listed first, but "client" is configured
+		self.mock.add_json("/Users", [{"Name": "admin", "Id": "adminuser0001"},
+									{"Name": "somebodyelse", "Id": "strangeruser1"}])
+		lib = helpers.make_emby_instance(self.mock, username="client", password="",
+										apiKey="my-api-key")
+
+		self.assertFalse(lib.authenticate())
+		self.assertNotEqual(lib.g_userId, "adminuser0001")
+		self.assertFalse(lib.g_userId)
+		self.assertIn("does not exist", lib.getLastErrorMessage())
+
+	def test_forbidden_user_list_explains_what_to_do(self):
+		# Emby answers 403 "does not have access to ManageServer feature"
+		self.mock.add_error("/Users", 403, body="does not have access to ManageServer feature.")
+		lib = helpers.make_emby_instance(self.mock, username="client", password="",
+										apiKey="my-api-key")
+
+		self.assertFalse(lib.authenticate())
+		self.assertIn("user id", lib.getLastErrorMessage())
+
+	def test_single_user_without_a_username_is_unambiguous(self):
+		self.mock.add_json("/Users", [{"Name": "onlyone", "Id": "onlyuser00001"}])
+		lib = helpers.make_emby_instance(self.mock, username="", password="",
+										apiKey="my-api-key")
+
+		self.assertTrue(lib.authenticate())
+		self.assertEqual(lib.g_userId, "onlyuser00001")
+
+	def test_several_users_without_a_username_is_an_error_not_a_guess(self):
+		self.mock.add_json("/Users", [{"Name": "admin", "Id": "adminuser0001"},
+									{"Name": "client", "Id": "clientuser001"}])
+		lib = helpers.make_emby_instance(self.mock, username="", password="",
+										apiKey="my-api-key")
+
+		self.assertFalse(lib.authenticate())
+		self.assertFalse(lib.g_userId)
 
 
 class TestDetectServerType(unittest.TestCase):
