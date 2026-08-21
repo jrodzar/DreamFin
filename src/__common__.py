@@ -1052,6 +1052,31 @@ def isRecentlyAdded(dateStrings, nowEpoch, days):
 #
 #===========================================================================
 
+# The fields that decide WHICH server we talk to and WHO we act as. A change in
+# any of them invalidates a cached session; anything else (playback quality,
+# codec, subtitle preferences...) leaves it perfectly valid.
+SERVER_IDENTITY_FIELDS = ("connectionType", "ip", "dns", "port", "serverType",
+						"username", "password", "accessToken")
+
+
+def serverIdentityFingerprint(entry):
+	"""Comparable snapshot of a server entry's connection/account fields.
+
+	Used by the server config screen to tell "the user retyped the password"
+	from "the user picked a different transcode codec". Missing attributes are
+	rendered as "" so an older entry, saved before a field existed, compares
+	equal to itself instead of looking like a change.
+	"""
+	values = []
+	for name in SERVER_IDENTITY_FIELDS:
+		item = getattr(entry, name, None)
+		values.append("" if item is None else str(getattr(item, "value", "")))
+	return tuple(values)
+
+#===========================================================================
+#
+#===========================================================================
+
 
 def convertSize(size):
 	printl2("", "__common__::convertSize", "S")

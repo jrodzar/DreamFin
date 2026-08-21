@@ -35,7 +35,7 @@ from Components.config import config, getConfigListEntry, configfile
 from Screens.MessageBox import MessageBox
 from Screens.Screen import Screen
 
-from .__common__ import printl2 as printl
+from .__common__ import printl2 as printl, serverIdentityFingerprint
 from .__init__ import initServerEntryConfig, _  # _ is translation
 
 from .DP_Mappings import DPS_Mappings
@@ -280,6 +280,10 @@ class DPS_ServerConfig(ConfigListScreen, Screen, DPH_PlexScreen):
 			self.currentId = self.current.id.value
 			printl("currentId: " + str(self.currentId), self, "D")
 
+		# what the connection/account fields looked like on the way in, so
+		# keySave can tell a real identity change from any other edit
+		self.identityOnOpen = serverIdentityFingerprint(self.current)
+
 		self.cfglist = []
 		ConfigListScreen.__init__(self, self.cfglist, session)
 
@@ -480,10 +484,16 @@ class DPS_ServerConfig(ConfigListScreen, Screen, DPH_PlexScreen):
 			config.plugins.dreamfin.entriescount.value += 1
 			config.plugins.dreamfin.entriescount.save()
 
-		# connection or account details may have changed: drop the cached
-		# session so the next request logs in freshly against this config
-		self.current.accessTokenCache.value = ""
-		self.current.userIdCache.value = ""
+		# Drop the cached session ONLY when the connection or account details
+		# actually changed. Wiping it on every save also threw away a user id
+		# provisioned from outside: an Emby API key is not user-scoped, and
+		# re-resolving one needs /Users, which is admin-only (ManageServer).
+		# A client saving a mere playback preference was left with a plugin
+		# that could no longer open its own library.
+		if serverIdentityFingerprint(self.current) != self.identityOnOpen:
+			printl("connection/account changed: dropping the cached session", self, "I")
+			self.current.accessTokenCache.value = ""
+			self.current.userIdCache.value = ""
 
 		self.saveNow()
 
