@@ -1,3 +1,46 @@
+DreamFin 0.1.16 — release notes
+===============================
+
+**DreamFin** is an Emby/Jellyfin client for Enigma2 forked from DreamPlex. It
+reuses the DreamPlex user interface and replaces the Plex backend with an
+Emby/Jellyfin one. See `README.md` for setup, lineage and attribution.
+
+New in 0.1.16
+-------------
+
+- **Opening the server settings and pressing save no longer risks breaking the
+  plugin.** Saving always cleared the cached session, on the reasoning that the
+  connection details might have changed. Usually that costs nothing — DreamFin
+  logs in again and carries on. It is a different story when the server is set
+  up with an API key. An API key is not tied to a user, so the user it acts as
+  has to be remembered separately; clearing that left DreamFin with a perfectly
+  valid key and no idea whose library to open. The only way back was to enter
+  the account details again, which is a poor reward for changing the transcode
+  quality. The cached session is now dropped only when the connection or account
+  details actually changed.
+
+- **An API key can no longer end up opening somebody else's library.** When
+  DreamFin needed to work out which user an API key belonged to, it asked the
+  server for its users and took the first one on the list. On a server with one
+  user that is right by accident. On a shared server with an administrator key
+  it is quietly wrong: the library opens, the names and posters are real, and
+  nothing suggests they belong to another account. DreamFin now matches the
+  username you configured, ignoring capitalisation, and refuses with an
+  explanation when there is no match — the one exception being a server with a
+  single user, where there is nothing to get wrong.
+
+- **The messages when this fails now tell you what to do.** In particular, asking
+  a server for its list of users is an administrator's privilege on Emby, so an
+  ordinary account's key is turned away; instead of a flat "could not resolve a
+  user", DreamFin now says so and points at the setting that fixes it. A forced
+  re-login also stops discarding a user id that came from the configuration,
+  since the key it belongs to has not changed.
+
+Both problems were reported by a sister project that sets DreamFin up across a
+number of receivers, where the second one had been kept from doing any harm by
+luck alone: the keys in use are ordinary accounts', so the server turned the
+request away rather than handing back a stranger's identity.
+
 DreamFin 0.1.15 — release notes
 ===============================
 

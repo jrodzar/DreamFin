@@ -5,6 +5,23 @@ DreamFin is a fork of DreamPlex (a Plex client for Enigma2) with the Plex
 backend replaced by an Emby/Jellyfin one. See `RELEASENOTES.md` for the full
 release notes and `README.md` for lineage and attribution.
 
+0.1.16 — fixes
+--------------
+* **Saving the server settings could leave the plugin unable to open your
+  library.** Every save threw away the cached session, even a save that only
+  changed a playback preference. That is harmless when DreamFin can log in
+  again on its own, but not when it is set up with an API key: those are not
+  tied to a user, so the user id has to be stored alongside them, and once it
+  was gone the plugin had no way to work out whose library to open. Only a
+  change to the connection or account details drops the cached session now.
+* **An API key could open the wrong user's library.** When DreamFin had to work
+  out which user an API key belonged to, it took whichever user the server
+  listed first. With an administrator key that is somebody else's library, and
+  nothing on screen would have said so. It now matches the configured username,
+  and says plainly when it cannot rather than picking someone.
+* A forced re-login no longer discards a user id that came from the
+  configuration, and the errors around all of this now say what to do about it.
+
 0.1.15 — fixes
 --------------
 * **DreamFin's own entry in the plugin browser was always in English**, however
