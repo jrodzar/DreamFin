@@ -1717,7 +1717,17 @@ class DP_View(DPH_Screen, DPH_ScreenHelper, DPH_MultiColorFunctions, DPH_Filter)
 				self.session.nav.stopService()
 
 		if self.viewStep >= 0:
-			self["listview"].setList(self.currentEntryDataDict[self.viewStep])
+			# The widget goes back to the parent level's list, and so must every
+			# list the view acts on. onEnter hands self.listViewList to DP_Player
+			# together with the WIDGET's index; left pointing at the level we came
+			# from, that index played a different entry (when it fell inside that
+			# list) or crashed enigma2 with IndexError (when it did not). Marking
+			# seen/unseen, the view-state refresh and the letter filter index into
+			# these lists too.
+			restored = self.currentEntryDataDict[self.viewStep]
+			self.listViewList = restored
+			self.beforeFilterListViewList = restored
+			self["listview"].setList(restored)
 			self["listview"].setIndex(self.currentIndexDict[self.viewStep])
 
 			if self.filterMode:
