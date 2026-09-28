@@ -1,3 +1,33 @@
+DreamFin 0.1.17 — release notes
+===============================
+
+**DreamFin** is an Emby/Jellyfin client for Enigma2 forked from DreamPlex. It
+reuses the DreamPlex user interface and replaces the Plex backend with an
+Emby/Jellyfin one. See `README.md` for setup, lineage and attribution.
+
+New in 0.1.17
+-------------
+
+- **Backing out of a list no longer makes the next OK play something else, or
+  crash the receiver.** When you go back a level — say, out of a series and its
+  episodes, back to a list of recently added films and series — DreamFin put
+  the right list back on screen, but kept working with the one you had just
+  left. Pressing OK then looked your cursor position up in that old list. When
+  the position happened to exist there, a different title started playing and
+  nothing on screen said so; when it did not, the receiver's interface crashed
+  and restarted. Both are gone: the list you see and the list DreamFin acts on
+  are now always the same one.
+
+- **The same mismatch reached a few other places**, and they are fixed with it:
+  marking a title as seen or unseen right after going back could write into the
+  old list and flip the screen back to it, and the letter filter could search
+  the level you had just left instead of the one you were on.
+
+The crash was caught on a receiver in the field, where its crash log pointed
+straight at the list lookup. The quieter version — the wrong title playing
+without any error — is the more worrying of the two, because nothing would
+ever have reported it.
+
 DreamFin 0.1.16 — release notes
 ===============================
 

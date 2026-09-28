@@ -5,6 +5,17 @@ DreamFin is a fork of DreamPlex (a Plex client for Enigma2) with the Plex
 backend replaced by an Emby/Jellyfin one. See `RELEASENOTES.md` for the full
 release notes and `README.md` for lineage and attribution.
 
+0.1.17 — fix
+------------
+* **Pressing OK after backing out of a list could play the wrong title, or take
+  the receiver down.** Going back a level put the right list on screen but left
+  DreamFin working with the list you had just left. The cursor position was then
+  looked up in the wrong list: if it fitted, a different title started playing
+  without a word; if it did not, the receiver's interface crashed. It shows up in
+  views that mix films and series, after opening a series and coming back out.
+  Marking a title as seen or unseen, and the letter filter, were caught by the
+  same mismatch.
+
 0.1.16 — fixes
 --------------
 * **Saving the server settings could leave the plugin unable to open your
