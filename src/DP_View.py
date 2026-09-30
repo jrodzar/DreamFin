@@ -922,7 +922,7 @@ class DP_View(DPH_Screen, DPH_ScreenHelper, DPH_MultiColorFunctions, DPH_Filter)
 		self.setColorFunction(color="yellow", level="3", functionList=(_("delete Medias"), self.deleteMedias))
 		self.setColorFunction(color="blue", level="3", functionList=(_("use for Mapping"), self.useForMappingHelper))
 
-		self.setColorFunction(color="red", level="4", functionList=("", self.toggleFilterMode))  # name is empty because we set it dynamical
+		self.setColorFunction(color="red", level="4", functionList=("", self.leaveFilterMode))  # name is empty because we set it dynamical
 		self.setColorFunction(color="green", level="4", functionList=None)
 		self.setColorFunction(color="yellow", level="4", functionList=None)
 		self.setColorFunction(color="blue", level="4", functionList=None)
@@ -1272,6 +1272,41 @@ class DP_View(DPH_Screen, DPH_ScreenHelper, DPH_MultiColorFunctions, DPH_Filter)
 
 			self["L2"].show()
 			self["L3"].show()
+
+		printl("", self, "C")
+
+	#===========================================================================
+	#
+	#===========================================================================
+	def leaveFilterMode(self):
+		"""RED in filter mode: leave it with the whole list back on screen and
+		the cursor on the entry it was on.
+
+		RED used to call toggleFilterMode alone, which only gives the keys
+		back: the list stayed filtered under a button that says the filter is
+		off, and the only way to the whole list was typing a space - on
+		OpenATV 7.0's NumericalTextInput the SECOND press of key 1, since key 0
+		types "0". toggleFilterMode itself has to stay as it is: onEnter calls
+		it on every OK, right before handing self.listViewList and the cursor
+		index to the player."""
+		printl("", self, "S")
+
+		fullList = self.beforeFilterListViewList
+		if fullList is not None and fullList is not self.listViewList:
+			selection = self["listview"].getCurrent()
+			index = 0
+			if selection is not None:
+				for position, entry in enumerate(fullList):
+					if entry[1] is selection[1]:
+						index = position
+						break
+
+			self.listViewList = fullList
+			self["listview"].setList(self.listViewList)
+			self["listview"].setIndex(index)
+			self.refresh()
+
+		self.toggleFilterMode()
 
 		printl("", self, "C")
 
@@ -3631,8 +3666,16 @@ class DP_View(DPH_Screen, DPH_ScreenHelper, DPH_MultiColorFunctions, DPH_Filter)
 			# we also have to reset the variable because this one is passed to player
 			self.listViewList = self.beforeFilterListViewList
 		else:
-			self.listViewList = [x for x in self.beforeFilterListViewList if x[1]["title"][0] == self.onNumberKeyLastChar]
-			self["listview"].setList(self.listViewList)
+			filtered = [x for x in self.beforeFilterListViewList if x[1]["title"][:1] == self.onNumberKeyLastChar]
+			if filtered:
+				self.listViewList = filtered
+				self["listview"].setList(self.listViewList)
+			else:
+				# nothing starts with that character: keep the list on screen.
+				# An empty one read "no data retrieved" with the header stuck on
+				# the old count - and key 0, the obvious key to clear the
+				# filter, types a "0" on OpenATV 7.0 that nothing starts with
+				printl("no entry starts with " + self.onNumberKeyLastChar, self, "D")
 
 		self.refresh()
 
