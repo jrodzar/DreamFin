@@ -27,99 +27,122 @@ def wire_auth(mock):
 	mock.add_json("/System/Info/Public", helpers.fixture_json("system_info_public_emby.json"))
 
 
-class _FakeReactor(object):
-	"""twisted's reactor as the box has it, minus the main loop: there,
-	callFromThread hands the call to the main loop; here it runs it straight
-	away. It records every call, so a test can tell the result came back
-	through it."""
+class QueueingReactor(object):
+	"""Stands in for the twisted reactor: keeps what the worker hands over
+	instead of running it, so the test decides when - and on which thread -
+	the callback runs, as the real main loop would."""
 
 	def __init__(self):
-		self.calls = 0
+		self.handedOver = threading.Event()
+		self.pending = []
 
-	def callFromThread(self, function, *args, **kwargs):
-		self.calls += 1
-		function(*args, **kwargs)
+	def callFromThread(self, fn, *args, **kwargs):
+		self.pending.append((fn, args, kwargs))
+		self.handedOver.set()
+
+	def runPending(self):
+		for fn, args, kwargs in self.pending:
+			fn(*args, **kwargs)
 
 
 class TestRunInThread(unittest.TestCase):
 	"""Network I/O must be delivered back through a callback so it can run
 	off the enigma2 main loop (a long block there kills enigma2).
 
-	runInThread has two branches, picked by whether twisted's reactor
-	imported: synchronous without one (these offline tests) and, on the box,
-	a worker thread that hands the result back with reactor.callFromThread.
-	Which one a test took used to depend on what the sys.path offered: at
-	DreamPlex a twisted stub added to tests/stubs for another fix moved these
-	tests onto the thread branch without anyone noticing, and since they read
-	the result on the next line, py2.7 lost the race now and then (56 in
-	20,000). Here no twisted is on the path, so the box's branch was simply
-	never tested. Each branch is now forced, and the thread one is waited
-	for."""
+	runInThread() has two branches - synchronous without a reactor (these
+	offline tests), and on the box a worker thread that hands the result back
+	with reactor.callFromThread - and every test here pins the one it means.
+	They used to run whichever branch the sys.path selected: at DreamPlex a
+	twisted stub added to tests/stubs for an unrelated fix moved them onto the
+	threaded branch, where they read the result without waiting and failed now
+	and then on Python 2. Here no twisted is on the path, so the box's branch
+	was simply never tested.
+
+	The threaded branch runs against a reactor that QUEUES what it is handed
+	(design from DreamPlex): the test waits for the hand-over itself, checks
+	that onDone has not run yet, and then runs the queue on its own thread, as
+	the main loop would. A reactor that ran the call on the spot could not tell
+	a callback delivered through it from one the worker also ran itself - on
+	the worker thread, off the main loop. Measured: such a double delivery
+	passed the previous version of these tests."""
 
 	def setUp(self):
 		import src.__common__ as common
 		self.common = common
-		self.savedReactor = common.reactor
+		self.addCleanup(setattr, common, "reactor", common.reactor)
 
-	def tearDown(self):
-		self.common.reactor = self.savedReactor
-
-	def _run(self, work):
+	def runThreaded(self, work):
+		"""Run work through the threaded branch; return what was seen."""
+		reactor = QueueingReactor()
+		self.common.reactor = reactor
 		seen = {}
-		done = threading.Event()
+
+		def recordingWork():
+			seen["workThread"] = threading.current_thread()
+			return work()
 
 		def onDone(result, error):
 			seen["result"], seen["error"] = result, error
-			seen["thread"] = threading.current_thread()
-			done.set()
 
-		self.common.runInThread(work, onDone)  # must not raise
-		self.assertTrue(done.wait(5), "the callback never came")
+		self.common.runInThread(recordingWork, onDone)  # must not raise
+
+		# wait for the hand-over itself, never for a fixed time
+		self.assertTrue(reactor.handedOver.wait(10),
+				"the worker never handed its result to the reactor")
+		self.assertNotIn("result", seen,
+				"onDone ran on the worker thread instead of going through the reactor")
+		reactor.runPending()
+
 		return seen
 
-	@staticmethod
-	def _failing():
-		raise IOError("boom")
+	def test_the_work_runs_off_the_callers_thread(self):
+		seen = self.runThreaded(lambda: 21 * 2)
 
-	# without a reactor: the offline branch, synchronous
-
-	def test_result_is_delivered_without_a_reactor(self):
-		self.common.reactor = None
-		seen = self._run(lambda: 21 * 2)
-		self.assertEqual(seen["result"], 42)
-		self.assertIsNone(seen["error"])
-		self.assertIs(seen["thread"], threading.current_thread(),
-			"without a reactor the call must stay on the calling thread")
-
-	def test_exception_is_delivered_not_raised_without_a_reactor(self):
-		self.common.reactor = None
-		seen = self._run(self._failing)
-		self.assertIsNone(seen["result"])
-		self.assertIsInstance(seen["error"], IOError)
-
-	# with a reactor: the branch the box runs
+		self.assertIsNot(seen["workThread"], threading.current_thread(),
+				"the work ran on the caller's thread, so runInThread blocked it")
 
 	def test_result_is_delivered_through_the_reactor(self):
-		reactor = self.common.reactor = _FakeReactor()
-		worker = {}
+		seen = self.runThreaded(lambda: 21 * 2)
 
-		def work():
-			worker["thread"] = threading.current_thread()
-			return 21 * 2
-
-		seen = self._run(work)
 		self.assertEqual(seen["result"], 42)
 		self.assertIsNone(seen["error"])
-		self.assertIsNot(worker["thread"], threading.current_thread(),
-			"the work did not run off the calling thread")
-		self.assertEqual(reactor.calls, 1, "the result did not come back through reactor.callFromThread")
 
-	def test_exception_is_delivered_through_the_reactor_not_raised(self):
-		reactor = self.common.reactor = _FakeReactor()
-		seen = self._run(self._failing)
+	def test_exception_is_delivered_not_raised(self):
+		def work():
+			raise IOError("boom")
+
+		seen = self.runThreaded(work)
+
 		self.assertIsNone(seen["result"])
 		self.assertIsInstance(seen["error"], IOError)
-		self.assertEqual(reactor.calls, 1, "the error did not come back through reactor.callFromThread")
+
+	def test_without_a_reactor_the_result_is_delivered_before_returning(self):
+		self.common.reactor = None
+		seen = {}
+
+		def onDone(result, error):
+			seen["result"], seen["error"] = result, error
+
+		self.common.runInThread(lambda: 21 * 2, onDone)
+
+		# no waiting on purpose: this branch is synchronous by design
+		self.assertEqual(seen["result"], 42)
+		self.assertIsNone(seen["error"])
+
+	def test_without_a_reactor_an_exception_is_delivered_not_raised(self):
+		self.common.reactor = None
+		seen = {}
+
+		def work():
+			raise IOError("boom")
+
+		def onDone(result, error):
+			seen["result"], seen["error"] = result, error
+
+		self.common.runInThread(work, onDone)  # must not raise
+
+		self.assertIsNone(seen["result"])
+		self.assertIsInstance(seen["error"], IOError)
 
 
 class TestMultiVersionMedia(unittest.TestCase):
