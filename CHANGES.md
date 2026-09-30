@@ -5,6 +5,15 @@ DreamFin is a fork of DreamPlex (a Plex client for Enigma2) with the Plex
 backend replaced by an Emby/Jellyfin one. See `RELEASENOTES.md` for the full
 release notes and `README.md` for lineage and attribution.
 
+0.1.20 — fix
+------------
+* **The letter filter opened its list on an arbitrary title.** The receiver's
+  list keeps the cursor's position number when its contents change, so after
+  filtering the cursor landed wherever that number fell - usually on the last
+  title, once the red button had left it deep in the whole list. A list the
+  filter puts on screen now starts at the top, in the library views and in the
+  section menu.
+
 0.1.19 — fix
 ------------
 * **After watching something, the yellow button offered the wrong action.**

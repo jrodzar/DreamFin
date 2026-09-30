@@ -1,3 +1,25 @@
+DreamFin 0.1.20 — release notes
+===============================
+
+**DreamFin** is an Emby/Jellyfin client for Enigma2 forked from DreamPlex. It
+reuses the DreamPlex user interface and replaces the Plex backend with an
+Emby/Jellyfin one. See `README.md` for setup, lineage and attribution.
+
+New in 0.1.20
+-------------
+
+- **A filtered list now opens at the top.** When the letter filter narrowed a
+  list, the cursor kept its old position number, cut down to the length of the
+  new list - so it landed on an arbitrary title, usually the last one after
+  the red button had put you back deep in the whole list. The filtered list,
+  and the whole list when you clear the filter with a space, now start on
+  their first title. Clearing the filter with the red button still keeps the
+  title you were on. The section menu, which filters on the same keys, behaves
+  the same way.
+
+Found by the DreamPlex project on a receiver running OpenATV 7.0, and checked
+here on one before release.
+
 DreamFin 0.1.19 — release notes
 ===============================
 
