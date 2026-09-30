@@ -1,3 +1,40 @@
+DreamFin 0.1.18 — release notes
+===============================
+
+**DreamFin** is an Emby/Jellyfin client for Enigma2 forked from DreamPlex. It
+reuses the DreamPlex user interface and replaces the Plex backend with an
+Emby/Jellyfin one. See `README.md` for setup, lineage and attribution.
+
+New in 0.1.18
+-------------
+
+Two fixes to the letter filter: the number keys that narrow a library view
+down to the titles starting with one letter (press 4, then type the letter).
+
+- **Seen and unseen markers set while the filter is on now stay put.** The
+  filter shows a narrowed copy of the list, and marking a title changed only
+  that copy. Once the filter was cleared the title was back with its old
+  marker, although the server knew better - and so did the yellow button,
+  which offered the opposite action on a row that looked the other way. The
+  same happened to the marker a title gets when you stop watching it and come
+  back to a filtered list. That refresh also had a quieter flaw: it remembered
+  the title by its position in the list, so if the list changed in the few
+  seconds it takes - a letter typed, the filter cleared - the marker, and the
+  resume position with it, went to whichever title had moved into that
+  position. It now keeps track of the title itself.
+
+- **The red "turn filter mode off" button gives the whole list back.** It used
+  to stop the letter input and leave the list filtered. The only way back to
+  the full list was typing a space, which on OpenATV 7.0 is the second press of
+  key 1. Key 0, the one most people would try, types a "0": nothing starts with
+  it, and the list went empty with a "no data retrieved" message. Now the red
+  button restores the whole list with the cursor on the title you were on, and
+  a key that matches nothing simply leaves the list as it was. The section
+  menu, which filters on the same keys, no longer empties itself either.
+
+Both were found on a receiver running OpenATV 7.0, and checked there again
+with the fix in place.
+
 DreamFin 0.1.17 — release notes
 ===============================
 

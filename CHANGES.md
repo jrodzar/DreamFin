@@ -5,6 +5,23 @@ DreamFin is a fork of DreamPlex (a Plex client for Enigma2) with the Plex
 backend replaced by an Emby/Jellyfin one. See `RELEASENOTES.md` for the full
 release notes and `README.md` for lineage and attribution.
 
+0.1.18 — fixes
+--------------
+* **Marking a title as seen or unseen while the letter filter was on did not
+  stick.** Clearing the filter brought the whole list back with the title's old
+  marker, although the server had the new state and the yellow button offered
+  the opposite action. The marker a title gets when you come back from playing
+  it went the same way, and could even land on another title if the list
+  changed in the few seconds that refresh takes.
+* **Turning the letter filter off now gives the whole list back.** The red
+  "turn filter mode off" button only stopped the letter input and left the
+  list filtered, and the only way back was typing a space - on OpenATV 7.0, the
+  second press of key 1. Key 0, the one most people would try, matched nothing
+  and left an empty list reading "no data retrieved". The red button now
+  restores the whole list with the cursor on the same title, and a key that
+  matches nothing leaves the list as it was, in the library views and in the
+  section menu.
+
 0.1.17 — fix
 ------------
 * **Pressing OK after backing out of a list could play the wrong title, or take
