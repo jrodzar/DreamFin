@@ -16,15 +16,17 @@ Both faults were confirmed on a real box (SF8008, OpenATV 7.0, 2026-09-30):
    an EMPTY list ("no data retrieved"), and RED "turn filter mode off" left
    the list filtered. The section menu filters on the same keys through the
    base class, and emptied itself the same way.
+3. After the marker refresh, YELLOW kept offering the action for the state
+   from before the playback, until the cursor moved (0.1.18, on the box).
 
 DP_View cannot be imported offline (it pulls half of enigma2's Screens), so
 these tests compile the real methods out of the source and run them on a
 small stand-in for the screen. They check what the user would see - which
-marker the whole list shows, which list is on screen - and not how the fix
-is written: the same tests fail on the code from before it and pass on the
-code after it. The stand-in printl keeps what the code logs as a warning or
-an error, because these methods catch Exception: a test must not pass
-because the code under test blew up quietly.
+marker the whole list shows, which list is on screen, what YELLOW offers -
+and not how the fix is written: the same tests fail on the code from before
+it and pass on the code after it. The stand-in printl keeps what the code
+logs as a warning or an error, because these methods catch Exception: a test
+must not pass because the code under test blew up quietly.
 """
 from __future__ import absolute_import
 
@@ -213,6 +215,7 @@ class _Screen(object):
 		self.viewStep = 0
 		self.forceUpdate = False
 		self.contextItemId = "item"
+		self.currentFunctionLevel = "1"  # the color buttons a view opens with
 		# the level as the load flow leaves it: the list on screen, the
 		# unfiltered list and the list saved for onLeave are one object
 		self.listViewList = entries
@@ -248,21 +251,29 @@ class _Screen(object):
 	def alterColorFunctionNames(self, level=None):
 		pass
 
+	def initPlayMode(self):
+		pass
+
+	def initResumeMode(self):
+		pass
+
 
 _STUBBED = ("__init__", "refresh", "refreshMenu", "refreshFunctionName", "processSubViewElements",
-		"onKey1", "onKey2", "setLevelActive", "alterColorFunctionNames")
+		"onKey1", "onKey2", "setLevelActive", "alterColorFunctionNames", "initPlayMode", "initResumeMode")
 
 
-def _screen_class(path, className):
+def _screen_class(path, className, stubbed=_STUBBED):
 	cls = _class_node(path, className)
 	methods = _compile_methods(path, cls, NAMESPACE)
-	body = dict((name, func) for name, func in methods.items() if name not in _STUBBED)
+	body = dict((name, func) for name, func in methods.items() if name not in stubbed)
 	return cls, type(className + "UnderTest", (_Screen,), body)
 
 
 VIEW_NODE, View = _screen_class(VIEW, "DP_View")
 RED_IN_FILTER_MODE = _red_in_filter_mode(VIEW_NODE)
 _, ServerMenuFilter = _screen_class(HELPER, "DPH_Filter")
+# the same screen, painting the YELLOW label for real
+_, LabelView = _screen_class(VIEW, "DP_View", tuple(name for name in _STUBBED if name != "refreshFunctionName"))
 
 
 def _rows(seen=()):
@@ -275,11 +286,11 @@ def _rows(seen=()):
 	return rows
 
 
-def _view(seen=()):
+def _view(seen=(), viewClass=None):
 	del PENDING[:]
 	del SWALLOWED[:]
 	FRESH.clear()
-	return View(_rows(seen), "listview")
+	return (viewClass or View)(_rows(seen), "listview")
 
 
 def _type(view, char):
@@ -433,6 +444,52 @@ class TestGettingTheWholeListBack(unittest.TestCase):
 		menu.onNumberKeyLastChar = "U"
 		menu.filter()
 		self.assertEqual(_on_screen(menu, "menu"), U_TITLES)
+
+
+class TestYellowLabelFollowsTheRefresh(unittest.TestCase):
+	"""YELLOW offers the opposite of the selected row's state ("set 'Seen'" on
+	an unseen row). The marker refresh after playback rebuilt the list through
+	updateList(), which does not go through refresh(), so self.seen - and the
+	label with it - kept the state from before the playback: "set 'Seen'" on a
+	row the refresh had just marked seen, until the cursor moved. Seen on the
+	box with 0.1.18."""
+
+	def _land_on(self, view, title):
+		"""The cursor lands on title, and refresh() works out its label."""
+		_select(view, title)
+		view.selection = view["listview"].getCurrent()
+		view.handleViewStateInformation()
+
+	def _refreshed_as(self, view, state):
+		"""The playback of the selected row stops; the server now says state."""
+		title, data = view.selection[0], view.selection[1]
+		played = "1" if state == "seen" else "0"
+		FRESH["item:" + data["ratingKey"]] = [[(title, {"viewCount": played, "played": played,
+				"viewOffset": "0"}, None, state, "next:" + title)]]
+		view.refreshEntryViewState(view["listview"].getIndex())
+		_answer_pending_requests(self)
+
+	def test_label_follows_a_row_the_refresh_marks_seen(self):
+		view = _view(viewClass=LabelView)
+		self._land_on(view, "Hokum")
+		self.assertEqual(view["btn_yellowText"].text, "set 'Seen'")
+
+		self._refreshed_as(view, "seen")
+		self.assertEqual(_markers(view)["Hokum"], SEEN, "the refresh did not mark the row")
+		self.assertTrue(view.seen, "the view still holds the state from before the playback")
+		self.assertEqual(view["btn_yellowText"].text, "set 'Unseen'",
+			"YELLOW still offers to mark seen a row the refresh just marked seen")
+
+	def test_label_follows_a_row_the_refresh_marks_unseen(self):
+		view = _view(seen=("Hokum",), viewClass=LabelView)
+		self._land_on(view, "Hokum")
+		self.assertEqual(view["btn_yellowText"].text, "set 'Unseen'")
+
+		self._refreshed_as(view, "unseen")
+		self.assertEqual(_markers(view)["Hokum"], UNSEEN, "the refresh did not mark the row")
+		self.assertFalse(view.seen, "the view still holds the state from before the playback")
+		self.assertEqual(view["btn_yellowText"].text, "set 'Seen'",
+			"YELLOW still offers to mark unseen a row the refresh just marked unseen")
 
 
 if __name__ == "__main__":

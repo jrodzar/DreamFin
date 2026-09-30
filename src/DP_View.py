@@ -812,6 +812,14 @@ class DP_View(DPH_Screen, DPH_ScreenHelper, DPH_MultiColorFunctions, DPH_Filter)
 				# modifyEntry does not repaint the row on every skin/listbox
 				# combination - rebuild the visual list like the initial load does
 				self.updateList(myIndex=index)
+				# ...and YELLOW, which offers the opposite of the selected row's
+				# state: updateList does not go through refresh(), so self.seen
+				# kept the state from before the playback and the label read
+				# "set 'Seen'" on a row just marked seen, until the cursor moved.
+				# Worked out again the way refresh() does it (it only repaints
+				# at level 1; onKey1 repaints from self.seen on the way back)
+				if self.selection is not None and self.selection[1].get("tagType") != "Directory":
+					self.handleViewStateInformation()
 
 			# the pickle cache of this section is stale now
 			self.forceUpdate = True
