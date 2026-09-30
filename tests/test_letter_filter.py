@@ -26,7 +26,10 @@ marker the whole list shows, which list is on screen, what YELLOW offers -
 and not how the fix is written: the same tests fail on the code from before
 it and pass on the code after it. The stand-in printl keeps what the code
 logs as a warning or an error, because these methods catch Exception: a test
-must not pass because the code under test blew up quietly.
+must not pass because the code under test blew up quietly. And every case
+runs twice: with a listbox that puts the cursor on top with every new list,
+and with the one the receiver has, which keeps the old index - one model
+alone hides what the other shows.
 """
 from __future__ import absolute_import
 
@@ -169,8 +172,9 @@ NAMESPACE = {
 # --- a stand-in for the screen ----------------------------------------------
 
 class _Listbox(object):
-	"""The widget: what the user sees and moves the cursor over. A new list
-	puts the cursor back on top, so nothing passes by keeping an old one."""
+	"""The widget: what the user sees and moves the cursor over. This model
+	puts the cursor back on top with every new list, so nothing passes by
+	leaning on a cursor that survived a list swap."""
 
 	def __init__(self):
 		self.list = []
@@ -192,6 +196,17 @@ class _Listbox(object):
 		return None
 
 
+class _ClampingListbox(_Listbox):
+	"""The listbox the receiver really has: enigma2's eListbox keeps the
+	cursor's index across setList(), cut down to the new length (measured by
+	DreamPlex on OpenATV 7.0). It sees a cursor left where it should not be,
+	which the resetting model hides."""
+
+	def setList(self, entries):
+		self.list = entries
+		self.index = min(self.index, max(len(entries) - 1, 0))
+
+
 class _Widget(object):
 
 	def show(self):
@@ -206,8 +221,8 @@ class _Widget(object):
 
 class _Screen(object):
 
-	def __init__(self, entries, listName):
-		self.widgets = {listName: _Listbox()}
+	def __init__(self, entries, listName, listbox=None):
+		self.widgets = {listName: (listbox or _Listbox)()}
 		self.seenPic, self.unseenPic, self.startedPic = SEEN, UNSEEN, STARTED
 		self.filterMode = False
 		self.keyOneDisabled = False
@@ -246,7 +261,7 @@ class _Screen(object):
 		pass
 
 	def setLevelActive(self, currentLevel=None):
-		pass
+		self.currentFunctionLevel = currentLevel
 
 	def alterColorFunctionNames(self, level=None):
 		pass
@@ -258,22 +273,34 @@ class _Screen(object):
 		pass
 
 
+class _LabelScreen(_Screen):
+
+	def refresh(self):
+		"""What refresh() does for YELLOW - work the selected row's state out
+		again - and nothing else."""
+		self.selection = self["listview"].getCurrent()
+		if self.selection is not None and self.selection[1].get("tagType") != "Directory":
+			self.handleViewStateInformation()
+
+
 _STUBBED = ("__init__", "refresh", "refreshMenu", "refreshFunctionName", "processSubViewElements",
 		"onKey1", "onKey2", "setLevelActive", "alterColorFunctionNames", "initPlayMode", "initResumeMode")
 
 
-def _screen_class(path, className, stubbed=_STUBBED):
+def _screen_class(path, className, stubbed=_STUBBED, base=_Screen):
 	cls = _class_node(path, className)
 	methods = _compile_methods(path, cls, NAMESPACE)
 	body = dict((name, func) for name, func in methods.items() if name not in stubbed)
-	return cls, type(className + "UnderTest", (_Screen,), body)
+	return cls, type(className + "UnderTest", (base,), body)
 
 
 VIEW_NODE, View = _screen_class(VIEW, "DP_View")
 RED_IN_FILTER_MODE = _red_in_filter_mode(VIEW_NODE)
 _, ServerMenuFilter = _screen_class(HELPER, "DPH_Filter")
-# the same screen, painting the YELLOW label for real
-_, LabelView = _screen_class(VIEW, "DP_View", tuple(name for name in _STUBBED if name != "refreshFunctionName"))
+# the same screen painting YELLOW for real: the real refreshFunctionName and
+# onKey1, and a refresh() that works the selected row's state out again
+_, LabelView = _screen_class(VIEW, "DP_View",
+		tuple(name for name in _STUBBED if name not in ("refreshFunctionName", "onKey1")), _LabelScreen)
 
 
 def _rows(seen=()):
@@ -286,11 +313,11 @@ def _rows(seen=()):
 	return rows
 
 
-def _view(seen=(), viewClass=None):
+def _view(seen=(), viewClass=None, listbox=None):
 	del PENDING[:]
 	del SWALLOWED[:]
 	FRESH.clear()
-	return (viewClass or View)(_rows(seen), "listview")
+	return (viewClass or View)(_rows(seen), "listview", listbox)
 
 
 def _type(view, char):
@@ -311,10 +338,22 @@ def _select(view, title):
 	view["listview"].setIndex(_on_screen(view).index(title))
 
 
-class TestMarkerSurvivesTheFilter(unittest.TestCase):
+class _ScreenTest(unittest.TestCase):
+	"""Runs with the resetting listbox; the ...OnTheReceiversListbox copies at
+	the end run the same cases with the one the receiver has."""
+	LISTBOX = _Listbox
+
+	def view(self, seen=(), viewClass=None):
+		return _view(seen, viewClass, self.LISTBOX)
+
+	def menu(self, titles):
+		return ServerMenuFilter([(title,) for title in titles], "menu", self.LISTBOX)
+
+
+class TestMarkerSurvivesTheFilter(_ScreenTest):
 
 	def test_seen_marker_survives_clearing_the_filter(self):
-		view = _view()
+		view = self.view()
 		_type(view, "U")
 		self.assertEqual(_on_screen(view), U_TITLES)
 		_select(view, "Un talento unico")
@@ -330,7 +369,7 @@ class TestMarkerSurvivesTheFilter(unittest.TestCase):
 				self.assertEqual(markers[title], UNSEEN, "%s changed marker" % title)
 
 	def test_unseen_marker_survives_clearing_the_filter(self):
-		view = _view(seen=("Un altre home",))
+		view = self.view(seen=("Un altre home",))
 		_type(view, "U")
 		_select(view, "Un altre home")
 		view.markUnwatched()
@@ -341,7 +380,7 @@ class TestMarkerSurvivesTheFilter(unittest.TestCase):
 
 	def test_the_level_saved_for_going_back_keeps_the_marker(self):
 		# onLeave restores this level from currentEntryDataDict
-		view = _view()
+		view = self.view()
 		_type(view, "U")
 		_select(view, "Un hijo propio")
 		view.markWatched()
@@ -359,7 +398,7 @@ class TestMarkerSurvivesTheFilter(unittest.TestCase):
 		self.assertTrue(PENDING, "the marker refresh sent no request")
 
 	def test_refresh_after_playback_marks_the_played_row_when_the_filter_is_cleared_meanwhile(self):
-		view = _view()
+		view = self.view()
 		_type(view, "U")
 		self._play_and_answer_later(view, "Un altre home")
 		_type(view, " ")  # cleared before the answer came back
@@ -378,7 +417,7 @@ class TestMarkerSurvivesTheFilter(unittest.TestCase):
 		# the played row sits at index 0, so the list typed meanwhile (one row)
 		# still HAS that index: patching by the old index writes on the row on
 		# screen, instead of raising IndexError and passing for that reason
-		view = _view()
+		view = self.view()
 		_type(view, "U")
 		self._play_and_answer_later(view, "Un hijo propio")
 		_type(view, "J")  # another letter before the answer came back
@@ -390,10 +429,10 @@ class TestMarkerSurvivesTheFilter(unittest.TestCase):
 			"the played entry lost its marker because it was filtered out when the answer came")
 
 
-class TestGettingTheWholeListBack(unittest.TestCase):
+class TestGettingTheWholeListBack(_ScreenTest):
 
 	def test_red_in_filter_mode_brings_the_whole_list_back(self):
-		view = _view()
+		view = self.view()
 		view.onKey4()
 		self.assertTrue(view.filterMode)
 		_type(view, "U")
@@ -413,7 +452,7 @@ class TestGettingTheWholeListBack(unittest.TestCase):
 		# onEnter leaves the filter mode on every OK, right before handing
 		# self.listViewList and the cursor index to DP_Player: that path must
 		# keep the filtered list, or OK plays another entry
-		view = _view()
+		view = self.view()
 		view.onKey4()
 		_type(view, "U")
 		_select(view, "Un altre home")
@@ -423,13 +462,13 @@ class TestGettingTheWholeListBack(unittest.TestCase):
 		self.assertEqual(view.listViewList[view["listview"].getIndex()][0], "Un altre home")
 
 	def test_a_character_nothing_starts_with_keeps_the_whole_list(self):
-		view = _view()
+		view = self.view()
 		_type(view, "0")  # key 0 on OpenATV 7.0
 		self.assertEqual(_on_screen(view), list(TITLES), "a \"0\" emptied the list")
 		self.assertIs(view.listViewList, view["listview"].list)
 
 	def test_a_character_nothing_starts_with_keeps_the_filtered_list(self):
-		view = _view()
+		view = self.view()
 		_type(view, "U")
 		_type(view, "0")
 		self.assertEqual(_on_screen(view), U_TITLES, "a \"0\" emptied the filtered list")
@@ -437,7 +476,7 @@ class TestGettingTheWholeListBack(unittest.TestCase):
 
 	def test_the_section_menu_keeps_its_list_on_a_character_nothing_starts_with(self):
 		# DPS_ServerMenu filters on the number keys through DPH_Filter.filter
-		menu = ServerMenuFilter([(title,) for title in TITLES], "menu")
+		menu = self.menu(TITLES)
 		menu.onNumberKeyLastChar = "0"
 		menu.filter()
 		self.assertEqual(_on_screen(menu, "menu"), list(TITLES), "a \"0\" emptied the section menu")
@@ -446,7 +485,7 @@ class TestGettingTheWholeListBack(unittest.TestCase):
 		self.assertEqual(_on_screen(menu, "menu"), U_TITLES)
 
 
-class TestYellowLabelFollowsTheRefresh(unittest.TestCase):
+class TestYellowLabelFollowsTheRefresh(_ScreenTest):
 	"""YELLOW offers the opposite of the selected row's state ("set 'Seen'" on
 	an unseen row). The marker refresh after playback rebuilt the list through
 	updateList(), which does not go through refresh(), so self.seen - and the
@@ -470,7 +509,7 @@ class TestYellowLabelFollowsTheRefresh(unittest.TestCase):
 		_answer_pending_requests(self)
 
 	def test_label_follows_a_row_the_refresh_marks_seen(self):
-		view = _view(viewClass=LabelView)
+		view = self.view(viewClass=LabelView)
 		self._land_on(view, "Hokum")
 		self.assertEqual(view["btn_yellowText"].text, "set 'Seen'")
 
@@ -481,7 +520,7 @@ class TestYellowLabelFollowsTheRefresh(unittest.TestCase):
 			"YELLOW still offers to mark seen a row the refresh just marked seen")
 
 	def test_label_follows_a_row_the_refresh_marks_unseen(self):
-		view = _view(seen=("Hokum",), viewClass=LabelView)
+		view = self.view(seen=("Hokum",), viewClass=LabelView)
 		self._land_on(view, "Hokum")
 		self.assertEqual(view["btn_yellowText"].text, "set 'Unseen'")
 
@@ -490,6 +529,48 @@ class TestYellowLabelFollowsTheRefresh(unittest.TestCase):
 		self.assertFalse(view.seen, "the view still holds the state from before the playback")
 		self.assertEqual(view["btn_yellowText"].text, "set 'Seen'",
 			"YELLOW still offers to mark unseen a row the refresh just marked unseen")
+
+
+class TestYellowAfterLeavingTheFilterMode(_ScreenTest):
+	"""RED must work YELLOW out again for the row the cursor lands on. A
+	cursor that stays on its row cannot tell a recomputed state from one left
+	over, so the case starts from a state left over from another row. Without
+	the refresh() in leaveFilterMode it fails; with it and toggleFilterMode()
+	swapped it passes - refresh() repaints once onKey1 is back at level 1.
+	What matters is that the list swap is followed by a refresh()."""
+
+	def test_red_works_the_label_out_for_the_row_under_the_cursor(self):
+		view = self.view(seen=("Hokum",), viewClass=LabelView)
+		view.onKey4()
+		_type(view, "U")  # Un hijo propio, Un talento unico, Un altre home: none seen
+		view.seen = True  # left over from Hokum, which is seen
+		view["btn_yellowText"].setText("set 'Unseen'")
+
+		getattr(view, RED_IN_FILTER_MODE)()
+		self.assertEqual(view.currentFunctionLevel, "1")
+		self.assertEqual(view["btn_yellowText"].text, "set 'Seen'",
+			"after RED, YELLOW kept a state left over from another row")
+
+
+class _OnTheReceiversListbox(object):
+	"""The same cases, with the listbox the receiver really has."""
+	LISTBOX = _ClampingListbox
+
+
+class TestMarkerSurvivesTheFilterOnTheReceiversListbox(_OnTheReceiversListbox, TestMarkerSurvivesTheFilter):
+	pass
+
+
+class TestGettingTheWholeListBackOnTheReceiversListbox(_OnTheReceiversListbox, TestGettingTheWholeListBack):
+	pass
+
+
+class TestYellowLabelFollowsTheRefreshOnTheReceiversListbox(_OnTheReceiversListbox, TestYellowLabelFollowsTheRefresh):
+	pass
+
+
+class TestYellowAfterLeavingTheFilterModeOnTheReceiversListbox(_OnTheReceiversListbox, TestYellowAfterLeavingTheFilterMode):
+	pass
 
 
 if __name__ == "__main__":
