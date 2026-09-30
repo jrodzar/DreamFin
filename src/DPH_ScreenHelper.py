@@ -635,11 +635,15 @@ class DPH_Filter(NumericalTextInput):
 
 			# we also have to reset the variable because this one is passed to player
 			self.listViewList = self.beforeFilterListViewList
+			# a new list starts at the top: the receiver's listbox keeps the old
+			# index across setList(), cut down to the new length
+			self["menu"].setIndex(0)
 		else:
 			filtered = [x for x in self.beforeFilterListViewList if x[0][:1] == self.onNumberKeyLastChar]
 			if filtered:
 				self.listViewList = filtered
 				self["menu"].setList(self.listViewList)
+				self["menu"].setIndex(0)
 			else:
 				# nothing starts with that character: keep the menu as it is.
 				# An empty one left nothing to select - and key 0 types a "0"

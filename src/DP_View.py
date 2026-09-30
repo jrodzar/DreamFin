@@ -3673,11 +3673,17 @@ class DP_View(DPH_Screen, DPH_ScreenHelper, DPH_MultiColorFunctions, DPH_Filter)
 
 			# we also have to reset the variable because this one is passed to player
 			self.listViewList = self.beforeFilterListViewList
+			# a new list starts at the top: the receiver's listbox keeps the old
+			# index across setList(), cut down to the new length, so the list
+			# opened on an arbitrary row - the last one, once RED had left the
+			# cursor deep in the whole list (found by DreamPlex on the box)
+			self["listview"].setIndex(0)
 		else:
 			filtered = [x for x in self.beforeFilterListViewList if x[1]["title"][:1] == self.onNumberKeyLastChar]
 			if filtered:
 				self.listViewList = filtered
 				self["listview"].setList(self.listViewList)
+				self["listview"].setIndex(0)
 			else:
 				# nothing starts with that character: keep the list on screen.
 				# An empty one read "no data retrieved" with the header stuck on

@@ -18,6 +18,9 @@ Both faults were confirmed on a real box (SF8008, OpenATV 7.0, 2026-09-30):
    base class, and emptied itself the same way.
 3. After the marker refresh, YELLOW kept offering the action for the state
    from before the playback, until the cursor moved (0.1.18, on the box).
+4. A list the filter put on screen opened wherever the old cursor index
+   fell - the last row, once RED had left the cursor deep in the whole
+   list (found by DreamPlex on the box, with the filter fix in place).
 
 DP_View cannot be imported offline (it pulls half of enigma2's Screens), so
 these tests compile the real methods out of the source and run them on a
@@ -552,6 +555,53 @@ class TestYellowAfterLeavingTheFilterMode(_ScreenTest):
 			"after RED, YELLOW kept a state left over from another row")
 
 
+class TestTheCursorAfterFiltering(_ScreenTest):
+	"""A list the filter puts on screen starts at the top. Only the receiver's
+	listbox can tell: the resetting one puts the cursor there whatever the
+	code does. Seen by DreamPlex on the box: after RED left the cursor deep in
+	the whole list, the next letter opened the filtered list on its last row."""
+
+	def test_a_letter_starts_at_the_top(self):
+		view = self.view()
+		_select(view, "Jumbo")
+		_type(view, "U")
+		self.assertEqual(view["listview"].getCurrent()[0], "Un hijo propio",
+			"the filtered list opened where the old cursor index fell")
+
+	def test_filtering_again_after_red_starts_at_the_top(self):
+		view = self.view()
+		view.onKey4()
+		_type(view, "U")
+		_select(view, "Un altre home")
+		getattr(view, RED_IN_FILTER_MODE)()  # back on it, deep in the whole list
+		view.onKey4()
+		_type(view, "U")
+		self.assertEqual(view["listview"].getCurrent()[0], "Un hijo propio",
+			"after RED, the next letter opened the list on its last row")
+
+	def test_showing_everything_again_starts_at_the_top(self):
+		view = self.view()
+		_type(view, "U")
+		_select(view, "Un altre home")
+		_type(view, " ")
+		self.assertEqual(view["listview"].getCurrent()[0], TITLES[0],
+			"the whole list opened where the filtered cursor index fell")
+
+	def test_a_character_that_matches_nothing_leaves_the_cursor_alone(self):
+		view = self.view()
+		_select(view, "Jumbo")
+		_type(view, "0")
+		self.assertEqual(view["listview"].getCurrent()[0], "Jumbo")
+
+	def test_the_section_menu_starts_at_the_top_too(self):
+		menu = self.menu(("Documentals", "Pel.licules", "Series", "Series infantils"))
+		menu["menu"].setIndex(3)
+		menu.onNumberKeyLastChar = "S"
+		menu.filter()
+		self.assertEqual(menu["menu"].getCurrent()[0], "Series",
+			"the filtered section menu opened where the old cursor index fell")
+
+
 class _OnTheReceiversListbox(object):
 	"""The same cases, with the listbox the receiver really has."""
 	LISTBOX = _ClampingListbox
@@ -570,6 +620,10 @@ class TestYellowLabelFollowsTheRefreshOnTheReceiversListbox(_OnTheReceiversListb
 
 
 class TestYellowAfterLeavingTheFilterModeOnTheReceiversListbox(_OnTheReceiversListbox, TestYellowAfterLeavingTheFilterMode):
+	pass
+
+
+class TestTheCursorAfterFilteringOnTheReceiversListbox(_OnTheReceiversListbox, TestTheCursorAfterFiltering):
 	pass
 
 
