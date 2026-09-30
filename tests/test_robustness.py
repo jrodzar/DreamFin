@@ -64,7 +64,12 @@ class TestRunInThread(unittest.TestCase):
 	the main loop would. A reactor that ran the call on the spot could not tell
 	a callback delivered through it from one the worker also ran itself - on
 	the worker thread, off the main loop. Measured: such a double delivery
-	passed the previous version of these tests."""
+	passed the previous version of these tests.
+
+	Once the queue has run, the test also joins the worker and wants exactly
+	one delivery, on its own thread (also from DreamPlex): a worker that handed
+	over and only THEN ran onDone itself got past the "not yet" check whenever
+	it was slow enough. Measured: with a pause between the two, every time."""
 
 	def setUp(self):
 		import src.__common__ as common
@@ -75,13 +80,14 @@ class TestRunInThread(unittest.TestCase):
 		"""Run work through the threaded branch; return what was seen."""
 		reactor = QueueingReactor()
 		self.common.reactor = reactor
-		seen = {}
+		seen = {"onDoneThreads": []}
 
 		def recordingWork():
 			seen["workThread"] = threading.current_thread()
 			return work()
 
 		def onDone(result, error):
+			seen["onDoneThreads"].append(threading.current_thread())
 			seen["result"], seen["error"] = result, error
 
 		self.common.runInThread(recordingWork, onDone)  # must not raise
@@ -92,6 +98,14 @@ class TestRunInThread(unittest.TestCase):
 		self.assertNotIn("result", seen,
 				"onDone ran on the worker thread instead of going through the reactor")
 		reactor.runPending()
+
+		# the worker must be done, and must not have delivered a second time
+		worker = seen["workThread"]
+		if worker is not threading.current_thread():  # else: its own test says so
+			worker.join(10)
+			self.assertFalse(worker.is_alive(), "the worker thread never finished")
+		self.assertEqual(seen["onDoneThreads"], [threading.current_thread()],
+				"onDone must run exactly once, and on the main loop's thread")
 
 		return seen
 
