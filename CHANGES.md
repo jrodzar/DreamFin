@@ -5,6 +5,15 @@ DreamFin is a fork of DreamPlex (a Plex client for Enigma2) with the Plex
 backend replaced by an Emby/Jellyfin one. See `RELEASENOTES.md` for the full
 release notes and `README.md` for lineage and attribution.
 
+0.1.19 — fix
+------------
+* **After watching something, the yellow button offered the wrong action.**
+  When you stop a title and come back to the list, DreamFin asks the server
+  for its new state and updates the title's seen marker. The marker changed,
+  but the yellow button kept offering what made sense before you pressed
+  play: "set 'Seen'" on a title that had just become seen. Moving the cursor
+  away and back put it right; now it is right straight away.
+
 0.1.18 — fixes
 --------------
 * **Marking a title as seen or unseen while the letter filter was on did not

@@ -1,3 +1,26 @@
+DreamFin 0.1.19 — release notes
+===============================
+
+**DreamFin** is an Emby/Jellyfin client for Enigma2 forked from DreamPlex. It
+reuses the DreamPlex user interface and replaces the Plex backend with an
+Emby/Jellyfin one. See `README.md` for setup, lineage and attribution.
+
+New in 0.1.19
+-------------
+
+- **The yellow button follows a title's watched state as soon as you come back
+  from playing it.** In the library views the yellow button offers the
+  opposite of the selected title's state: "set 'Seen'" on something you have
+  not watched, "set 'Unseen'" on something you have. When you stop playing and
+  return to the list, DreamFin asks the server for the title's new state and
+  updates its marker - but the yellow button kept the state from before you
+  pressed play, so a title that had just become watched still offered to be
+  marked as seen. Moving the cursor away and back fixed it; now the button is
+  right from the start.
+
+Found on a receiver running OpenATV 7.0, and checked there again with the fix
+in place.
+
 DreamFin 0.1.18 — release notes
 ===============================
 
