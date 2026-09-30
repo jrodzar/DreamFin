@@ -22,7 +22,9 @@ these tests compile the real methods out of the source and run them on a
 small stand-in for the screen. They check what the user would see - which
 marker the whole list shows, which list is on screen - and not how the fix
 is written: the same tests fail on the code from before it and pass on the
-code after it.
+code after it. The stand-in printl keeps what the code logs as a warning or
+an error, because these methods catch Exception: a test must not pass
+because the code under test blew up quietly.
 """
 from __future__ import absolute_import
 
@@ -94,16 +96,30 @@ def _red_in_filter_mode(cls):
 
 PENDING = []  # (fetch, callback) pairs handed to runInThread, still "out"
 FRESH = {}  # item url -> what the server answers for it
+SWALLOWED = []  # warnings and errors the code under test logged
+
+
+def _printl(string, parent=None, dmode="U", *args, **kwargs):
+	"""The plugin's printl. Warnings and errors are kept: the methods under
+	test catch Exception and only log it, so a test could pass because the
+	code blew up quietly instead of because it worked."""
+	if dmode in ("W", "E"):
+		SWALLOWED.append(str(string))
 
 
 def _run_in_thread(fetch, callback):
 	PENDING.append((fetch, callback))
 
 
-def _answer_pending_requests():
+def _answer_pending_requests(test):
+	"""The answers come back. A swallowed exception fails the test: DreamPlex
+	measured a case that passed on the old code only because an index past
+	the end of a shorter list raised inside applyRefreshedViewState's
+	`except Exception`."""
 	while PENDING:
 		fetch, callback = PENDING.pop(0)
 		callback(fetch(), None)
+	test.assertEqual(SWALLOWED, [], "the code under test swallowed an exception: %s" % "; ".join(SWALLOWED))
 
 
 class _Backend(object):
@@ -138,7 +154,7 @@ class _MessageBox(object):
 
 
 NAMESPACE = {
-	"printl": lambda *args, **kwargs: None,
+	"printl": _printl,
 	"_": lambda text: text,
 	"fireAndForget": lambda job: None,
 	"runInThread": _run_in_thread,
@@ -261,6 +277,7 @@ def _rows(seen=()):
 
 def _view(seen=()):
 	del PENDING[:]
+	del SWALLOWED[:]
 	FRESH.clear()
 	return View(_rows(seen), "listview")
 
@@ -335,7 +352,7 @@ class TestMarkerSurvivesTheFilter(unittest.TestCase):
 		_type(view, "U")
 		self._play_and_answer_later(view, "Un altre home")
 		_type(view, " ")  # cleared before the answer came back
-		_answer_pending_requests()
+		_answer_pending_requests(self)
 
 		markers = _markers(view)
 		self.assertEqual(markers["Un altre home"], SEEN, "the played entry did not get its marker")
@@ -347,15 +364,18 @@ class TestMarkerSurvivesTheFilter(unittest.TestCase):
 					"%s got the watch state of the entry that was played" % title)
 
 	def test_refresh_after_playback_reaches_a_row_filtered_out_meanwhile(self):
+		# the played row sits at index 0, so the list typed meanwhile (one row)
+		# still HAS that index: patching by the old index writes on the row on
+		# screen, instead of raising IndexError and passing for that reason
 		view = _view()
 		_type(view, "U")
-		self._play_and_answer_later(view, "Un altre home")
+		self._play_and_answer_later(view, "Un hijo propio")
 		_type(view, "J")  # another letter before the answer came back
-		_answer_pending_requests()
+		_answer_pending_requests(self)
 		self.assertEqual(_markers(view), {"Jumbo": UNSEEN}, "a row on screen got another entry's marker")
 
 		_type(view, " ")
-		self.assertEqual(_markers(view)["Un altre home"], SEEN,
+		self.assertEqual(_markers(view)["Un hijo propio"], SEEN,
 			"the played entry lost its marker because it was filtered out when the answer came")
 
 
