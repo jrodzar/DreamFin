@@ -726,7 +726,10 @@ class DP_View(DPH_Screen, DPH_ScreenHelper, DPH_MultiColorFunctions, DPH_Filter)
 			# reads the stale pre-stop state and the marker stays wrong until a
 			# full section reload. _pollEntryViewState re-fetches a few times;
 			# the attempt that runs once the stop has committed patches it right.
-			self._viewStateIndex = index
+			# The entry is remembered by its data, not by its index: the answers
+			# come back off the main loop, and a letter typed or a filter cleared
+			# in the meantime puts another entry at that index.
+			self._viewStateEntryData = entryData
 			self._viewStateAttempts = 3
 			if getattr(self, "_viewStateRefreshTimer", None) is None:
 				self._viewStateRefreshTimer = eTimer()
@@ -750,15 +753,13 @@ class DP_View(DPH_Screen, DPH_ScreenHelper, DPH_MultiColorFunctions, DPH_Filter)
 		printl("", self, "S")
 
 		try:
-			index = self._viewStateIndex
-			if 0 <= index < len(self.listViewList):
-				entryData = self.listViewList[index][1]
-				if "ratingKey" in entryData:
-					plexInstance = Singleton().getBackendInstance()
-					url = plexInstance.getItemUrl(entryData["ratingKey"])
-					# fetch off the main loop, then patch the row in the callback
-					runInThread(lambda: plexInstance.getMoviesFromSection(url),
-							lambda result, error: self.applyRefreshedViewState(index, result, error))
+			entryData = self._viewStateEntryData
+			if "ratingKey" in entryData:
+				plexInstance = Singleton().getBackendInstance()
+				url = plexInstance.getItemUrl(entryData["ratingKey"])
+				# fetch off the main loop, then patch the row in the callback
+				runInThread(lambda: plexInstance.getMoviesFromSection(url),
+						lambda result, error: self.applyRefreshedViewState(entryData, result, error))
 
 			self._viewStateAttempts -= 1
 			if self._viewStateAttempts > 0:
@@ -772,7 +773,7 @@ class DP_View(DPH_Screen, DPH_ScreenHelper, DPH_MultiColorFunctions, DPH_Filter)
 	#===========================================================================
 	#
 	#===========================================================================
-	def applyRefreshedViewState(self, index, result, error):
+	def applyRefreshedViewState(self, entryData, result, error):
 		printl("", self, "S")
 
 		try:
@@ -786,8 +787,12 @@ class DP_View(DPH_Screen, DPH_ScreenHelper, DPH_MultiColorFunctions, DPH_Filter)
 				printl("", self, "C")
 				return
 
-			entry = self.listViewList[index]
-			entryData = entry[1]
+			entry = self.findListEntry(entryData)
+			if entry is None:
+				printl("played entry is no longer in this level, skipping marker refresh", self, "D")
+				printl("", self, "C")
+				return
+
 			freshEntry = freshList[0]
 			freshData = freshEntry[1]
 
@@ -802,10 +807,11 @@ class DP_View(DPH_Screen, DPH_ScreenHelper, DPH_MultiColorFunctions, DPH_Filter)
 			icons = {"seen": self.seenPic, "started": self.startedPic, "unseen": self.unseenPic}
 			patched = list(entry)
 			patched[3] = icons.get(str(freshEntry[3]), self.unseenPic)
-			self.listViewList[index] = tuple(patched)
-			# modifyEntry does not repaint the row on every skin/listbox
-			# combination - rebuild the visual list like the initial load does
-			self.updateList(myIndex=index)
+			index = self.replaceListEntry(entryData, tuple(patched))
+			if index is not None:
+				# modifyEntry does not repaint the row on every skin/listbox
+				# combination - rebuild the visual list like the initial load does
+				self.updateList(myIndex=index)
 
 			# the pickle cache of this section is stale now
 			self.forceUpdate = True
@@ -2583,6 +2589,47 @@ class DP_View(DPH_Screen, DPH_ScreenHelper, DPH_MultiColorFunctions, DPH_Filter)
 	#===========================================================================
 	#
 	#===========================================================================
+	def findListEntry(self, entryData):
+		"""The row carrying entryData - by identity, first in the list on
+		screen, then in the unfiltered list behind a letter filter. None when
+		this level no longer holds it."""
+		for entries in (self.listViewList, self.beforeFilterListViewList):
+			for entry in entries or ():
+				if entry[1] is entryData:
+					return entry
+		return None
+
+	#===========================================================================
+	#
+	#===========================================================================
+	def replaceListEntry(self, entryData, newEntry):
+		"""Put newEntry in place of the row carrying entryData, in the list on
+		screen AND in the unfiltered list behind it. Returns the row's index on
+		screen, or None when it is not on screen right now.
+
+		filter() shows a NEW list over the same rows, so a row patched only in
+		self.listViewList - the seen/unseen marker, the view state after
+		playback - got its old marker back the moment the filter was cleared:
+		the unfiltered list, which is also the one onLeave restores for this
+		level, still held the old tuple. Both lists share the row's data dict,
+		so that is what finds it in each."""
+		lists = [self.listViewList]
+		if self.beforeFilterListViewList is not None and self.beforeFilterListViewList is not self.listViewList:
+			lists.append(self.beforeFilterListViewList)
+
+		shownIndex = None
+		for entries in lists:
+			for position, entry in enumerate(entries):
+				if entry[1] is entryData:
+					entries[position] = newEntry
+					if entries is self.listViewList:
+						shownIndex = position
+					break
+		return shownIndex
+
+	#===========================================================================
+	#
+	#===========================================================================
 	def markUnwatched(self):
 		printl("", self, "S")
 		self.forceUpdate = True
@@ -2599,7 +2646,7 @@ class DP_View(DPH_Screen, DPH_ScreenHelper, DPH_MultiColorFunctions, DPH_Filter)
 		myList[1]["viewCount"] = "0"
 		myList[1]["played"] = "0"
 		myList[1]["viewOffset"] = "0"
-		self.listViewList[currentIndex] = tuple(myList)
+		self.replaceListEntry(myList[1], tuple(myList))
 		# modifyEntry does not repaint the row everywhere, rebuild the list
 		self.updateList(myIndex=currentIndex)
 
@@ -2627,7 +2674,7 @@ class DP_View(DPH_Screen, DPH_ScreenHelper, DPH_MultiColorFunctions, DPH_Filter)
 		myList[3] = self.seenPic
 		myList[1]["viewCount"] = "1"
 		myList[1]["played"] = "1"
-		self.listViewList[currentIndex] = tuple(myList)
+		self.replaceListEntry(myList[1], tuple(myList))
 		# modifyEntry does not repaint the row everywhere, rebuild the list
 		self.updateList(myIndex=currentIndex)
 
