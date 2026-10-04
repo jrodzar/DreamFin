@@ -2153,10 +2153,14 @@ class DP_View(DPH_Screen, DPH_ScreenHelper, DPH_MultiColorFunctions, DPH_Filter)
 	def handleViewStateInformation(self):
 		printl("", self, "S")
 
-		self.seen = False
-		if "viewCount" in self.selection[1]:
-			if int(self.selection[1]["viewCount"]) > 0:
-				self.seen = True
+		# watched is the Played flag, as for the row's marker - not viewCount:
+		# Emby bumps PlayCount on every stop, even a few seconds in, so YELLOW
+		# offered (and did) "set 'Unseen'" on a film nobody had watched
+		data = self.selection[1]
+		if "played" in data:
+			self.seen = str(data["played"]) == "1"
+		else:
+			self.seen = int(data.get("viewCount") or 0) > 0
 
 		if self.currentFunctionLevel == "1":
 			self.refreshFunctionName()

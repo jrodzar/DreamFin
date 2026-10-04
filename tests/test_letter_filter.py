@@ -21,6 +21,9 @@ Both faults were confirmed on a real box (SF8008, OpenATV 7.0, 2026-09-30):
 4. A list the filter put on screen opened wherever the old cursor index
    fell - the last row, once RED had left the cursor deep in the whole
    list (found by DreamPlex on the box, with the filter fix in place).
+5. After a film was stopped a few seconds in, YELLOW offered "set 'Unseen'"
+   on it - still unwatched, its marker said so - and pressing it marked it
+   unwatched again (0.1.20 on OpenATV 8.0.1, Emby, 2026-10-04).
 
 DP_View cannot be imported offline (it pulls half of enigma2's Screens), so
 these tests compile the real methods out of the source and run them on a
@@ -534,6 +537,47 @@ class TestYellowLabelFollowsTheRefresh(_ScreenTest):
 			"YELLOW still offers to mark unseen a row the refresh just marked unseen")
 
 
+class TestYellowAfterAShortPlayback(_ScreenTest):
+	"""A film stopped a few seconds in is still unwatched, and YELLOW must
+	treat it so. Emby bumps PlayCount (viewCount) on every stop, however
+	short, and leaves Played false; the row's marker follows Played, YELLOW
+	followed viewCount - "set 'Unseen'" on an unwatched row, and pressing it
+	marked the row unwatched again, so it took two presses to mark it seen."""
+
+	def _land_on(self, view, title):
+		_select(view, title)
+		view.selection = view["listview"].getCurrent()
+		view.handleViewStateInformation()
+
+	def _stopped_a_few_seconds_in(self, view):
+		"""What Emby answers for the selected row after a short playback."""
+		title, data = view.selection[0], view.selection[1]
+		FRESH["item:" + data["ratingKey"]] = [[(title, {"viewCount": "1", "played": "0",
+				"viewOffset": "0"}, None, "unseen", "next:" + title)]]
+		view.refreshEntryViewState(view["listview"].getIndex())
+		_answer_pending_requests(self)
+
+	def test_yellow_still_offers_to_mark_it_seen(self):
+		view = self.view(viewClass=LabelView)
+		self._land_on(view, "Hokum")
+		self.assertEqual(view["btn_yellowText"].text, "set 'Seen'")
+
+		self._stopped_a_few_seconds_in(view)
+		self.assertEqual(_markers(view)["Hokum"], UNSEEN)
+		self.assertEqual(view["btn_yellowText"].text, "set 'Seen'",
+			"YELLOW offers to mark unwatched a film nobody watched")
+
+	def test_one_press_of_yellow_marks_it_seen(self):
+		view = self.view(viewClass=LabelView)
+		self._land_on(view, "Hokum")
+		self._stopped_a_few_seconds_in(view)
+
+		view.executeLibraryFunction()  # YELLOW
+		self.assertEqual(_markers(view)["Hokum"], SEEN,
+			"YELLOW marked the film unwatched instead of watched")
+		self.assertEqual(view["btn_yellowText"].text, "set 'Unseen'")
+
+
 class TestYellowAfterLeavingTheFilterMode(_ScreenTest):
 	"""RED must work YELLOW out again for the row the cursor lands on. A
 	cursor that stays on its row cannot tell a recomputed state from one left
@@ -616,6 +660,10 @@ class TestGettingTheWholeListBackOnTheReceiversListbox(_OnTheReceiversListbox, T
 
 
 class TestYellowLabelFollowsTheRefreshOnTheReceiversListbox(_OnTheReceiversListbox, TestYellowLabelFollowsTheRefresh):
+	pass
+
+
+class TestYellowAfterAShortPlaybackOnTheReceiversListbox(_OnTheReceiversListbox, TestYellowAfterAShortPlayback):
 	pass
 
 
