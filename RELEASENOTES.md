@@ -1,3 +1,31 @@
+DreamFin 0.1.21 — release notes
+===============================
+
+**DreamFin** is an Emby/Jellyfin client for Enigma2 forked from DreamPlex. It
+reuses the DreamPlex user interface and replaces the Plex backend with an
+Emby/Jellyfin one. See `README.md` for setup, lineage and attribution.
+
+New in 0.1.21
+-------------
+
+- **The audio button works during playback on OpenATV 7.6 and 8.0.** Pressing
+  AUDIO while a film was playing brought up the crash window instead of the
+  audio track selection. DreamFin's player borrowed a piece of the receiver's
+  own software to handle that screen, and OpenATV removed it in May 2025, so
+  the button failed on every receiver running OpenATV 7.6 or 8.0. Receivers on
+  7.5 or older were not affected. The player now handles that screen itself,
+  and the audio track selection opens on all of them.
+- **The yellow button no longer treats a film you only started as watched.**
+  If you stopped a film a few seconds in, the yellow button offered "set
+  'Unseen'" although the film was still unwatched - its marker said so.
+  Pressing it marked the film unwatched again, so it took two presses to mark
+  it seen. Emby counts every stop as a play, however short; the yellow button
+  now goes by whether the film was actually watched, as its marker does.
+
+Both were found on a receiver running OpenATV 8.0.1. The audio fix was checked
+on it before release; the yellow-button fix is covered by tests that replay
+what the server answers after a short playback.
+
 DreamFin 0.1.20 — release notes
 ===============================
 
