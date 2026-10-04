@@ -91,7 +91,16 @@ class InfobarAudioSelectionExtended(InfoBarAudioSelection):
 	#===========================================================================
 	def audioSelection(self):
 		printl("mh: audioSelection", self, "D")
-		self.session.openWithCallback(self.audioSelected, myAudioSelection, infobar=self.session.infobar or self)
+		self.session.openWithCallback(self.audioSelectionClosed, myAudioSelection, infobar=self.session.infobar or self)
+
+	#===========================================================================
+	#
+	#===========================================================================
+	def audioSelectionClosed(self, result=None):
+		# our own callback: the one this used to borrow,
+		# InfoBarAudioSelection.audioSelected, is gone since OpenATV 7.6, and
+		# AUDIO during playback crashed with AttributeError
+		printl("result: " + str(result), self, "D")
 
 #===============================================================================
 #
