@@ -42,7 +42,7 @@ else:
 
 from Components.config import config
 
-from .__common__ import printl2 as printl, getUUID, getVersion, IMAGE_SIZE_PLACEHOLDER, isRecentlyAdded, newPlaybackId
+from .__common__ import printl2 as printl, getUUID, getVersion, IMAGE_SIZE_PLACEHOLDER, isRecentlyAdded, newPlaybackId, boxSupportsHdr
 from .__plugin__ import Plugin, getPlugin
 from .__init__ import _  # _ is translation
 
@@ -1306,6 +1306,23 @@ class EmbyLibrary(object):
 	#
 	#===============================================================================
 	@staticmethod
+	def _videoRangeLabel(stream):
+		"""The HDR kind of a video stream for the version dialog: "" for SDR or
+		unknown, else "HLG", "HDR10", "HDR10+", "DV"... Jellyfin says it in
+		VideoRangeType (its VideoRange is only SDR/HDR); Emby only in
+		VideoRange ("HLG", "HDR 10") - both seen on the test servers."""
+		for field in ("VideoRangeType", "VideoRange"):
+			value = jsonToStr(stream.get(field)).strip().upper().replace(" ", "")
+			if value and value not in ("SDR", "UNKNOWN"):
+				if value.startswith("DOVI"):
+					return "DV"
+				return value.replace("PLUS", "+")
+		return ""
+
+	#===============================================================================
+	#
+	#===============================================================================
+	@staticmethod
 	def _mapAspect(value):
 		"""AspectRatio ('2.40:1', '16:9', '1.78', 2.35, None) -> nearest of
 		the three literals the skin has icons for."""
@@ -1732,10 +1749,12 @@ class EmbyLibrary(object):
 			sourceId = jsonToStr(source.get("Id"))
 			videoResolution = ""
 			videoCodec = ""
+			videoRange = ""
 			for stream in source.get("MediaStreams") or []:
 				if stream.get("Type") == "Video":
 					videoResolution = self._mapResolution(stream.get("Width"), stream.get("Height"))
 					videoCodec = jsonToStr(stream.get("Codec"))
+					videoRange = self._videoRangeLabel(stream)
 					break
 			key = "/Videos/%s/stream?static=true&MediaSourceId=%s" % (jsonToStr(myId), sourceId)
 			part = (
@@ -1747,9 +1766,17 @@ class EmbyLibrary(object):
 				videoResolution,
 				videoCodec,
 				index,  # mediaIndex -> setSelectedVersion -> MediaSources[index]
+				videoRange,  # "" for SDR, else HLG/HDR10/... - shown in the version dialog
 			)
 			parts.append(part)
 			sourceIds.append(sourceId)
+
+		# A box that cannot show HDR gets the SDR versions first, so the version
+		# dialog opens on one: Emby never tone-maps HLG when transcoding and
+		# keeps its BT.2020/HLG signalling, which such a box shows black. The
+		# picked version travels by its own media index ([7]), not by position.
+		if any(part[8] for part in parts) and not all(part[8] for part in parts) and not boxSupportsHdr():
+			parts.sort(key=lambda part: 1 if part[8] else 0)
 
 		streams = dict(empty)
 		streams["partsCount"] = len(parts)

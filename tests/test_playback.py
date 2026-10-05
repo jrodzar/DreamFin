@@ -77,7 +77,7 @@ class TestSingleItemDetailWrap(PlaybackBase):
 
 class TestGetMediaOptions(PlaybackBase):
 
-	def test_single_version_one_eight_tuple(self):
+	def test_single_version_one_nine_tuple(self):
 		self._serve_detail("item_detail_emby.json")
 		lib = self._lib()
 
@@ -85,8 +85,9 @@ class TestGetMediaOptions(PlaybackBase):
 		self.assertEqual(count, 1)
 		self.assertEqual(len(options), 1)
 		part = options[0]
-		self.assertEqual(len(part), 8)
-		key, path, container, size, duration, resolution, codec, mediaIndex = part
+		self.assertEqual(len(part), 9)
+		key, path, container, size, duration, resolution, codec, mediaIndex, videoRange = part
+		self.assertEqual(videoRange, "")  # SDR says nothing (see test_hdr_versions)
 		self.assertIn("/Videos/%s/stream" % MOVIE_ID, key)
 		self.assertIn("static=true", key)
 		self.assertIn("MediaSourceId=%s" % MOVIE_SRC0, key)

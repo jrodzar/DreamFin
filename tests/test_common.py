@@ -15,6 +15,7 @@ helpers.setup_environment()
 from src.__common__ import getRatingValue, buildMediaChoiceName, isCompleteImage, durationToTime, rememberEphemeralArt  # noqa: E402
 from src.__common__ import _ephemeralArt  # noqa: E402
 from src.__common__ import parseServerDate, isRecentlyAdded  # noqa: E402
+from src.__common__ import boxSupportsHdr  # noqa: E402
 
 
 class TestDurationToTime(unittest.TestCase):
@@ -119,6 +120,20 @@ class TestMediaChoiceName(unittest.TestCase):
 		self.assertEqual(buildMediaChoiceName(items),
 				"[1080 / h264 / 1.0 GB]  Movie.1080p.mkv")
 
+	def test_the_hdr_kind_goes_into_the_prefix(self):
+		items = ("mediasource-3", "/data/movies/Movie.2160p.mkv",
+				"mkv", "4710000000", "6792", "4K", "hevc", 0, "HLG")
+
+		self.assertEqual(buildMediaChoiceName(items),
+				"[4K / hevc / HLG / 4.39 GB]  Movie.2160p.mkv")
+
+	def test_an_sdr_version_says_nothing_about_it(self):
+		items = ("mediasource-4", "/data/movies/Movie.1080p.mkv",
+				"mkv", "1073741824", "6792", "1080", "hevc", 1, "")
+
+		self.assertEqual(buildMediaChoiceName(items),
+				"[1080 / hevc / 1.0 GB]  Movie.1080p.mkv")
+
 	def test_no_file_name_falls_back_to_key_and_stays_str(self):
 		items = (u"película", None, u"mkv", u"1048576", u"61")
 
@@ -130,6 +145,60 @@ class TestMediaChoiceName(unittest.TestCase):
 			self.assertEqual(name, expected.encode("utf-8"))
 		else:
 			self.assertEqual(name, expected)
+
+
+class TestBoxSupportsHdr(unittest.TestCase):
+	"""The same files OpenATV 7.0 and 8.0 look at (Components/AVSwitch)."""
+
+	def setUp(self):
+		self.root = tempfile.mkdtemp()
+		self.addCleanup(shutil.rmtree, self.root)
+
+	def touch(self, path, content=""):
+		full = self.root + path
+		if not os.path.isdir(os.path.dirname(full)):
+			os.makedirs(os.path.dirname(full))
+		with open(full, "w") as handle:
+			handle.write(content)
+
+	def test_a_box_with_none_of_them_has_no_hdr(self):
+		self.assertFalse(boxSupportsHdr(self.root))
+
+	def test_broadcom(self):
+		self.touch("/proc/stb/hdmi/hlg_support_choices", "auto yes no")
+		self.assertTrue(boxSupportsHdr(self.root))
+
+	def test_amlogic(self):
+		self.touch("/sys/class/amhdmitx/amhdmitx0/config")
+		self.assertTrue(boxSupportsHdr(self.root))
+
+	def test_hisilicon_offering_hdr(self):
+		self.touch("/proc/stb/video/hdmi_hdrtype", "auto")
+		self.touch("/proc/stb/video/hdmi_hdrtype_choices", "auto sdr hdr10 hlg")
+		self.assertTrue(boxSupportsHdr(self.root))
+
+	def test_hisilicon_offering_only_sdr(self):
+		self.touch("/proc/stb/video/hdmi_hdrtype", "auto")
+		self.touch("/proc/stb/video/hdmi_hdrtype_choices", "auto sdr")
+		self.assertFalse(boxSupportsHdr(self.root))
+
+	def test_hisilicon_without_its_choices(self):
+		self.touch("/proc/stb/video/hdmi_hdrtype", "auto")
+		self.assertTrue(boxSupportsHdr(self.root))
+
+	def test_a_1080p_box_whose_driver_lists_hdr_types_has_no_hdr(self):
+		"""The Zgemma H8.2H as read on the box (hi3716mv430, 2026-10-05)."""
+		self.touch("/proc/stb/video/hdmi_hdrtype", "auto")
+		self.touch("/proc/stb/video/hdmi_hdrtype_choices", "none auto autofirstframe dolby hdr10 hlg")
+		self.touch("/proc/stb/video/videomode_choices",
+				"pal ntsc 720p 720p50 1080i 1080i50 1080p24 1080p25 1080p30 1080p50 1080p 576i 576p 480i 480p")
+		self.assertFalse(boxSupportsHdr(self.root))
+
+	def test_a_4k_box_with_hdr_types(self):
+		self.touch("/proc/stb/video/hdmi_hdrtype", "auto")
+		self.touch("/proc/stb/video/hdmi_hdrtype_choices", "auto sdr hdr10 hlg")
+		self.touch("/proc/stb/video/videomode_choices", "720p 1080i 1080p 2160p24 2160p25 2160p50 2160p")
+		self.assertTrue(boxSupportsHdr(self.root))
 
 
 class TestGetRatingValue(unittest.TestCase):
