@@ -1,3 +1,31 @@
+DreamFin 0.1.23 — release notes
+===============================
+
+**DreamFin** is an Emby/Jellyfin client for Enigma2 forked from DreamPlex. It
+reuses the DreamPlex user interface and replaces the Plex backend with an
+Emby/Jellyfin one. See `README.md` for setup, lineage and attribution.
+
+New in 0.1.23
+-------------
+
+- **The SDR version also comes first when the receiver could show HDR but
+  will not.** Since 0.1.22, on a receiver that cannot show HDR, the "Select
+  media to play" list puts the SDR versions of a title first: Emby does not
+  convert HLG titles to SDR when it transcodes them, and the result plays
+  black there. A 4K receiver that could show HDR may still not be doing it,
+  with the same result. The SDR versions now also come first when:
+  - HDR is switched off in the receiver's video settings: the HDMI HDR type
+    set to SDR, or HLG and HDR10 support both forced off; or
+  - the TV does not take HDR. DreamFin reads what the TV announces to the
+    receiver over HDMI; when it cannot tell, nothing changes.
+
+  When the receiver and the TV can both show HDR, the list keeps its usual
+  order.
+
+Checked on a 4K receiver running OpenATV 7.0: with an HDR monitor the list
+kept the 4K HLG version first; with HDR switched off in its settings, and with
+a monitor without HDR, it opened on the 1080p SDR version.
+
 DreamFin 0.1.22 — release notes
 ===============================
 

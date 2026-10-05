@@ -5,6 +5,15 @@ DreamFin is a fork of DreamPlex (a Plex client for Enigma2) with the Plex
 backend replaced by an Emby/Jellyfin one. See `RELEASENOTES.md` for the full
 release notes and `README.md` for lineage and attribution.
 
+0.1.23 — improvement
+--------------------
+* **The SDR version also comes first when the receiver could show HDR but
+  will not.** 0.1.22 put the SDR versions of a title first on receivers that
+  cannot show HDR. Now they also come first when HDR is switched off in the
+  receiver's video settings, or when the TV does not take HDR - DreamFin reads
+  what the TV announces to the receiver. When both can show HDR, the list
+  keeps its usual order.
+
 0.1.22 — improvement
 --------------------
 * **The version list names HDR versions, and receivers without HDR get the SDR
