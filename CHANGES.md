@@ -8,10 +8,11 @@ release notes and `README.md` for lineage and attribution.
 0.1.21 — fixes
 --------------
 * **The audio button crashed DreamFin during playback on OpenATV 7.6 and
-  later.** Pressing AUDIO while something played brought up the crash window
-  instead of the audio track selection. DreamFin relied on a piece of the
-  receiver's own software that OpenATV removed in 2025, so every receiver on
-  OpenATV 7.6 or 8.0 was affected; 7.5 and older were not. The audio track
+  later** - and so did the option and yellow buttons, which open the same
+  screen. Pressing any of them while something played brought up the crash
+  window instead of the audio track selection. DreamFin relied on a piece of
+  the receiver's own software that OpenATV removed in 2025, so every receiver
+  on OpenATV 7.6 or 8.0 was affected; 7.5 and older were not. The audio track
   selection now opens on all of them.
 * **The yellow button offered to mark as unseen a film you had only just
   started.** After stopping a film a few seconds in, the yellow button read
