@@ -1,3 +1,47 @@
+DreamFin 0.1.24 — release notes
+===============================
+
+**DreamFin** is an Emby/Jellyfin client for Enigma2 forked from DreamPlex. It
+reuses the DreamPlex user interface and replaces the Plex backend with an
+Emby/Jellyfin one. See `README.md` for setup, lineage and attribution.
+
+New in 0.1.24
+-------------
+
+- **The SDR version also comes first when the HDR one would be transcoded.**
+  An HDR version that the server transcodes does not reach the receiver as
+  HDR. Emby, in particular, turns HLG into 8-bit video that still carries the
+  HLG signalling, and receivers handle that badly: one draws a green line
+  along the top of the picture, another shows it black. The same title copied
+  unchanged, in 10 bits, plays fine. So when every HDR version of a title
+  would be transcoded with the current settings - because of its resolution,
+  its bitrate or its codec, compared with the quality chosen for the server -
+  the "Select media to play" list now opens on the SDR version. When the HDR
+  version can be played as it is (a higher quality setting, or direct
+  playback), the order stays as before, and the HDR version can always be
+  picked by hand.
+
+- **An audio or subtitle choice no longer follows you into other titles.**
+  The track picked with the AUDIO or TEXT buttons was remembered for the rest
+  of the session and applied by number to every title played afterwards.
+  Track numbers differ from file to file, so the next film could start in
+  another language, with subtitles nobody asked for burned into the picture -
+  which also made the server fall back to slower software encoding. A choice
+  now belongs to the title it was made for, and finds the same track in
+  whichever version of that title is played; a version without that track
+  plays its default.
+
+- **The AUDIO and TEXT lists show the selected title's tracks, each once.**
+  After playing a film, the lists could show that film's tracks instead of
+  the selected title's, and a title with several versions listed every track
+  once per version.
+
+Checked on a 4K receiver running OpenATV 7.0 against Emby: with the quality
+set to 1920x1080 at 3 Mbps, a title with a 4K HLG and a 1080p version opened
+on the 1080p one, and on the 4K HLG in direct playback. A film played after
+choosing tracks on another one used its own default audio and no subtitles,
+and a track chosen on that film itself was used.
+
 DreamFin 0.1.23 — release notes
 ===============================
 

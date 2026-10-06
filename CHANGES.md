@@ -5,6 +5,26 @@ DreamFin is a fork of DreamPlex (a Plex client for Enigma2) with the Plex
 backend replaced by an Emby/Jellyfin one. See `RELEASENOTES.md` for the full
 release notes and `README.md` for lineage and attribution.
 
+0.1.24 — improvement and fixes
+------------------------------
+* **The SDR version also comes first when the HDR one would be transcoded.**
+  An HDR version that the server transcodes does not arrive as HDR: Emby turns
+  HLG into 8-bit video that keeps its HLG signalling, which some receivers show
+  with a green line along the top and others show black. When every HDR
+  version of a title would be transcoded with the current quality setting, the
+  "Select media to play" list now opens on the SDR version. With a quality that
+  lets the HDR version through unchanged, or with direct playback, the order
+  stays as before.
+* **An audio or subtitle choice no longer carries over to other titles.** The
+  track picked with the AUDIO or TEXT buttons was kept for the rest of the
+  session and applied by number to every title played after it, so the next
+  film could start in another language, with subtitles nobody asked for burned
+  in. A choice now belongs to the title it was made for, and finds the same
+  track in whichever version of it plays.
+* **The AUDIO and TEXT lists show the selected title's tracks, each once.**
+  After playing a film they could list that film's tracks instead, and a title
+  with several versions listed every track once per version.
+
 0.1.23 — improvement
 --------------------
 * **The SDR version also comes first when the receiver could show HDR but
