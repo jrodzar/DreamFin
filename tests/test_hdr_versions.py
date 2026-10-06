@@ -192,8 +192,18 @@ class TestThePlayerGivesTheModeBeforeTheVersions(unittest.TestCase):
 			tree = ast.parse(handle.read(), filename=path)
 
 		def calls(node, name):
-			return [child.lineno for child in ast.walk(node) if isinstance(child, ast.Call)
+			return [child for child in ast.walk(node) if isinstance(child, ast.Call)
 				and isinstance(child.func, ast.Attribute) and child.func.attr == name]
+
+		def is_the_players_mode(call):
+			"""str(self.playbackMode): THIS playback's mode, not a literal - a
+			setPlaybackType("1") in the right place passed the first version of
+			this check (DreamPlex ran it through their four variants)."""
+			arg = call.args[0] if len(call.args) == 1 else None
+			inner = arg.args[0] if isinstance(arg, ast.Call) and len(arg.args) == 1 else None
+			return (isinstance(arg, ast.Call) and isinstance(arg.func, ast.Name) and arg.func.id == "str"
+				and isinstance(inner, ast.Attribute) and inner.attr == "playbackMode"
+				and isinstance(inner.value, ast.Name) and inner.value.id == "self")
 
 		asking = [node for node in ast.walk(tree) if isinstance(node, ast.FunctionDef)
 			and calls(node, "getMediaOptionsToPlay") and not any(
@@ -201,9 +211,11 @@ class TestThePlayerGivesTheModeBeforeTheVersions(unittest.TestCase):
 				for inner in ast.walk(node))]
 		# the innermost function that asks; seeing none means the walk broke
 		self.assertEqual(len(asking), 1, "expected one function asking for the media options")
-		modes = calls(asking[0], "setPlaybackType")
-		self.assertTrue(modes, "the function asking for the versions does not set the playback mode")
-		self.assertLess(min(modes), min(calls(asking[0], "getMediaOptionsToPlay")))
+		request = min(call.lineno for call in calls(asking[0], "getMediaOptionsToPlay"))
+		before = [call for call in calls(asking[0], "setPlaybackType") if call.lineno < request]
+		self.assertTrue(before, "the function asking for the versions does not set the playback mode first")
+		self.assertTrue(any(is_the_players_mode(call) for call in before),
+			"the mode set before asking is not str(self.playbackMode)")
 
 
 class TestVideoRangeLabel(unittest.TestCase):
