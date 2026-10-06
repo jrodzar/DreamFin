@@ -205,17 +205,25 @@ class TestThePlayerGivesTheModeBeforeTheVersions(unittest.TestCase):
 				and isinstance(inner, ast.Attribute) and inner.attr == "playbackMode"
 				and isinstance(inner.value, ast.Name) and inner.value.id == "self")
 
+		def position(call):
+			return (call.lineno, call.col_offset)
+
 		asking = [node for node in ast.walk(tree) if isinstance(node, ast.FunctionDef)
 			and calls(node, "getMediaOptionsToPlay") and not any(
 				isinstance(inner, ast.FunctionDef) and inner is not node and calls(inner, "getMediaOptionsToPlay")
 				for inner in ast.walk(node))]
 		# the innermost function that asks; seeing none means the walk broke
 		self.assertEqual(len(asking), 1, "expected one function asking for the media options")
-		request = min(call.lineno for call in calls(asking[0], "getMediaOptionsToPlay"))
-		before = [call for call in calls(asking[0], "setPlaybackType") if call.lineno < request]
+		request = min(position(call) for call in calls(asking[0], "getMediaOptionsToPlay"))
+		before = [call for call in calls(asking[0], "setPlaybackType") if position(call) < request]
 		self.assertTrue(before, "the function asking for the versions does not set the playback mode first")
-		self.assertTrue(any(is_the_players_mode(call) for call in before),
-			"the mode set before asking is not str(self.playbackMode)")
+		# the LAST mode set before asking is the one in force when the backend
+		# orders the versions: taking any of them passed the right call followed
+		# by a setPlaybackType("1") (DreamPlex's fifth variant). Last by
+		# position, not by list order: ast.walk goes breadth-first, so a call
+		# nested in an if comes out of it after a later one.
+		self.assertTrue(is_the_players_mode(max(before, key=position)),
+			"the last mode set before asking is not str(self.playbackMode)")
 
 
 class TestVideoRangeLabel(unittest.TestCase):
