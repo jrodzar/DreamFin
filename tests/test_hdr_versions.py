@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """A title with an HDR and an SDR version: the version dialog names the HDR
-kind, and a box that cannot show HDR gets the SDR version first.
+kind, and a box that cannot show HDR gets the SDR version first - as does one
+that can, when the HDR version would reach it re-encoded (2026-10-06).
 
 Why (2026-10-05): Emby never tone-maps HLG when it transcodes and keeps its
 BT.2020/HLG signalling, which a box without HDR (a Zgemma H8.2H) shows black
@@ -95,6 +96,114 @@ class TestOnABoxWithHdr(_VersionsTest, unittest.TestCase):
 		lib, options, server = self.options()
 
 		self.assertEqual(self.played(lib, options[0], server), HLG_SOURCE)
+
+
+class TestOnABoxWithHdrWhenTheServerReencodes(_VersionsTest, unittest.TestCase):
+	"""A box that CAN show HDR still gets the SDR version first when every HDR
+	version would reach it re-encoded. Emby re-encodes HLG to 8 bits and keeps
+	the HLG signalling; the SF8008 draws that with a green line on top, while
+	the very same HLG copied in 10 bits plays clean (2026-10-06). The fixture:
+	HLG 3840x1592 and SDR 1920x796, both HEVC at 4.2 Mbps."""
+	BOX_HAS_HDR = True
+
+	def options_with(self, mode, quality, codec="hevc"):
+		step = {"uniQualityHevc": quality} if codec == "hevc" else {"uniQuality": quality}
+		lib = helpers.make_emby_instance(self.mock, playbackType=mode, transcodeVideoCodec=codec, **step)
+		self.assertTrue(lib.authenticate())
+		lib.setPlaybackType(mode)  # what DP_Player does before asking for the versions
+		count, options, server = lib.getMediaOptionsToPlay(MOVIE_ID, lib.g_address, False, myType="Video")
+		self.assertEqual(count, 2)
+		return lib, options, server
+
+	def test_a_re_encoded_hdr_version_goes_after_the_sdr_one(self):
+		lib, options, server = self.options_with("1", "4")  # 1920x1080, 3 Mbps
+
+		self.assertEqual([source_of(o) for o in options], [SDR_SOURCE, HLG_SOURCE])
+
+	def test_a_plain_ok_then_plays_the_sdr_version(self):
+		lib, options, server = self.options_with("1", "4")
+
+		self.assertEqual(self.played(lib, options[0], server), SDR_SOURCE)
+
+	def test_an_hdr_version_the_step_lets_through_stays_first(self):
+		lib, options, server = self.options_with("1", "7")  # 3840x2160, 10 Mbps: copied
+
+		self.assertEqual([source_of(o) for o in options], [HLG_SOURCE, SDR_SOURCE])
+
+	def serve_hlg_video(self, **fields):
+		"""The fixture with the HLG version's video stream changed, so that a
+		single limit is passed (the real one is over width, height AND
+		bitrate at most steps, which hides a broken check)."""
+		detail = helpers.fixture_json("item_detail_hdr_versions_emby.json")
+		for source in detail["MediaSources"]:
+			if source["Id"] == HLG_SOURCE:
+				for stream in source["MediaStreams"]:
+					if stream.get("Type") == "Video":
+						stream.update(fields)
+		self.mock.add_json(DETAIL_PATH, detail)
+
+	def test_only_too_wide_is_a_re_encode(self):
+		self.serve_hlg_video(Height=796)  # 3840x796 at 4.2 Mbps
+		lib, options, server = self.options_with("1", "6")  # 2560x1440, 8 Mbps
+
+		self.assertEqual([source_of(o) for o in options], [SDR_SOURCE, HLG_SOURCE])
+
+	def test_only_too_tall_is_a_re_encode(self):
+		self.serve_hlg_video(Width=1920)  # 1920x1592 at 4.2 Mbps
+		lib, options, server = self.options_with("1", "6")  # 2560x1440, 8 Mbps
+
+		self.assertEqual([source_of(o) for o in options], [SDR_SOURCE, HLG_SOURCE])
+
+	def test_only_too_much_bitrate_is_a_re_encode(self):
+		self.serve_hlg_video(Width=1920, Height=796)  # 1920x796 at 4.2 Mbps
+		lib, options, server = self.options_with("1", "4")  # 1920x1080, 3 Mbps
+
+		self.assertEqual([source_of(o) for o in options], [SDR_SOURCE, HLG_SOURCE])
+
+	def test_only_another_codec_is_a_re_encode(self):
+		self.serve_hlg_video(Width=1920, Height=796)  # fits the top h264 step but is hevc
+		lib, options, server = self.options_with("1", "9", codec="h264")  # 1920x1080, 20 Mbps
+
+		self.assertEqual([source_of(o) for o in options], [SDR_SOURCE, HLG_SOURCE])
+
+	def test_a_version_within_every_limit_stays_first(self):
+		self.serve_hlg_video(Width=1920, Height=796)  # 1920x796 at 4.2 Mbps, hevc
+		lib, options, server = self.options_with("1", "6")  # 2560x1440, 8 Mbps: all within
+
+		self.assertEqual([source_of(o) for o in options], [HLG_SOURCE, SDR_SOURCE])
+
+	def test_without_a_transcode_the_hdr_version_stays_first(self):
+		lib, options, server = self.options_with("0", "4")
+
+		self.assertEqual([source_of(o) for o in options], [HLG_SOURCE, SDR_SOURCE])
+
+
+class TestThePlayerGivesTheModeBeforeTheVersions(unittest.TestCase):
+	"""The order above depends on the playback mode, so DP_Player must hand it
+	to the backend BEFORE asking for the versions. It used to set it only after
+	the version dialog, so the order would follow the previous playback's mode.
+	DP_Player cannot be imported offline: read its source."""
+
+	def test_set_playback_type_comes_first(self):
+		import ast
+		import os
+		path = os.path.join(helpers.REPO_ROOT, "src", "DP_Player.py")
+		with open(path, "rb") as handle:
+			tree = ast.parse(handle.read(), filename=path)
+
+		def calls(node, name):
+			return [child.lineno for child in ast.walk(node) if isinstance(child, ast.Call)
+				and isinstance(child.func, ast.Attribute) and child.func.attr == name]
+
+		asking = [node for node in ast.walk(tree) if isinstance(node, ast.FunctionDef)
+			and calls(node, "getMediaOptionsToPlay") and not any(
+				isinstance(inner, ast.FunctionDef) and inner is not node and calls(inner, "getMediaOptionsToPlay")
+				for inner in ast.walk(node))]
+		# the innermost function that asks; seeing none means the walk broke
+		self.assertEqual(len(asking), 1, "expected one function asking for the media options")
+		modes = calls(asking[0], "setPlaybackType")
+		self.assertTrue(modes, "the function asking for the versions does not set the playback mode")
+		self.assertLess(min(modes), min(calls(asking[0], "getMediaOptionsToPlay")))
 
 
 class TestVideoRangeLabel(unittest.TestCase):

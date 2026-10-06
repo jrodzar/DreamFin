@@ -1745,7 +1745,9 @@ class EmbyLibrary(object):
 
 		parts = []
 		sourceIds = []
+		reencoded = []
 		for index, source in enumerate(item.get("MediaSources") or []):
+			reencoded.append(self._wouldReencodeVideo(source))
 			sourceId = jsonToStr(source.get("Id"))
 			videoResolution = ""
 			videoCodec = ""
@@ -1775,8 +1777,15 @@ class EmbyLibrary(object):
 		# dialog opens on one: Emby never tone-maps HLG when transcoding and
 		# keeps its BT.2020/HLG signalling, which such a box shows black. The
 		# picked version travels by its own media index ([7]), not by position.
-		if any(part[8] for part in parts) and not all(part[8] for part in parts) and not boxSupportsHdr():
-			parts.sort(key=lambda part: 1 if part[8] else 0)
+		# So does a box that can, when every HDR version would reach it
+		# re-encoded: Emby makes HLG 8-bit and keeps the HLG signalling, which
+		# the SF8008 draws with a green line on top (the same HLG copied in 10
+		# bits plays clean, 2026-10-06), and a re-encode tone-maps any other
+		# HDR to SDR anyway - the SDR version is then the better SDR.
+		hdrParts = [part for part in parts if part[8]]
+		if hdrParts and len(hdrParts) < len(parts):
+			if not boxSupportsHdr() or all(reencoded[part[7]] for part in hdrParts):
+				parts.sort(key=lambda part: 1 if part[8] else 0)
 
 		streams = dict(empty)
 		streams["partsCount"] = len(parts)
@@ -1793,6 +1802,38 @@ class EmbyLibrary(object):
 	#===============================================================================
 	#
 	#===============================================================================
+	def _wouldReencodeVideo(self, source):
+		"""Whether the server would re-encode this version's video with the
+		current settings - our guess, used only to order the version dialog.
+		Only in transcoded playback, for a source whose codec is not the one
+		asked for or that goes past the quality step's width, height or
+		bitrate. Measured on Emby 4.10 (2026-10-06): a 4K HLG of 3840x1592 at
+		5.6 Mbps is copied at 3840x2160 / 10 Mbps and re-encoded at
+		1920x1080 / 3 Mbps; its 1080p version is copied at 1920x1080 / 3 Mbps."""
+		if self.g_transcode != "true":
+			return False
+		video = None
+		for stream in source.get("MediaStreams") or []:
+			if stream.get("Type") == "Video":
+				video = stream
+				break
+		if video is None:
+			return False
+
+		def number(value):
+			try:
+				return int(value)
+			except (TypeError, ValueError):
+				return 0
+
+		if jsonToStr(video.get("Codec")).lower() != self.getTranscodeVideoCodec().lower():
+			return True
+		maxWidth, maxHeight, videoBitrate = self.getUniversalTranscoderSettings()
+		bitrate = number(video.get("BitRate")) or number(source.get("Bitrate"))
+		return (number(video.get("Width")) > number(maxWidth)
+			or number(video.get("Height")) > number(maxHeight)
+			or bitrate > number(videoBitrate))
+
 	def _sourceIdForIndex(self, index):
 		if index is None or not self.streams:
 			return None

@@ -399,7 +399,12 @@ class DP_Player(Screen, InfoBarBase, InfoBarShowHide, InfoBarCueSheetSupport,
 		# asking the server for the media options is a network round trip:
 		# keep it off the enigma2 main loop so the GUI cannot freeze
 		def work():
-			return Singleton().getBackendInstance().getMediaOptionsToPlay(self.media_id, server, False, myType=selection[1]['tagType'])
+			backend = Singleton().getBackendInstance()
+			# the backend orders the versions by how they will play (a re-encoded
+			# HDR version goes after the SDR one), so it needs this playback's
+			# mode now, not from the previous playback
+			backend.setPlaybackType(str(self.playbackMode))
+			return backend.getMediaOptionsToPlay(self.media_id, server, False, myType=selection[1]['tagType'])
 
 		runInThread(work, self.onMediaOptionsReady)
 
