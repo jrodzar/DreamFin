@@ -235,10 +235,16 @@ class EmbyLibrary(object):
 		self.g_stream = "1"
 		self.g_transcode = "false"
 		self.g_currentMediaSourceId = None
-		# stream indices the audio/subtitle dialogs pick; consumed by
-		# transcode() (Emby has no server-side "set active stream" call)
-		self.g_audioStreamIndex = None
-		self.g_subtitleStreamIndex = None
+		# the audio/subtitle tracks the dialogs pick, consumed by transcode()
+		# (Emby has no server-side "set active stream" call): each one is
+		# (itemId, track key) and only applies to THAT title. A bare
+		# MediaStream Index used to stay set for the whole server session, so
+		# the next film played whatever track had the same number - French
+		# audio and English subtitles burned in, seen on the box (2026-10-06)
+		self.g_audioChoice = None
+		self.g_subtitleChoice = None
+		# sourceId -> item detail, for the dialog rows the setters resolve
+		self._dialogItems = {}
 		self.fallback = False
 		self.locations = ""
 		self.currentFile = ""
@@ -2072,11 +2078,32 @@ class EmbyLibrary(object):
 			("VideoBitrate", jsonToStr(videoBitrate)),
 			("AudioBitrate", "192000"),
 		]
-		if self.g_audioStreamIndex is not None:
-			params.append(("AudioStreamIndex", jsonToStr(self.g_audioStreamIndex)))
-		if self.g_subtitleStreamIndex is not None:
-			params.append(("SubtitleStreamIndex", jsonToStr(self.g_subtitleStreamIndex)))
+		audioIndex = self._chosenIndex(self.g_audioChoice)
+		if audioIndex is not None:
+			params.append(("AudioStreamIndex", audioIndex))
+		subtitleIndex = self._chosenIndex(self.g_subtitleChoice)
+		if subtitleIndex is not None:
+			params.append(("SubtitleStreamIndex", subtitleIndex))
 		return params
+
+	def _chosenIndex(self, choice):
+		"""The Index, in the version about to play, of the track a dialog
+		picked for THIS title - None for another title's pick, or for a track
+		this version does not have. self.streams is the title being played
+		(getMediaOptionsToPlay runs right before) and g_currentMediaSourceId
+		the version picked in its dialog."""
+		if not choice:
+			return None
+		item = self.streams.get("_item") if self.streams else None
+		if not item or jsonToStr(item.get("Id")) != choice[0]:
+			return None
+		for source in item.get("MediaSources") or []:
+			if jsonToStr(source.get("Id")) != jsonToStr(self.g_currentMediaSourceId):
+				continue
+			for stream in source.get("MediaStreams") or []:
+				if self._trackKey(stream) == choice[1]:
+					return jsonToStr(stream.get("Index"))
+		return None
 
 	def _progressive(self):
 		return bool(getattr(self.g_serverConfig, "progressiveTranscode", _emptyConfig(False)).value)
@@ -2156,16 +2183,38 @@ class EmbyLibrary(object):
 	# dialogs store the picked MediaStream Index, consumed by transcode().
 	#===============================================================================
 
+	@staticmethod
+	def _trackKey(stream):
+		"""What makes a track the same track in another version of a title:
+		type, language, the server's display title and the forced flag."""
+		return (jsonToStr(stream.get("Type")), jsonToStr(stream.get("Language")).lower(),
+			jsonToStr(stream.get("DisplayTitle")), bool(stream.get("IsForced")))
+
 	def _streamsOfType(self, itemId, streamType):
+		"""One dialog row per track of THIS title. The detail cached for the
+		player is only reused when it is this title's: it is the last title
+		asked for its versions, and the dialogs used to list that one's tracks.
+		A title with several versions lists each track once - they usually
+		carry the same ones, and a pick applies to whichever version plays."""
 		item = self.streams.get("_item") if self.streams else None
-		if not item:
+		if not item or jsonToStr(item.get("Id")) != jsonToStr(itemId):
 			item = self.getJson(self._detailUrl(itemId))
+		if not isinstance(item, dict):
+			item = {}
+		if len(self._dialogItems) > 64:
+			self._dialogItems = {}
 		rows = []
-		for source in (item or {}).get("MediaSources") or []:
+		seen = set()
+		for source in item.get("MediaSources") or []:
 			sourceId = jsonToStr(source.get("Id"))
+			self._dialogItems[sourceId] = item
 			for stream in source.get("MediaStreams") or []:
 				if stream.get("Type") != streamType:
 					continue
+				key = self._trackKey(stream)
+				if key in seen:
+					continue
+				seen.add(key)
 				rows.append({
 					"language": jsonToStr(stream.get("DisplayTitle") or stream.get("Language") or streamType),
 					"languageCode": jsonToStr(stream.get("Language")),
@@ -2184,18 +2233,25 @@ class EmbyLibrary(object):
 	def getSubtitleById(self, server=None, itemId=None):
 		return self._streamsOfType(itemId, "Subtitle")
 
+	def _choiceFor(self, stream_id, part_id):
+		"""(itemId, track key) of the track a dialog row stands for - its
+		version (part_id) and Index in it (stream_id) - or None."""
+		item = self._dialogItems.get(jsonToStr(part_id)) or {}
+		for source in item.get("MediaSources") or []:
+			if jsonToStr(source.get("Id")) != jsonToStr(part_id):
+				continue
+			for stream in source.get("MediaStreams") or []:
+				if jsonToStr(stream.get("Index")) == jsonToStr(stream_id):
+					return (jsonToStr(item.get("Id")), self._trackKey(stream))
+		return None
+
 	def setAudioById(self, server=None, stream_id=None, part_id=None):
-		"""Remember the audio MediaStream Index for the next transcode."""
-		try:
-			self.g_audioStreamIndex = int(stream_id)
-		except (TypeError, ValueError):
-			self.g_audioStreamIndex = None
+		"""Remember the audio track the dialog picked, for this title only."""
+		self.g_audioChoice = self._choiceFor(stream_id, part_id)
 
 	def setSubtitleById(self, server=None, stream_id=None, part_id=None):
-		try:
-			self.g_subtitleStreamIndex = int(stream_id)
-		except (TypeError, ValueError):
-			self.g_subtitleStreamIndex = None
+		"""Remember the subtitle track the dialog picked, for this title only."""
+		self.g_subtitleChoice = self._choiceFor(stream_id, part_id)
 
 	def getSelectedEmbeddedSubtitleData(self):
 		return None

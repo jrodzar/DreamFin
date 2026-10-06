@@ -19,6 +19,37 @@ from src.DP_EmbyLibrary import UNI_QUALITY_TABLE, UNI_QUALITY_HEVC_TABLE  # noqa
 AUTH_PATH = "/Users/AuthenticateByName"
 EMBY_UID = "user0000000000000000000000000001"
 MOVIE_ID = "104906"
+ITEM_B = "222847"
+
+
+def _track(kind, index, language, title, default=False, forced=False):
+	return {"Type": kind, "Index": index, "Language": language, "DisplayTitle": title,
+		"IsDefault": default, "IsForced": forced}
+
+
+# title A: two versions whose tracks carry DIFFERENT indices, and a forced
+# subtitle only the first one has
+DETAIL_A = {"Id": MOVIE_ID, "Name": "A", "Type": "Movie", "UserData": {"PlayCount": 0}, "MediaSources": [
+	{"Id": "src-0", "Container": "mkv", "MediaStreams": [
+		{"Type": "Video", "Codec": "hevc", "Width": 1920, "Height": 800, "Index": 0},
+		_track("Audio", 1, "spa", "Spanish AAC 5.1", default=True),
+		_track("Audio", 2, "chi", "Chinese AAC 5.1"),
+		_track("Subtitle", 3, "spa", "Spanish (Forced SUBRIP)", forced=True),
+		_track("Subtitle", 4, "spa", "Spanish (SUBRIP)")]},
+	{"Id": "src-1", "Container": "mkv", "MediaStreams": [
+		{"Type": "Video", "Codec": "hevc", "Width": 3840, "Height": 1600, "Index": 0},
+		_track("Audio", 1, "chi", "Chinese AAC 5.1"),
+		_track("Audio", 2, "spa", "Spanish AAC 5.1", default=True),
+		_track("Subtitle", 3, "spa", "Spanish (SUBRIP)"),
+		_track("Subtitle", 4, "eng", "English (SUBRIP)")]}]}  # only this version
+# title B: the same numbering as A's first version, other languages
+DETAIL_B = {"Id": ITEM_B, "Name": "B", "Type": "Movie", "UserData": {"PlayCount": 0}, "MediaSources": [
+	{"Id": "src-b", "Container": "mkv", "MediaStreams": [
+		{"Type": "Video", "Codec": "h264", "Width": 1920, "Height": 808, "Index": 0},
+		_track("Audio", 1, "spa", "Spanish AAC 5.1", default=True),
+		_track("Audio", 2, "fre", "French AAC 5.1"),
+		_track("Subtitle", 3, "spa", "Spanish (SUBRIP)"),
+		_track("Subtitle", 4, "eng", "English (SUBRIP)")]}]}
 
 
 def wire_auth(mock):
@@ -241,13 +272,28 @@ class TestTranscodeUrl(TranscodeTestCase):
 
 	def test_audio_and_subtitle_indices_go_into_the_url(self):
 		self._master()
-		self.lib.setAudioById("srv", "3", "src-0")
-		self.lib.setSubtitleById("srv", "5", "src-0")
+		self.mock.add_json("/Users/%s/Items/%s" % (EMBY_UID, MOVIE_ID), DETAIL_A)
+		# what the dialogs do: list the tracks, then hand back the picked row
+		audio = [r for r in self.lib.getAudioById("srv", MOVIE_ID) if r["language"] == "Chinese AAC 5.1"][0]
+		subtitle = [r for r in self.lib.getSubtitleById("srv", MOVIE_ID) if r["language"] == "Spanish (SUBRIP)"][0]
+		self.lib.setAudioById("srv", audio["id"], audio["partid"])
+		self.lib.setSubtitleById("srv", subtitle["id"], subtitle["partid"])
+		self.lib.getMediaOptionsToPlay(MOVIE_ID, self.lib.g_address, False, myType="Video")
 		self.lib.transcode(MOVIE_ID, "http://ignored")
 
 		q = self.mock.requests_for("/Videos/%s/master.m3u8" % MOVIE_ID)[0]["query"]
-		self.assertEqual(q.get("AudioStreamIndex"), ["3"])
-		self.assertEqual(q.get("SubtitleStreamIndex"), ["5"])
+		self.assertEqual(q.get("AudioStreamIndex"), ["2"])
+		self.assertEqual(q.get("SubtitleStreamIndex"), ["4"])
+
+	def test_without_a_pick_no_index_is_sent(self):
+		self._master()
+		self.mock.add_json("/Users/%s/Items/%s" % (EMBY_UID, MOVIE_ID), DETAIL_A)
+		self.lib.getMediaOptionsToPlay(MOVIE_ID, self.lib.g_address, False, myType="Video")
+		self.lib.transcode(MOVIE_ID, "http://ignored")
+
+		q = self.mock.requests_for("/Videos/%s/master.m3u8" % MOVIE_ID)[0]["query"]
+		self.assertNotIn("AudioStreamIndex", q)
+		self.assertNotIn("SubtitleStreamIndex", q)
 
 	def test_progressive_fallback_uses_stream_ts(self):
 		self.lib.g_serverConfig.progressiveTranscode.value = True
@@ -313,11 +359,92 @@ class TestAudioSubtitleStreams(TranscodeTestCase):
 		for key in ("language", "languageCode", "id", "partid", "selected", "forced"):
 			self.assertIn(key, subs[0])
 
-	def test_set_index_stores_int_and_bad_value_clears(self):
-		self.lib.setAudioById("srv", "2", "src-0")
-		self.assertEqual(self.lib.g_audioStreamIndex, 2)
+	def test_a_pick_is_kept_with_its_title_and_a_bad_row_clears_it(self):
+		self._wire_detail()
+		row = self.lib.getAudioById("srv", MOVIE_ID)[1]
+		self.lib.setAudioById("srv", row["id"], row["partid"])
+		self.assertEqual(self.lib.g_audioChoice[0], MOVIE_ID)
 		self.lib.setAudioById("srv", "n/a", "src-0")
-		self.assertIsNone(self.lib.g_audioStreamIndex)
+		self.assertIsNone(self.lib.g_audioChoice)
+
+
+class TestTrackChoice(TranscodeTestCase):
+	"""A track picked in the audio/subtitle dialogs belongs to the title it was
+	picked for. It used to be a bare MediaStream Index kept for the whole
+	server session: picking Chinese audio and full subtitles in one film made
+	the next one play in French with English subtitles burned in, because
+	Emby took index 2 and 4 of THAT film (seen on the box, 2026-10-06)."""
+
+	def setUp(self):
+		super(TestTrackChoice, self).setUp()
+		self.mock.add_json("/Users/%s/Items/%s" % (EMBY_UID, MOVIE_ID), DETAIL_A)
+		self.mock.add_json("/Users/%s/Items/%s" % (EMBY_UID, ITEM_B), DETAIL_B)
+
+	def pick(self, itemId, kind, title):
+		"""What a dialog callback does with the row the user chose."""
+		rows = self.lib.getAudioById("srv", itemId) if kind == "Audio" else self.lib.getSubtitleById("srv", itemId)
+		row = [r for r in rows if r["language"] == title][0]
+		setter = self.lib.setAudioById if kind == "Audio" else self.lib.setSubtitleById
+		setter("srv", row["id"], row["partid"])
+
+	def play(self, itemId, sourceId=None):
+		"""The stream params a transcode of this title would carry."""
+		self.lib.getMediaOptionsToPlay(itemId, self.lib.g_address, False, myType="Video")
+		if sourceId:
+			self.lib.g_currentMediaSourceId = sourceId  # the version dialog's pick
+		return dict(self.lib._transcodeStreamParams())
+
+	def test_a_pick_goes_with_its_own_title(self):
+		self.pick(MOVIE_ID, "Audio", "Chinese AAC 5.1")
+		self.pick(MOVIE_ID, "Subtitle", "Spanish (SUBRIP)")
+
+		params = self.play(MOVIE_ID, "src-0")
+		self.assertEqual(params.get("AudioStreamIndex"), "2")
+		self.assertEqual(params.get("SubtitleStreamIndex"), "4")
+
+	def test_a_pick_does_not_follow_into_another_title(self):
+		self.pick(MOVIE_ID, "Audio", "Chinese AAC 5.1")
+		self.pick(MOVIE_ID, "Subtitle", "Spanish (SUBRIP)")
+
+		params = self.play(ITEM_B)
+		self.assertNotIn("AudioStreamIndex", params)
+		self.assertNotIn("SubtitleStreamIndex", params)
+
+	def test_a_pick_finds_its_track_in_the_other_version(self):
+		self.pick(MOVIE_ID, "Audio", "Chinese AAC 5.1")  # index 2 in src-0
+
+		self.assertEqual(self.play(MOVIE_ID, "src-1").get("AudioStreamIndex"), "1")
+
+	def test_a_track_the_version_lacks_is_not_sent(self):
+		self.pick(MOVIE_ID, "Subtitle", "Spanish (Forced SUBRIP)")  # only in src-0
+
+		self.assertNotIn("SubtitleStreamIndex", self.play(MOVIE_ID, "src-1"))
+
+	def test_the_dialog_lists_each_track_once(self):
+		audio = self.lib.getAudioById("srv", MOVIE_ID)
+		subtitles = self.lib.getSubtitleById("srv", MOVIE_ID)
+
+		self.assertEqual(sorted(r["language"] for r in audio), ["Chinese AAC 5.1", "Spanish AAC 5.1"])
+		self.assertEqual(sorted(r["language"] for r in subtitles),
+			["English (SUBRIP)", "Spanish (Forced SUBRIP)", "Spanish (SUBRIP)"])
+
+	def test_a_track_only_the_second_version_has_is_resolved_in_that_version(self):
+		self.pick(MOVIE_ID, "Subtitle", "English (SUBRIP)")  # index 4 of src-1; src-0's 4 is Spanish
+
+		self.assertEqual(self.play(MOVIE_ID, "src-1").get("SubtitleStreamIndex"), "4")
+		self.assertNotIn("SubtitleStreamIndex", self.play(MOVIE_ID, "src-0"))
+
+	def test_the_dialog_shows_this_titles_tracks_not_the_last_played(self):
+		self.play(MOVIE_ID)  # leaves title A's detail cached for the player
+
+		audio = self.lib.getAudioById("srv", ITEM_B)
+		self.assertEqual(sorted(r["language"] for r in audio), ["French AAC 5.1", "Spanish AAC 5.1"])
+
+	def test_a_row_that_is_not_there_clears_the_pick(self):
+		self.pick(MOVIE_ID, "Audio", "Chinese AAC 5.1")
+		self.lib.setAudioById("srv", "n/a", "src-0")
+
+		self.assertNotIn("AudioStreamIndex", self.play(MOVIE_ID, "src-0"))
 
 
 class TestTrailers(TranscodeTestCase):
